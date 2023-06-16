@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(lip)
+
+if (NOT TARGET H3RESULT::h3result)
+  include("${CMAKE_CURRENT_LIST_DIR}/h3result-targets.cmake")
+endif()
+
+check_required_components(h3result)
+check_required_components(lip)

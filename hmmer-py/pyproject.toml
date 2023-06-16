@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "hmmer"
+version = "0.2.4"
+description = "HMMER binaries."
+authors = ["Danilo Horta <horta@ebi.ac.uk>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "hmmer" }]
+exclude = [{ path = "hmmer/data/bin/*", format = "sdist" }]
+include = [
+  { path = "hmmer/data/bin/*", format = "wheel" },
+  { path = "build_hmmer.py", format = "sdist" },
+  { path = "build_hmmer.sh", format = "sdist" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.build]
+script = "build_hmmer.py"
+generate-setup-file = false
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+alimask = 'hmmer:alimask'
+hmmalign = 'hmmer:hmmalign'
+hmmbuild = 'hmmer:hmmbuild'
+hmmc2 = 'hmmer:hmmc2'
+hmmconvert = 'hmmer:hmmconvert'
+hmmemit = 'hmmer:hmmemit'
+hmmerfm-exactmatch = 'hmmer:hmmerfm_exactmatch'
+hmmfetch = 'hmmer:hmmfetch'
+hmmlogo = 'hmmer:hmmlogo'
+hmmpgmd = 'hmmer:hmmpgmd'
+hmmpgmd_shard = 'hmmer:hmmpgmd_shard'
+hmmpress = 'hmmer:hmmpress'
+hmmscan = 'hmmer:hmmscan'
+hmmsearch = 'hmmer:hmmsearch'
+hmmsim = 'hmmer:hmmsim'
+hmmstat = 'hmmer:hmmstat'
+jackhmmer = 'hmmer:jackhmmer'
+makehmmerdb = 'hmmer:makehmmerdb'
+nhmmer = 'hmmer:nhmmer'
+nhmmscan = 'hmmer:nhmmscan'
+phmmer = 'hmmer:phmmer'
+
+[tool.cibuildwheel]
+skip = ["*i686"]
+
+[tool.cibuildwheel.linux]
+archs = ["auto", "aarch64"]

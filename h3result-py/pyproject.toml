@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "h3result"
+version = "0.2.0"
+description = "Python wrapper for h3result library."
+authors = ["Danilo Horta <horta@ebi.ac.uk>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "h3result" }]
+include = [
+	{ path = "h3result/*.so", format = "wheel" },
+	{ path = "h3result/*.pyd", format = "wheel" },
+	{ path = "h3result/lib/lib*", format = "wheel" },
+	{ path = "build_ext.py", format = "sdist" },
+]
+
+[tool.poetry.dependencies]
+cffi = ">=1.15.1"
+python = "^3.9"
+
+[tool.poetry.build]
+script = "build_ext.py"
+generate-setup-file = false
+
+[build-system]
+requires = ["poetry-core", "cffi", "cmake", "patchelf;sys_platform=='linux'"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.cibuildwheel]
+skip = ["*i686"]
+
+[tool.cibuildwheel.linux]
+archs = ["auto", "aarch64"]

@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: dist/*.tar.gz
+          path: hmmer-py/dist/*.tar.gz
 
   make_linux_wheels:
     runs-on: ubuntu-latest
@@ -41,7 +41,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: wheelhouse/*.whl
+          path: hmmer-py/wheelhouse/*.whl
 
   make_macos_wheels:
     runs-on: macos-latest
@@ -53,7 +53,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: wheelhouse/*.whl
+          path: hmmer-py/wheelhouse/*.whl
 
   upload_all:
     needs: [make_linux_wheels, make_macos_wheels, make_sdist]
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: artifact
-          path: dist
+          path: hmmer-py/dist
 
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:

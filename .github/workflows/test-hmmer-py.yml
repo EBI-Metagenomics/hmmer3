@@ -1,0 +1,27 @@
+name: Test hmmer-py
+
+on:
+  push:
+    paths:
+      - hmmer-py/**
+      - .github/workflows/test-hmmer-py.yml
+
+defaults:
+  run:
+    working-directory: hmmer-py
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run tests
+        run: |
+          pipx install poetry
+          poetry install
+          poetry run pytest

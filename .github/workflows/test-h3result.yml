@@ -1,4 +1,4 @@
-name: Test H3Result
+name: Test h3result
 
 on:
   push:

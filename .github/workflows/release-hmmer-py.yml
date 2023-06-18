@@ -1,0 +1,71 @@
+name: Release hmmer-py
+
+on:
+  push:
+    paths:
+      - hmmer-py/**
+      - .github/workflows/release-hmmer-py.yml
+
+defaults:
+  run:
+    working-directory: hmmer-py
+
+env:
+  CIBW_PROJECT_REQUIRES_PYTHON: ">=3.9"
+
+jobs:
+  make_sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build SDist
+        run: pipx run build --sdist
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: dist/*.tar.gz
+
+  make_linux_wheels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: all
+
+      - name: Build wheels
+        run: pipx run cibuildwheel==2.13.1
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: wheelhouse/*.whl
+
+  make_macos_wheels:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build wheels
+        run: pipx run cibuildwheel==2.13.1
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: wheelhouse/*.whl
+
+  upload_all:
+    needs: [make_linux_wheels, make_macos_wheels, make_sdist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/hmmer-py-v')
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true

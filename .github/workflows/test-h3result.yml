@@ -1,16 +1,14 @@
 name: Test H3Result
 
 on:
-  pull_request:
-    paths:
-      - h3result/**
-      - .github/workflows/test-h3result.yml
   push:
-    branches:
-      - main
     paths:
       - h3result/**
       - .github/workflows/test-h3result.yml
+
+defaults:
+  run:
+    working-directory: h3result
 
 jobs:
   test:

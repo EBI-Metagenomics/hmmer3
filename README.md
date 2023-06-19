@@ -1,7 +1,5 @@
 # HMMER (version 3) related projects
 
-### 🏠 [Homepage](https://github.com/EBI-Metagenomics/hmmer3)
-
 ## Directory layout
 
     ├─ h3client/        C library that talks to the hmmer master (`hmmpgmd --master`).

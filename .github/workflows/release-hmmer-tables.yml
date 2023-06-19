@@ -1,0 +1,30 @@
+name: Release hmmer-tables
+
+on:
+  push:
+    paths:
+      - hmmer-tables/**
+      - .github/workflows/release-hmmer-tables.yml
+    tags:
+      - hmmer-tables-v*
+
+defaults:
+  run:
+    working-directory: hmmer-tables
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: |
+          pipx install poetry
+          poetry build
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true

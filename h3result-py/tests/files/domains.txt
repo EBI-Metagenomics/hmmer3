@@ -1,0 +1,75 @@
+Domain annotation for each model (and alignments):
+>> PF13460.8  NAD(P)H-binding
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   73.0   0.0     6e-24   7.6e-24       1     146 [.      48     191 ..      48     202 .. 0.87
+
+  Alignments for each domain:
+  == domain 1  score: 73.0 bits;  conditional E-value: 6e-24
+                             TTTSHHHHHHHHHHHHT.T-EEEEEESS.GGGHHHHHHTT-SEEEE--T..TS--GGGGTT-SEEEE----TTSHHHH.......HH CS
+               PF13460.8   1 GAtGkvGrlvvkellargghevtalvRn.peklaeleaeaglevvegdvtdvedlaealkgadaVvsalggggkdeeg.......ak 79 
+                             G++G vG++++ke+l++ g+ v  l R+  ++l++    + ++  +gd++++++l+ al+g+  V+s++gg g+++++        +
+  tr|Q949S7|Q949S7_ARATH  48 GGNGYVGSHICKEALRQ-GFSVSSLSRSgRSSLHDS-WVDDVTWHQGDLLSPDSLKPALEGITSVISCVGGFGSNSQMvringtaNI 132
+                             9****************.6********967888886.479*****************************999996666677777799 PP
+
+                             HHHHHHHHHT--EEEEE--TT-S-GGGS-G......GGHHHHHHHHHHHHH.HHHSSSEEEEEEE-SE CS
+               PF13460.8  80 nvidaakeagvkRfvlvsaigvgdevpgkfgewnkellkaylkakraaeel.lrasgldyTivrpgaL 146
+                             n+++aa e+gvkRfv++sa++ g         + ++l+++y++ kra e++ l + g    ++rpg++
+  tr|Q949S7|Q949S7_ARATH 133 NAVKAAAEQGVKRFVYISAADFG---------VINNLIRGYFEGKRATEAEiLDKFGNRGSVLRPGFI 191
+                             99******************998.........567889*********998724445888888888876 PP
+
+>> PF01370.23  NAD dependent epimerase/dehydratase family
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   51.6   0.0   1.9e-17   2.3e-17       1     116 [.      44     152 ..      44     155 .. 0.89
+
+  Alignments for each domain:
+  == domain 1  score: 51.6 bits;  conditional E-value: 1.9e-17
+                             EEEETTTSHHHHHHHHHHHHCTSEEEEEES-STTTTCHHCHHC.EEEE--TT-HHHHHHHHHHHT-SEEEE--S---HHHHHHSHHH CS
+              PF01370.23   1 ilVtGatGfiGsalvkallekgyevigldrlssasntarledl.elveldltdrsalerlfkeeqpdavihlAavggvaassedpad 86 
+                             ilV+G++G++Gs+++k+ l++g  v  l+r  ++s + +  d  +++++dl+ +++l+ +++  +++ vi +  vgg + +s+    
+  tr|Q949S7|Q949S7_ARATH  44 ILVLGGNGYVGSHICKEALRQGFSVSSLSRSGRSSLHDSWVDDvTWHQGDLLSPDSLKPALE--GITSVISC--VGGFGSNSQ---- 122
+                             8************************9999997766655443335******************..9*******..888887555.... PP
+
+                             HHHHHTHHHHHHHHHHHHHTCTEEEEEEEG CS
+              PF01370.23  87 fieknlqgtlnlleaarkagvkrllflsSs 116
+                             ++++n   + n ++aa ++gvkr++++s +
+  tr|Q949S7|Q949S7_ARATH 123 MVRINGTANINAVKAAAEQGVKRFVYISAA 152
+                             599************************975 PP
+
+>> PF01073.21  3-beta hydroxysteroid dehydrogenase/isomerase family
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   44.7   0.0   1.8e-15   2.3e-15       1     119 [.      45     154 ..      45     177 .. 0.79
+
+  Alignments for each domain:
+  == domain 1  score: 44.7 bits;  conditional E-value: 1.8e-15
+              PF01073.21   1 vvtGgaGFlGralvkeLvrleelkevrvlDlrespelleelskvnvkkviegDvtdkdkleealegvdvvihlaslvdvagkltede 87 
+                             +v+Gg G++G++++ke +r +    v +l    +++l+   s v+  + ++gD+++ d+l+ aleg+  vi       v g  ++  
+  tr|Q949S7|Q949S7_ARATH  45 LVLGGNGYVGSHICKEALRQG--FSVSSLSRSGRSSLH--DSWVDDVTWHQGDLLSPDSLKPALEGITSVISC-----VGGFGSNS- 121
+                             69******************9..588888777777774..445566669******************999976.....34422333. PP
+
+              PF01073.21  88 imkvnvkGTrnv..leacvkagvrvlvYtSsaev 119
+                              + v ++GT n+  ++a+ ++gv+++vY S+a+ 
+  tr|Q949S7|Q949S7_ARATH 122 -QMVRINGTANInaVKAAAEQGVKRFVYISAADF 154
+                             .56889999875559***************9984 PP
+
+>> PF05368.15  NmrA-like family
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   41.8   0.0   1.8e-14   2.3e-14       1     103 [.      44     152 ..      44     178 .. 0.85
+
+  Alignments for each domain:
+  == domain 1  score: 41.8 bits;  conditional E-value: 1.8e-14
+                             EEESSTTSHHHHHHHHHHHHHT-EEEEEES-S-SHHHHHHHHSTTEEEES-TT-HHHHHHHHTT-SEEEE---GG.....S-HHHH. CS
+              PF05368.15   1 ilviGatGrqGksvvraslkagfkvralvRdtkselakslkeaGvelvkgdlddkeslaealkgvdvvfsvtgfa.....skeied. 81 
+                             ilv+G+ G++G+++ + +l++gf+v  l R  +s l +s  +  v+  +gdl + +sl+ al+g   v+s +g +      + i+  
+  tr|Q949S7|Q949S7_ARATH  44 ILVLGGNGYVGSHICKEALRQGFSVSSLSRSGRSSLHDSWVDD-VTWHQGDLLSPDSLKPALEGITSVISCVGGFgsnsqMVRINGt 129
+                             89*********************************99999875.9999***********************9977888542333331 PP
+
+                             .HHHHHHHHHHHS-SEEEEEE-- CS
+              PF05368.15  82 .gkklvdAakeaGvkhfvySelg 103
+                                + v+Aa+e Gvk+fvy +  
+  tr|Q949S7|Q949S7_ARATH 130 aNINAVKAAAEQGVKRFVYISAA 152
+                             134569999999*******7765 PP
+

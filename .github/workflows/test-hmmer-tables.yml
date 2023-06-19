@@ -2,6 +2,8 @@ name: Test hmmer-tables
 
 on:
   push:
+    branches:
+      - "**"
     paths:
       - hmmer-tables/**
       - .github/workflows/test-hmmer-tables.yml

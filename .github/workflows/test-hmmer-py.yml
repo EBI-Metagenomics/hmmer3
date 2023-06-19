@@ -2,6 +2,8 @@ name: Test hmmer-py
 
 on:
   push:
+    branches:
+      - "**"
     paths:
       - hmmer-py/**
       - .github/workflows/test-hmmer-py.yml

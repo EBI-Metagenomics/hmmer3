@@ -2,6 +2,8 @@ name: Test h3result-py
 
 on:
   push:
+    branches:
+      - "**"
     paths:
       - h3result-py/**
       - .github/workflows/test-h3result-py.yml

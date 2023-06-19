@@ -2,6 +2,8 @@ name: Test h3client
 
 on:
   push:
+    branches:
+      - "**"
     paths:
       - h3client/**
       - .github/workflows/test-h3client.yml

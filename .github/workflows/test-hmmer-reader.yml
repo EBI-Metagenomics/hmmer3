@@ -2,6 +2,8 @@ name: Test hmmer-reader
 
 on:
   push:
+    branches:
+      - "**"
     paths:
       - hmmer-reader/**
       - .github/workflows/test-hmmer-reader.yml

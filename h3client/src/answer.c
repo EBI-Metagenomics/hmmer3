@@ -315,6 +315,7 @@ cleanup:
 int h3client_answer_copy(struct answer *x, struct h3client_result *y)
 {
   y->errnum = x->errnum;
+  if (y->errstr) free((void *)y->errstr);
   y->errstr = x->errstr;
   x->errstr = NULL;
   if (y->errnum) return 0;

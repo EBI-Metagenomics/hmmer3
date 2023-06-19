@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
-project(h3result VERSION 0.2.0 LANGUAGES C)
+project(h3result VERSION 0.2.1 LANGUAGES C)
 
 include(cmake/warnings.cmake)
 include(cmake/sanitizers.cmake)

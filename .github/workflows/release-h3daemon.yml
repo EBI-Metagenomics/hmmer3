@@ -2,9 +2,6 @@ name: Release h3daemon
 
 on:
   push:
-    paths:
-      - h3daemon/**
-      - .github/workflows/release-h3daemon.yml
     tags:
       - h3daemon-v*
 

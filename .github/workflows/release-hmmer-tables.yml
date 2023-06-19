@@ -2,9 +2,6 @@ name: Release hmmer-tables
 
 on:
   push:
-    paths:
-      - hmmer-tables/**
-      - .github/workflows/release-hmmer-tables.yml
     tags:
       - hmmer-tables-v*
 

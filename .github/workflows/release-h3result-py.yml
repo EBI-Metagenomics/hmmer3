@@ -2,9 +2,8 @@ name: Release h3result-py
 
 on:
   push:
-    paths:
-      - h3result-py/**
-      - .github/workflows/release-h3result-py.yml
+    tags:
+      - h3result-py-v*
 
 defaults:
   run:
@@ -58,7 +57,6 @@ jobs:
   upload_all:
     needs: [make_linux_wheels, make_macos_wheels, make_sdist]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/h3result-py-v')
     steps:
       - uses: actions/download-artifact@v3
         with:

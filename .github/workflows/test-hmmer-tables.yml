@@ -1,0 +1,27 @@
+name: Test hmmer-tables
+
+on:
+  push:
+    paths:
+      - hmmer-tables/**
+      - .github/workflows/test-hmmer-tables.yml
+
+defaults:
+  run:
+    working-directory: hmmer-tables
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run tests
+        run: |
+          pipx install poetry
+          poetry install
+          poetry run pytest

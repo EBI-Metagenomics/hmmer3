@@ -34,15 +34,22 @@ CPM_OPTS = ["-DCPM_USE_LOCAL_PACKAGES=ON"]
 
 @dataclass
 class Ext:
-    user: str
-    project: str
-    version: str
+    github_user: str
+    github_project: str
+    git_tag: str
+    root_dir: str
     cmake_opts: list[str]
 
 
 EXTS = [
-    Ext("EBI-Metagenomics", "lip", "0.5.2", CMAKE_OPTS),
-    Ext("EBI-Metagenomics", "h3result", "0.1.0", CMAKE_OPTS + CPM_OPTS),
+    Ext("EBI-Metagenomics", "lip", "v0.5.2", "./", CMAKE_OPTS),
+    Ext(
+        "EBI-Metagenomics",
+        "hmmer3",
+        "h3result-v0.2.0",
+        "./h3result",
+        CMAKE_OPTS + CPM_OPTS,
+    ),
 ]
 
 
@@ -64,22 +71,23 @@ def resolve_bin(bin: str):
 def build_ext(ext: Ext):
     from cmake import CMAKE_BIN_DIR
 
-    prj_dir = TMP / f"{ext.project}-{ext.version}"
-    bld_dir = prj_dir / "build"
-    os.makedirs(bld_dir, exist_ok=True)
-
     url = (
-        f"https://github.com/{ext.user}/{ext.project}"
-        f"/archive/refs/tags/v{ext.version}.tar.gz"
+        f"https://github.com/{ext.github_user}/{ext.github_project}"
+        f"/archive/refs/tags/{ext.git_tag}.tar.gz"
     )
+    tar_filename = f"{ext.github_project}-{ext.git_tag}.tar.gz"
 
-    tar_filename = f"{ext.project}-{ext.version}.tar.gz"
-
+    os.makedirs(TMP, exist_ok=True)
     with open(TMP / tar_filename, "wb") as lf:
         lf.write(urllib.request.urlopen(url).read())
 
     with tarfile.open(TMP / tar_filename) as tf:
+        dir = os.path.commonprefix(tf.getnames())
         tf.extractall(TMP)
+
+    prj_dir = TMP / dir / ext.root_dir
+    bld_dir = prj_dir / "build"
+    os.makedirs(bld_dir, exist_ok=True)
 
     cmake = [str(v) for v in Path(CMAKE_BIN_DIR).glob("cmake*")][0]
     check_call([cmake, "-S", str(prj_dir), "-B", str(bld_dir)] + ext.cmake_opts)

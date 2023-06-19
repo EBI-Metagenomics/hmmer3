@@ -1,2 +1,5 @@
 .build_ext/
 cffi.*
+h3result/include/
+h3result/lib/
+h3result/share/

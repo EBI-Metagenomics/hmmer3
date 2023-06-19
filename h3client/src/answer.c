@@ -25,7 +25,7 @@ struct answer
 
   struct buff *buff;
   int errnum;
-  char const *errstr;
+  char *errstr;
   struct hmmd_stats stats;
   struct hmmd_tophits tophits;
 };
@@ -113,7 +113,7 @@ int h3client_answer_parse_error(struct answer *x)
   x->errnum = x->status.value.status;
 
   size_t msg_size = x->status.value.msg_size;
-  char *errstr = malloc(msg_size + 1);
+  char *errstr = realloc(x->errstr, msg_size + 1);
   if (!errstr) return H3CLIENT_ENOMEM;
   memcpy(errstr, x->buff->data, msg_size);
   errstr[msg_size] = '\0';

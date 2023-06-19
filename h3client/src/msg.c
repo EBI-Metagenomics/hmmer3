@@ -103,7 +103,7 @@ void h3client_msg_stop(struct msg *x)
   nng_aio_stop(x->aio);
 }
 
-void h3client_msg_del(struct msg *x)
+void h3client_msg_del(struct msg const *x)
 {
   if (!x) return;
   if (x->ans) h3client_answer_del(x->ans);
@@ -113,7 +113,7 @@ void h3client_msg_del(struct msg *x)
   nng_mtx_unlock(x->mtx);
   if (x->mtx) nng_mtx_free(x->mtx);
   if (x->aio) nng_aio_free(x->aio);
-  free(x);
+  free((void *)x);
 }
 
 struct answer *h3client_msg_answer(struct msg *x) { return x->ans; }

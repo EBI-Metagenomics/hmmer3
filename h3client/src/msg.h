@@ -31,7 +31,7 @@ void h3client_msg_wait(struct msg *);
 int h3client_msg_result(struct msg *);
 void h3client_msg_cancel(struct msg *);
 void h3client_msg_stop(struct msg *);
-void h3client_msg_del(struct msg *);
+void h3client_msg_del(struct msg const *);
 struct answer *h3client_msg_answer(struct msg *);
 
 #endif

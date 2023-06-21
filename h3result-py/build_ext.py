@@ -46,7 +46,7 @@ EXTS = [
     Ext(
         "EBI-Metagenomics",
         "hmmer3",
-        "h3result-v0.2.0",
+        "h3result-v0.2.1",
         "./h3result",
         CMAKE_OPTS + CPM_OPTS,
     ),

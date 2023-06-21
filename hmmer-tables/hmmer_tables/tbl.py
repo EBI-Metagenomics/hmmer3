@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Iterable
 
 from pydantic import BaseModel
 
@@ -39,36 +39,41 @@ class TBLRow(BaseModel):
     description: str
 
 
-def read_tbl(filename: PathLike) -> List[TBLRow]:
+def _read_tbl_stream(stream: Iterable[str]) -> List[TBLRow]:
+    rows = []
+    for x in csv_iter(stream):
+        seq = TBLScore(e_value=float(x[4]), score=float(x[5]), bias=float(x[6]))
+        dom = TBLScore(e_value=float(x[7]), score=float(x[8]), bias=float(x[9]))
+        row = TBLRow(
+            target=TBLIndex(name=x[0], accession=x[1]),
+            query=TBLIndex(name=x[2], accession=x[3]),
+            full_sequence=seq,
+            best_1_domain=dom,
+            domain_numbers=TBLDom(
+                exp=float(x[10]),
+                reg=int(x[11]),
+                clu=int(x[12]),
+                ov=int(x[13]),
+                env=int(x[14]),
+                dom=int(x[15]),
+                rep=int(x[16]),
+                inc=int(x[17]),
+            ),
+            description=" ".join(x[18:]),
+        )
+        rows.append(row)
+    return rows
+
+
+def read_tbl(
+    filename: PathLike | None = None, stream: Iterable[str] | None = None
+) -> List[TBLRow]:
     """
     Read tbl file type.
-
-    Parameters
-    ----------
-    file
-        File path or file stream.
     """
-    rows = []
-    with open(filename, "r") as file:
-        for x in csv_iter(file):
-            seq = TBLScore(e_value=float(x[4]), score=float(x[5]), bias=float(x[6]))
-            dom = TBLScore(e_value=float(x[7]), score=float(x[8]), bias=float(x[9]))
-            row = TBLRow(
-                target=TBLIndex(name=x[0], accession=x[1]),
-                query=TBLIndex(name=x[2], accession=x[3]),
-                full_sequence=seq,
-                best_1_domain=dom,
-                domain_numbers=TBLDom(
-                    exp=float(x[10]),
-                    reg=int(x[11]),
-                    clu=int(x[12]),
-                    ov=int(x[13]),
-                    env=int(x[14]),
-                    dom=int(x[15]),
-                    rep=int(x[16]),
-                    inc=int(x[17]),
-                ),
-                description=" ".join(x[18:]),
-            )
-            rows.append(row)
-    return rows
+    if filename is not None:
+        assert stream is None
+        with open(filename, "r") as stream:
+            return _read_tbl_stream(stream)
+    else:
+        return _read_tbl_stream(stream)

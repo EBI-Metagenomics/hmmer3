@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List
+from typing import List, Iterable
 
 from pydantic import BaseModel
 
@@ -89,39 +89,44 @@ class DomTBLRow(BaseModel):
         return {f.name: f.type for f in dataclasses.fields(self)}
 
 
-def read_domtbl(filename: PathLike) -> List[DomTBLRow]:
+def _read_domtbl_stream(stream: Iterable[str]):
+    rows = []
+    for x in csv_iter(stream):
+        seq_score = DomTBLSeqScore(
+            e_value=float(x[6]), score=float(x[7]), bias=float(x[8])
+        )
+        domain = DomTBLDomScore(
+            id=int(x[9]),
+            size=int(x[10]),
+            c_value=float(x[11]),
+            i_value=float(x[12]),
+            score=float(x[13]),
+            bias=float(x[14]),
+        )
+        row = DomTBLRow(
+            target=DomTBLIndex(name=x[0], accession=x[1], length=int(x[2])),
+            query=DomTBLIndex(name=x[3], accession=x[4], length=int(x[5])),
+            full_sequence=seq_score,
+            domain=domain,
+            hmm_coord=DomTBLCoord(start=int(x[15]), stop=int(x[16])),
+            ali_coord=DomTBLCoord(start=int(x[17]), stop=int(x[18])),
+            env_coord=DomTBLCoord(start=int(x[19]), stop=int(x[20])),
+            acc=float(x[21]),
+            description=" ".join(x[22:]),
+        )
+        rows.append(row)
+    return rows
+
+
+def read_domtbl(
+    filename: PathLike | None = None, stream: Iterable[str] | None = None
+) -> List[DomTBLRow]:
     """
     Read domtbl file type.
-
-    Parameters
-    ----------
-    file
-        File path or file stream.
     """
-    rows = []
-    with open(filename, "r") as file:
-        for x in csv_iter(file):
-            seq_score = DomTBLSeqScore(
-                e_value=float(x[6]), score=float(x[7]), bias=float(x[8])
-            )
-            domain = DomTBLDomScore(
-                id=int(x[9]),
-                size=int(x[10]),
-                c_value=float(x[11]),
-                i_value=float(x[12]),
-                score=float(x[13]),
-                bias=float(x[14]),
-            )
-            row = DomTBLRow(
-                target=DomTBLIndex(name=x[0], accession=x[1], length=int(x[2])),
-                query=DomTBLIndex(name=x[3], accession=x[4], length=int(x[5])),
-                full_sequence=seq_score,
-                domain=domain,
-                hmm_coord=DomTBLCoord(start=int(x[15]), stop=int(x[16])),
-                ali_coord=DomTBLCoord(start=int(x[17]), stop=int(x[18])),
-                env_coord=DomTBLCoord(start=int(x[19]), stop=int(x[20])),
-                acc=float(x[21]),
-                description=" ".join(x[22:]),
-            )
-            rows.append(row)
-    return rows
+    if filename is not None:
+        assert stream is None
+        with open(filename, "r") as stream:
+            return _read_domtbl_stream(stream)
+    else:
+        return _read_domtbl_stream(stream)

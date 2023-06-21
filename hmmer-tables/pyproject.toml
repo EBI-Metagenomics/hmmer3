@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hmmer-tables"
-version = "0.1.2"
+version = "0.2.0"
 description = "Read tables produced by HMMER software."
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"

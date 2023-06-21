@@ -12,4 +12,6 @@ def uncomment(stream: TextIOWrapper):
     for line in stream:
         if line.startswith("#"):
             continue
+        if len(line) == 0:
+            continue
         yield line

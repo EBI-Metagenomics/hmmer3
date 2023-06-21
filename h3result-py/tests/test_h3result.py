@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile
 
 import pytest
 
-from h3result.h3result import H3Result
+from h3result.read_h3result import read_h3result
 
 
 @pytest.fixture()
@@ -38,7 +38,7 @@ class TempFile:
 def test_targets(files_path: Path):
     tmp = TempFile()
     with tmp:
-        x = H3Result(files_path / "h3result.mp")
+        x = read_h3result(files_path / "h3result.mp")
         x.print_targets(tmp.fileno())
 
     desired = open(files_path / "targets.txt").read()
@@ -48,7 +48,7 @@ def test_targets(files_path: Path):
 def test_targets_table(files_path: Path):
     tmp = TempFile()
     with tmp:
-        x = H3Result(files_path / "h3result.mp")
+        x = read_h3result(files_path / "h3result.mp")
         x.print_targets_table(tmp.fileno())
 
     desired = open(files_path / "targets_table.txt").read()
@@ -58,7 +58,7 @@ def test_targets_table(files_path: Path):
 def test_domains(files_path: Path):
     tmp = TempFile()
     with tmp:
-        x = H3Result(files_path / "h3result.mp")
+        x = read_h3result(files_path / "h3result.mp")
         x.print_domains(tmp.fileno())
 
     desired = open(files_path / "domains.txt").read()
@@ -68,8 +68,19 @@ def test_domains(files_path: Path):
 def test_domains_table(files_path: Path):
     tmp = TempFile()
     with tmp:
-        x = H3Result(files_path / "h3result.mp")
+        x = read_h3result(files_path / "h3result.mp")
         x.print_domains_table(tmp.fileno())
 
     desired = open(files_path / "domains_table.txt").read()
+    assert desired == tmp.content
+
+
+def test_open_via_fileno(files_path: Path):
+    tmp = TempFile()
+    with tmp:
+        with open(files_path / "h3result.mp", "rb") as f:
+            x = read_h3result(fileno=f.fileno())
+            x.print_targets(tmp.fileno())
+
+    desired = open(files_path / "targets.txt").read()
     assert desired == tmp.content

@@ -1,7 +1,7 @@
 import dataclasses
 from typing import List, Iterable
 
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 
 from hmmer_tables.csv_iter import csv_iter
 from hmmer_tables.interval import PyInterval, RInterval
@@ -13,6 +13,7 @@ __all__ = [
     "DomTBLIndex",
     "DomTBLRow",
     "DomTBLSeqScore",
+    "DomTBL",
     "read_domtbl",
 ]
 
@@ -89,6 +90,19 @@ class DomTBLRow(BaseModel):
         return {f.name: f.type for f in dataclasses.fields(self)}
 
 
+class DomTBL(RootModel):
+    root: List[DomTBLRow]
+
+    def __iter__(self):
+        return iter(self.root)
+
+    def __getitem__(self, item):
+        return self.root[item]
+
+    def __len__(self):
+        return len(self.root)
+
+
 def _read_domtbl_stream(stream: Iterable[str]):
     rows = []
     for x in csv_iter(stream):
@@ -115,12 +129,12 @@ def _read_domtbl_stream(stream: Iterable[str]):
             description=" ".join(x[22:]),
         )
         rows.append(row)
-    return rows
+    return DomTBL.model_validate(rows)
 
 
 def read_domtbl(
     filename: PathLike | None = None, stream: Iterable[str] | None = None
-) -> List[DomTBLRow]:
+) -> DomTBL:
     """
     Read domtbl file type.
     """

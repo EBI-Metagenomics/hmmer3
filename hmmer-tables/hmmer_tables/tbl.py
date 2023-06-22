@@ -1,11 +1,11 @@
 from typing import List, Iterable
 
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 
 from hmmer_tables.csv_iter import csv_iter
 from hmmer_tables.path_like import PathLike
 
-__all__ = ["TBLScore", "TBLRow", "TBLIndex", "TBLDom", "read_tbl"]
+__all__ = ["TBLScore", "TBLRow", "TBLIndex", "TBLDom", "read_tbl", "TBL"]
 
 
 class TBLIndex(BaseModel):
@@ -39,6 +39,19 @@ class TBLRow(BaseModel):
     description: str
 
 
+class TBL(RootModel):
+    root: List[TBLRow]
+
+    def __iter__(self):
+        return iter(self.root)
+
+    def __getitem__(self, item):
+        return self.root[item]
+
+    def __len__(self):
+        return len(self.root)
+
+
 def _read_tbl_stream(stream: Iterable[str]) -> List[TBLRow]:
     rows = []
     for x in csv_iter(stream):
@@ -62,12 +75,12 @@ def _read_tbl_stream(stream: Iterable[str]) -> List[TBLRow]:
             description=" ".join(x[18:]),
         )
         rows.append(row)
-    return rows
+    return TBL.model_validate(rows)
 
 
 def read_tbl(
     filename: PathLike | None = None, stream: Iterable[str] | None = None
-) -> List[TBLRow]:
+) -> TBL:
     """
     Read tbl file type.
     """

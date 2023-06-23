@@ -96,7 +96,7 @@ class DomTBL(RootModel):
     def __iter__(self):
         return iter(self.root)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> DomTBLRow:
         return self.root[item]
 
     def __len__(self):

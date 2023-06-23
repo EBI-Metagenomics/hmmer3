@@ -55,7 +55,7 @@ class RInterval:
     stop: int
 
     def __post_init__(self):
-        if self.start > self.stop:
+        if self.start > self.stop + 1:
             raise ValueError(f"Invalid RInterval({self.start}, {self.stop}).")
 
     def to_pyinterval(self) -> PyInterval:

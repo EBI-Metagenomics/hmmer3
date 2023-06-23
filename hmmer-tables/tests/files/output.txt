@@ -1,0 +1,232 @@
+# hmmscan :: search sequence(s) against a profile database
+# HMMER 3.3.2 (Nov 2020); http://hmmer.org/
+# Copyright (C) 2020 Howard Hughes Medical Institute.
+# Freely distributed under the BSD open source license.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# query sequence file:             AE014184.1.amino.5.fasta
+# target HMM database:             Pfam-A.hmm
+# output directed to file:         output.txt
+# per-seq hits tabular output:     tblout.txt
+# per-dom hits tabular output:     domtblout.txt
+# model-specific thresholding:     GA cutoffs
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Query:       AE014184.1:1-1434|amino|11  [L=478]
+Description: Tropheryma whipplei str. Twist, complete genome
+Scores for complete sequence (score includes all domains):
+   --- full sequence ---   --- best 1 domain ---    -#dom-
+    E-value  score  bias    E-value  score  bias    exp  N  Model        Description
+    ------- ------ -----    ------- ------ -----   ---- --  --------     -----------
+    1.9e-91  305.9   0.1    3.2e-91  305.1   0.1    1.4  1  Bac_DnaA      Bacterial dnaA  protein
+    6.6e-25   87.0   0.1      2e-24   85.5   0.1    1.9  1  Bac_DnaA_C    Bacterial dnaA protein helix-turn-helix
+      5e-09   36.1   0.0    9.5e-09   35.2   0.0    1.4  1  IstB_IS21     IstB-like ATP binding protein
+      1e-06   29.3   0.0    3.6e-06   27.5   0.0    2.0  1  AAA           ATPase family associated with various cellular 
+    1.1e-05   25.9   0.0    4.5e-05   23.9   0.0    2.1  1  RNA_helicase  RNA helicase
+
+
+Domain annotation for each model (and alignments):
+>> Bac_DnaA  Bacterial dnaA  protein
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  305.1   0.1   8.5e-95   3.2e-91       2     218 ..     144     360 ..     143     361 .. 0.99
+
+  Alignments for each domain:
+  == domain 1  score: 305.1 bits;  conditional E-value: 8.5e-95
+                                 -SS-SGGG----TTTHHHHHHHHHHHHSTTT.S--EEEE-SSSSSHHHHHHHHHHHHHHHSSSS-EEEEEHHHHHHHHHHHHH CS
+                    Bac_DnaA   2 nkrytFetFviGasnrlAlaaalkvaeapgkkynPlfiygevGlGktHLlkaignevlenapelrvvYltaeeFlnelvkalr 84 
+                                 n+r+tF++Fv+G+sn+lA+aa+ + ae pgk++nPlfiyg++G+GktHLl++ign+++  +p+lr++Y+++e+F+n++++++ 
+  AE014184.1:1-1434|amino|11 144 NPRFTFDNFVVGKSNELARAASISAAERPGKSFNPLFIYGDSGVGKTHLLHSIGNYAKFLFPSLRIKYVSSEDFTNDFINSIS 226
+                                 89********************************************************************************* PP
+
+                                 TT-HHHHHHHHTT-SEEEEE-GGGGTT-HHHHHHHHHHHHHHHTTT-EEEEEESS-TTT-SS--HHHHHHHHSSEEEE----- CS
+                    Bac_DnaA  85 dkkaeefkeklrkvDvLliDDiqflagkektqeelfhtfnalleegkqvvlssDrsPkeleeledrlrsrfeaGlvvdieppd 167
+                                 + + ++f+ek+r++D+L++DDiqfl++k++tqe +fhtfn+l+++++q+v+ssD +Pk+l  +edr+rsrfe Glv+di++pd
+  AE014184.1:1-1434|amino|11 227 SGTSQKFQEKYRQIDILMVDDIQFLQKKQETQESFFHTFNSLHNSSRQLVISSDLPPKQLMGFEDRMRSRFECGLVCDIQKPD 309
+                                 *********************************************************************************** PP
+
+                                 HHHHHHHHHHHHHHTT----TTHHHHHHHH--S-HHHHHHHHHHHHHHHHH CS
+                    Bac_DnaA 168 letrlailkkkieaeklevpeevlefiaervtdnvRelegalnrlkayasl 218
+                                 letr+ail+kk ++ek ev  e+l++ia+ ++++vRelegal r+ a as+
+  AE014184.1:1-1434|amino|11 310 LETRIAILQKKCQNEKKEVSMEILTYIASCFSSSVRELEGALLRIFALASF 360
+                                 *********************************************998876 PP
+
+>> Bac_DnaA_C  Bacterial dnaA protein helix-turn-helix
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   85.5   0.1   5.2e-28     2e-24       3      69 .]     389     454 ..     387     454 .. 0.97
+
+  Alignments for each domain:
+  == domain 1  score: 85.5 bits;  conditional E-value: 5.2e-28
+                                 HHHHTHHHHTT--HHHHHS----CSSHHHHHHHHHHHHHTS---HHHHHHHHT-STTHHHHHHHHHH CS
+                  Bac_DnaA_C   3 kIieaVaeyfgvsvedlkskkRkkeiveaRqiamYlareltdlslpeIGkafggrdHsTVihaikki 69 
+                                 +Iie++a+++++  +dl +++R ++i+ aRqiamYl+reltd slp++G  f grdHsT+i+a ++i
+  AE014184.1:1-1434|amino|11 389 EIIEITAKHYDLAASDLCGNSRVANISIARQIAMYLCRELTDVSLPKLGYIF-GRDHSTIIYATRRI 454
+                                 7***************************************************.8**********997 PP
+
+>> IstB_IS21  IstB-like ATP binding protein
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   35.2   0.0   2.5e-12   9.5e-09      95     195 ..     179     282 ..     162     289 .. 0.91
+
+  Alignments for each domain:
+  == domain 1  score: 35.2 bits;  conditional E-value: 2.5e-12
+                   IstB_IS21  95 vvllGppGvGkthlAialgveai..raGykvyfvsvadlveeLkraeedGklkrklqallkidvlilDelGylpldqaeakll 175
+                                 + + G +GvGkthl  ++g  a       ++ +vs +d+ ++     + G  ++  +++ +id+l++D++ +l+ +q+ ++ +
+  AE014184.1:1-1434|amino|11 179 LFIYGDSGVGKTHLLHSIGNYAKflFPSLRIKYVSSEDFTNDFINSISSGTSQKFQEKYRQIDILMVDDIQFLQKKQETQESF 261
+                                 55779**************998645889******************************************************* PP
+
+                   IstB_IS21 176 fqvlakryek.asiiltsnls 195
+                                 f+  + + +  + +++ s+l+
+  AE014184.1:1-1434|amino|11 262 FHTFNSLHNSsRQLVISSDLP 282
+                                 ****99887526789999887 PP
+
+>> AAA  ATPase family associated with various cellular activities (AAA)
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   27.5   0.0   9.3e-10   3.6e-06       2      98 ..     180     270 ..     179     301 .. 0.77
+
+  Alignments for each domain:
+  == domain 1  score: 27.5 bits;  conditional E-value: 9.3e-10
+                                 EEESSTTSSHHHHHHHHHHHHT.....SEEEEEETTTSSCSSTTHHHHHHHHHHHHHHHTSTSEEEEEETGGGTSHHSSSSSH CS
+                         AAA   2 llyGppGtGKTllakavakelg.....vefleisgsellskyvgesekkirelfkeakekakpsilfiDEidalaksrsgses 79 
+                                  +yG  G+GKT l +++ + ++      ++  +s  +++++++   ++ +++ f+e    +   il++D+i  l k++     
+  AE014184.1:1-1434|amino|11 180 FIYGDSGVGKTHLLHSIGNYAKflfpsLRIKYVSSEDFTNDFINSISSGTSQKFQEK-YRQ-IDILMVDDIQFLQKKQ----- 255
+                                 68******************965555588999999*******************994.443.6***********8888..... PP
+
+                                 HHHHHHHHHHHHHHHHTTS CS
+                         AAA  80 eeeervvnqLlteldgvkk 98 
+                                     ++++ +++ ++ + +
+  AE014184.1:1-1434|amino|11 256 ----ETQESFFHTFNSLHN 270
+                                 ....455555555555554 PP
+
+>> RNA_helicase  RNA helicase
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   23.9   0.0   1.2e-08   4.5e-05       1      92 [.     179     284 ..     179     292 .. 0.76
+
+  Alignments for each domain:
+  == domain 1  score: 23.9 bits;  conditional E-value: 1.2e-08
+                RNA_helicase   1 iwlyGpsgeGKStlakeLakallkkl..............klkkkdsvysrnpeddfwdgYtgqevvvidDfgqvkdee..np 67 
+                                 +++yG+sg+GK++l +++ +     l               ++  +s+ s +++++f ++Y++ +++++dD+   ++++  ++
+  AE014184.1:1-1434|amino|11 179 LFIYGDSGVGKTHLLHSIGNYAK-FLfpslrikyvssedfTNDFINSI-SSGTSQKFQEKYRQIDILMVDDIQFLQKKQetQE 259
+                                 589**************665554.335778889999766544444444.6799******************986665554355 PP
+
+                RNA_helicase  68 sdlaelirlvsstpyplnmasleek 92 
+                                 s +++++ l +s    +   +l  k
+  AE014184.1:1-1434|amino|11 260 SFFHTFNSLHNSSRQLVISSDLPPK 284
+                                 6999999999998877766666655 PP
+
+
+
+Internal pipeline statistics summary:
+-------------------------------------
+Query sequence(s):                         1  (478 residues searched)
+Target model(s):                       19179  (3258786 nodes)
+Passed MSV filter:                       857  (0.0446843); expected 383.6 (0.02)
+Passed bias filter:                      600  (0.0312842); expected 383.6 (0.02)
+Passed Vit filter:                        64  (0.00333698); expected 19.2 (0.001)
+Passed Fwd filter:                        16  (0.000834246); expected 0.2 (1e-05)
+Initial search space (Z):              19179  [actual number of targets]
+Domain search space  (domZ):               5  [number of targets reported over threshold]
+# CPU time: 0.17u 0.10s 00:00:00.27 Elapsed: 00:00:00.15
+# Mc/sec: 9788.37
+//
+Query:       AE014184.1:1767-2897|amino|11  [L=377]
+Description: Tropheryma whipplei str. Twist, complete genome
+Scores for complete sequence (score includes all domains):
+   --- full sequence ---   --- best 1 domain ---    -#dom-
+    E-value  score  bias    E-value  score  bias    exp  N  Model           Description
+    ------- ------ -----    ------- ------ -----   ---- --  --------        -----------
+      1e-31  109.6   2.6    1.8e-22   79.8   0.0    3.2  2  DNA_pol3_beta    DNA polymerase III beta subunit, N-terminal 
+    9.7e-28   96.8   0.1    3.4e-22   78.9   0.0    3.0  1  DNA_pol3_beta_2  DNA polymerase III beta subunit, central dom
+    6.4e-10   39.0   1.0    1.7e-08   34.4   0.0    3.1  1  DNA_pol3_beta_3  DNA polymerase III beta subunit, C-terminal 
+
+
+Domain annotation for each model (and alignments):
+>> DNA_pol3_beta  DNA polymerase III beta subunit, N-terminal domain
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   79.8   0.0   2.8e-26   1.8e-22       1     121 []       1     118 [.       1     118 [. 0.99
+   2 !   27.0   0.6   6.7e-10   4.3e-06       4      95 ..     127     221 ..     125     248 .. 0.81
+
+  Alignments for each domain:
+  == domain 1  score: 79.8 bits;  conditional E-value: 2.8e-26
+                                    EEEEEEHHHHHHHHHHHHTTSSSSTSSGGGGEEEEEEETTEEEEEEE-SSEEEEEEEESEECEE-EEEEEEHHHHHHHHH CS
+                  DNA_pol3_beta   1 mkftiereellkelekvakvisnRntlpiLsgvllevkdsqlsltgtDleisiestisaeseeeegkvlvparllldivk 80 
+                                    mk+++ r  l ++++ v ++i++R+  piLsg+l+e+k+++++l+ +++e s+++++sa++  e gkvlvp+ l++ i +
+  AE014184.1:1767-2897|amino|11   1 MKLIVDRGLLSSSVNFVTRMIPARPPSPILSGMLIEAKNEKVTLSTFNYETSAKVEFSANVI-EGGKVLVPGTLISSISQ 79 
+                                    9************************************************************9.99*************** PP
+
+                                    HSTTTSEEEEEEETTEEEEEEETTEEEEEE-BEGGGSC-XX CS
+                  DNA_pol3_beta  81 aLpndkkvkisvneqklliiksgssrfslstlsaeeypnlp 121
+                                    +Lp+ ++v+is +++k +++ +g  ++ l+ ++  eyp lp
+  AE014184.1:1767-2897|amino|11  80 KLPD-EPVEISKEDEKISLT-CGPVNYILNLMPIAEYPPLP 118
+                                    ****.***************.*****************886 PP
+
+  == domain 2  score: 27.0 bits;  conditional E-value: 6.7e-10
+                                    EEEHHHHHHHHHHHHTTSSSSTSSGGGGEEEEEEETTEEEEEEE-SSEEEEEEEESEEC.EE-EEEEEEHHHHHHHHHHS CS
+                  DNA_pol3_beta   4 tiereellkelekvakvisnRntlpiLsgvllevkdsqlsltgtDleisiestisaese.eeegkvlvparllldivkaL 82 
+                                    +i  e+++k++++v  +  +     +++g+ l  +++ + ltgtD+   + +t++ +s   ++ +v+v+ ++l+++ k+L
+  AE014184.1:1767-2897|amino|11 127 RIPSEDFVKSVSQVTTSAAKDDISAVITGINLRLSNESIELTGTDRYRVAVKTLNSVSGhPSDSSVIVSSKTLFEVSKTL 206
+                                    677899***************************************9877777777777646899**************** PP
+
+                                    TT.TSEEEEEEET.T CS
+                  DNA_pol3_beta  83 pn.dkkvkisvne.q 95 
+                                     n ++++++ +++  
+  AE014184.1:1767-2897|amino|11 207 GNlESEISVFIKNdG 221
+                                    773566776665533 PP
+
+>> DNA_pol3_beta_2  DNA polymerase III beta subunit, central domain
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   78.9   0.0   5.4e-26   3.4e-22       2     115 ..     128     245 ..     127     246 .. 0.97
+
+  Alignments for each domain:
+  == domain 1  score: 78.9 bits;  conditional E-value: 5.4e-26
+                                    EEHHHHHHHHHHHGGGS-SSTTSGGGGEEEEEEETTEEEEEEEESSEEEEEEEEEEECTTCCEEEEEEHHHHHHHHHHHT CS
+                DNA_pol3_beta_2   2 lkqkelkelieqvafaasedetrpvLtGvrleieedklllaaTdghRlavrkleleeeeedeasvivPaktlaelaklle 81 
+                                    ++++ + + ++qv+ +a++d+   v+tG++l++++++++l+ Td++R+av++l+  + ++++ sviv +ktl e++k l 
+  AE014184.1:1767-2897|amino|11 128 IPSEDFVKSVSQVTTSAAKDDISAVITGINLRLSNESIELTGTDRYRVAVKTLNSVSGHPSDSSVIVSSKTLFEVSKTLG 207
+                                    78999*************************************************************************** PP
+
+                                    SSSSEEEEEEE....SSEEEEEETTEEEEEE-BSS--- CS
+                DNA_pol3_beta_2  82 dneeqvklals....egkirfevgnvrltsrlldgkfP 115
+                                    + e++++++++    ++ i+fe gn+++ts l+ g++P
+  AE014184.1:1767-2897|amino|11 208 NLESEISVFIKndgeNKVIGFESGNKTVTSLLISGNYP 245
+                                    **********999977889******************9 PP
+
+>> DNA_pol3_beta_3  DNA polymerase III beta subunit, C-terminal domain
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   34.4   0.0   2.7e-12   1.7e-08       3     100 ..     250     344 ..     248     370 .. 0.90
+
+  Alignments for each domain:
+  == domain 1  score: 34.4 bits;  conditional E-value: 2.7e-12
+                                    CS-SS-SEEEEEEHHHHHHHHHHHHTTSSTTTGEEEEEEETTEEEEEEEETTTEEEEEEEECCEESS-EEEEEEHHHHHH CS
+                DNA_pol3_beta_3   3 llPkefkkkvtvdtkellealaRvalladeknrkvrLsveegqlklsaessevgkaeEevdanyiGeeleiafNvrYlld 82 
+                                    l+ +e  + ++++t  +le  +Rv++++ e+ + +  s+ ++ ++++++   ++ a E+v+ ++ G+e++i + +++l d
+  AE014184.1:1767-2897|amino|11 250 LFTEETGHYAILKTSDFLESTKRVSVVV-ERDEPIEFSFVKNTVTIKGS--GIALASEKVECELFGDEISIMLRPQFLCD 326
+                                    5666777788999***************.8****************986..678899*********************** PP
+
+                                    HHHHH-SSEEEEEESSTT CS
+                DNA_pol3_beta_3  83 alkaleteevelqltdst 100
+                                    +l a +++ +++ +t+++
+  AE014184.1:1767-2897|amino|11 327 GLIACQEDFIKVAFTKPS 344
+                                    **************9875 PP
+
+
+
+Internal pipeline statistics summary:
+-------------------------------------
+Query sequence(s):                         1  (377 residues searched)
+Target model(s):                       19179  (3258786 nodes)
+Passed MSV filter:                       406  (0.021169); expected 383.6 (0.02)
+Passed bias filter:                      350  (0.0182491); expected 383.6 (0.02)
+Passed Vit filter:                        30  (0.00156421); expected 19.2 (0.001)
+Passed Fwd filter:                         3  (0.000156421); expected 0.2 (1e-05)
+Initial search space (Z):              19179  [actual number of targets]
+Domain search space  (domZ):               3  [number of targets reported over threshold]
+# CPU time: 0.14u 0.10s 00:00:00.24 Elapsed: 00:00:00.15
+# Mc/sec: 7892.56
+//
+[ok]

@@ -45,7 +45,7 @@ class TBL(RootModel):
     def __iter__(self):
         return iter(self.root)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> TBLRow:
         return self.root[item]
 
     def __len__(self):

@@ -6,10 +6,9 @@ from more_itertools import split_at, split_before
 from pydantic import BaseModel, RootModel
 
 from hmmer_tables.cleanup import (
-    _split_at_consecutive_empty_lines,
-    _split_queries,
-    _strip_empty_lines,
     remove_multispace,
+    rstrip_newlines,
+    strip_empty_lines,
 )
 from hmmer_tables.interval import RInterval
 from hmmer_tables.path_like import PathLike
@@ -22,6 +21,7 @@ __all__ = [
     "DomAnnotList",
     "QueryAnnot",
     "QueryAnnotList",
+    "parse_query",
 ]
 
 
@@ -188,42 +188,53 @@ def _parse_align(stream: Iterable[str]):
 
 
 def _parse_annot(stream: Iterable[str]):
-    head, tail = split_before(stream, lambda x: x.startswith(ALIGN_ANNOUNCE), 1)
-    head = _strip_empty_lines(head)
+    xy = list(split_before(stream, lambda x: x.startswith(ALIGN_ANNOUNCE), 1))
+    head = strip_empty_lines(xy[0] if len(xy) > 1 else [""])
+    tail = xy[-1]
     tail = list(dropwhile(lambda x: x == ALIGN_ANNOUNCE, tail))
     aligns = list(split_before(tail, lambda x: x.startswith(DOMAIN_ANNOUNCE)))
-    aligns = [_strip_empty_lines(x) for x in aligns]
+    aligns = [strip_empty_lines(x) for x in aligns]
     return DomAnnot(head=head[0], aligns=[_parse_align(x) for x in aligns])
 
 
 def _parse_annots(stream: Iterable[str]):
     annots = list(split_before(stream, lambda x: x.startswith(">> ")))
-    return [_parse_annot(_strip_empty_lines(x)) for x in annots]
+    return [_parse_annot(strip_empty_lines(x)) for x in annots]
 
 
-def _parse_query(stream: Iterable[str]):
-    rows = _strip_empty_lines(stream)
-    scores, tail = _split_at_consecutive_empty_lines(rows, 1)
+def parse_query(stream: Iterable[str]):
+    rows = strip_empty_lines(stream)
+
+    xy = list(split_at(rows, lambda x: x == DOM_ANNOT_ANNOUNCE, 1))
+    scores = xy[0] if len(xy) > 1 else ""
+    tail = xy[-1]
+
+    # scores, tail = list(split_at(rows, lambda x: x == "", 1))
+
+    scores = strip_empty_lines(scores)
+    tail = strip_empty_lines(tail)
     tail = list(dropwhile(lambda x: x == DOM_ANNOT_ANNOUNCE, tail))
-    annots, stat = split_before(tail, lambda x: x == PIPE_SUMMARY, 1)
-    annots = _strip_empty_lines(annots)
-    stat = _strip_empty_lines(stat)
+    xy = list(split_before(tail, lambda x: x == PIPE_SUMMARY, 1))
+    annots = xy[0]
+    stat = xy[1] if len(xy) > 1 else ""
+    annots = strip_empty_lines(annots)
+    stat = strip_empty_lines(stat)
     return QueryAnnot(head="\n".join(scores), domains=_parse_annots(annots))
 
 
-def _read_queries_stream(stream: Iterable[str]):
-    rows = _strip_empty_lines(stream)
-    queries = _split_queries(rows)
-    return [_parse_query(x) for x in queries]
+def _read_query(stream: Iterable[str]):
+    rows = rstrip_newlines(stream)
+    rows = strip_empty_lines(rows)
+    return parse_query(rows)
 
 
-def read_queries(filename: PathLike | None = None, stream: Iterable[str] | None = None):
+def read_query(filename: PathLike | None = None, stream: Iterable[str] | None = None):
     """
-    Read queries.
+    Read query.
     """
     if filename is not None:
         assert stream is None
         with open(filename, "r") as stream:
-            return _read_queries_stream(stream)
+            return _read_query(stream)
     else:
-        return _read_queries_stream(stream)
+        return _read_query(stream)

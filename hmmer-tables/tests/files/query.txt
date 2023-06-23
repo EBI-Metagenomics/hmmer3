@@ -1,0 +1,54 @@
+Domain annotation for each model (and alignments):
+>> PF07719.20  Tetratricopeptide repeat
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   26.7   0.1     2e-10   1.6e-06       2      33 ..      80     111 ..      79     112 .. 0.95
+   2 !   27.3   0.0   1.3e-10   9.9e-07       1      33 [.     113     145 ..     113     146 .. 0.96
+   3 !   28.7   0.1   4.7e-11   3.6e-07       1      34 []     147     180 ..     147     180 .. 0.96
+   4 !   23.3   0.2   2.5e-09   1.9e-05       1      33 [.     181     213 ..     181     214 .. 0.97
+   5 !   27.8   0.2   8.5e-11   6.7e-07       1      33 [.     249     281 ..     249     282 .. 0.96
+   6 !   28.6   0.4   4.9e-11   3.8e-07       1      34 []     283     316 ..     283     316 .. 0.97
+   7 !   26.8   0.5   1.9e-10   1.4e-06       1      32 [.     317     348 ..     317     348 .. 0.98
+
+  Alignments for each domain:
+  == domain 1  score: 26.7 bits;  conditional E-value: 2e-10
+                                PF07719.20   2 ealynlGlayyklgdyeeAleafekAleldPn 33 
+                                                ++ nlG+a+  +g++eeA+  +++Al++ P+
+  lcl|NZ_OU912926.1_cds_WP_239795528.1_168  80 IYYINLGNALKDQGQLEEAILNYRQALSIKPD 111
+                                               689***************************98 PP
+
+  == domain 2  score: 27.3 bits;  conditional E-value: 1.3e-10
+                                PF07719.20   1 aealynlGlayyklgdyeeAleafekAleldPn 33 
+                                               ae+++nlG+a+ ++g++e A+e f+++l l P+
+  lcl|NZ_OU912926.1_cds_WP_239795528.1_168 113 AEVHNNLGNALKEQGNLEAAIESFRRSLVLKPD 145
+                                               79****************************998 PP
+
+  == domain 3  score: 28.7 bits;  conditional E-value: 4.7e-11
+                                PF07719.20   1 aealynlGlayyklgdyeeAleafekAleldPnn 34 
+                                               ae + nlG+ +  +g++eeA++++ +Al l P++
+  lcl|NZ_OU912926.1_cds_WP_239795528.1_168 147 AETHSNLGNTLKDQGQLEEAIACYGQALLLKPDY 180
+                                               799*****************************85 PP
+
+  == domain 4  score: 23.3 bits;  conditional E-value: 2.5e-09
+                                PF07719.20   1 aealynlGlayyklgdyeeAleafekAleldPn 33 
+                                               aea++nlG a+ ++++++ A+  ++kA++l P+
+  lcl|NZ_OU912926.1_cds_WP_239795528.1_168 181 AEAYNNLGTALKAQNKLDAAIGSYRKAVSLKPD 213
+                                               89*****************************98 PP
+
+  == domain 5  score: 27.8 bits;  conditional E-value: 8.5e-11
+                                PF07719.20   1 aealynlGlayyklgdyeeAleafekAleldPn 33 
+                                               aea++nlG+a+  +g+++ A+e f++Al+  P+
+  lcl|NZ_OU912926.1_cds_WP_239795528.1_168 249 AEAHNNLGNALKDQGKLDAAVESFQRALAFKPD 281
+                                               89***************************9997 PP
+
+  == domain 6  score: 28.6 bits;  conditional E-value: 4.9e-11
+                                PF07719.20   1 aealynlGlayyklgdyeeAleafekAleldPnn 34 
+                                               aea+ nlGla+ k+ + +eA+++++kAl++ P++
+  lcl|NZ_OU912926.1_cds_WP_239795528.1_168 283 AEAYSNLGLALQKQSKMDEAIACYNKALSIKPDY 316
+                                               89******************************85 PP
+
+  == domain 7  score: 26.8 bits;  conditional E-value: 1.9e-10
+                                PF07719.20   1 aealynlGlayyklgdyeeAleafekAleldP 32 
+                                               aea++nlGla+ ++g+++ A++ + kAl+l P
+  lcl|NZ_OU912926.1_cds_WP_239795528.1_168 317 AEAYNNLGLALQEQGKLDGAVDSYHKALALRP 348
+                                               89****************************98 PP

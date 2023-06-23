@@ -5,11 +5,11 @@ from more_itertools import split_at
 from pydantic import BaseModel
 
 from hmmer_tables.cleanup import (
-    _rstrip_newlines,
-    _strip_empty_lines,
+    rstrip_newlines,
+    strip_empty_lines,
 )
 from hmmer_tables.path_like import PathLike
-from hmmer_tables.query import QueryAnnotList, read_queries
+from hmmer_tables.query import QueryAnnotList, parse_query
 
 __all__ = ["read_output", "Output"]
 
@@ -24,12 +24,19 @@ def _consume_run_params(stream: Iterable[str]):
     return x, tail
 
 
+def _split_queries(stream: Iterable[str]):
+    return list(split_at(stream, lambda x: x == "//"))
+
+
 def _read_output_stream(stream: Iterable[str]):
-    rows = _rstrip_newlines(stream)
+    rows = rstrip_newlines(stream)
     rows = list(more_itertools.rstrip(rows, lambda x: x == "[ok]"))
     rows = list(more_itertools.rstrip(rows, lambda x: x == "//"))
-    head, rows = _consume_run_params(_strip_empty_lines(rows))
-    return Output(head="\n".join(head), queries=read_queries(stream=rows))
+    head, rows = _consume_run_params(strip_empty_lines(rows))
+    rows = strip_empty_lines(rows)
+    queries = _split_queries(rows)
+    query_annotations = [parse_query(x) for x in queries]
+    return Output(head="\n".join(head), queries=query_annotations)
 
 
 def read_output(filename: PathLike | None = None, stream: Iterable[str] | None = None):

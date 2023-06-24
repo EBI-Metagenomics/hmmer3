@@ -23,7 +23,7 @@ static inline void __hope_print_newline(void)
     fflush(stderr);
 }
 
-#define __HOPE_REL_TOL(x) _Generic((x), float : 5e-05, double : 1e-09)
+#define __HOPE_REL_TOL(x) _Generic((x), float: 5e-05, double: 1e-09)
 
 static inline void __hope_close2(double actual, double desired, double rel_tol,
                                  double abs_tol, char const *file, int line)
@@ -70,36 +70,36 @@ __MAKE_EQ(lld, long long, "lld")
 #ifndef _WIN32
 #define __hope_eq(actual, desired, file, line)                                 \
     _Generic((actual),                                                         \
-             unsigned char: __hope_eq_hhu,                                     \
-             unsigned short: __hope_eq_hu,                                     \
-             unsigned int: __hope_eq_u,                                        \
-             unsigned long: __hope_eq_lu,                                      \
-             unsigned long long: __hope_eq_llu,                                \
-             signed char: __hope_eq_hhd,                                       \
-             short: __hope_eq_hd,                                              \
-             int: __hope_eq_d,                                                 \
-             long: __hope_eq_ld,                                               \
-             long long: __hope_eq_lld,                                         \
-             char: __hope_eq_char,                                             \
-             char *: __hope_eq_str,                                            \
-             char const *: __hope_eq_str,\
-             FILE *: __hope_eq_file)((actual), (desired), file, line)
+        unsigned char: __hope_eq_hhu,                                          \
+        unsigned short: __hope_eq_hu,                                          \
+        unsigned int: __hope_eq_u,                                             \
+        unsigned long: __hope_eq_lu,                                           \
+        unsigned long long: __hope_eq_llu,                                     \
+        signed char: __hope_eq_hhd,                                            \
+        short: __hope_eq_hd,                                                   \
+        int: __hope_eq_d,                                                      \
+        long: __hope_eq_ld,                                                    \
+        long long: __hope_eq_lld,                                              \
+        char: __hope_eq_char,                                                  \
+        char *: __hope_eq_str,                                                 \
+        char const *: __hope_eq_str,                                           \
+        FILE *: __hope_eq_file)((actual), (desired), file, line)
 #else
 /* Bug: https://is.gd/DWxyJO */
 #define __hope_eq(actual, desired, file, line)                                 \
     _Generic((actual),                                                         \
-             unsigned short: __hope_eq_hu,                                     \
-             unsigned int: __hope_eq_u,                                        \
-             unsigned long: __hope_eq_lu,                                      \
-             unsigned long long: __hope_eq_llu,                                \
-             short: __hope_eq_hd,                                              \
-             int: __hope_eq_d,                                                 \
-             long: __hope_eq_ld,                                               \
-             long long: __hope_eq_lld,                                         \
-             char: __hope_eq_char,                                             \
-             char *: __hope_eq_str,                                            \
-             char const *: __hope_eq_str,\
-             FILE *: __hope_eq_file)((actual), (desired), file, line)
+        unsigned short: __hope_eq_hu,                                          \
+        unsigned int: __hope_eq_u,                                             \
+        unsigned long: __hope_eq_lu,                                           \
+        unsigned long long: __hope_eq_llu,                                     \
+        short: __hope_eq_hd,                                                   \
+        int: __hope_eq_d,                                                      \
+        long: __hope_eq_ld,                                                    \
+        long long: __hope_eq_lld,                                              \
+        char: __hope_eq_char,                                                  \
+        char *: __hope_eq_str,                                                 \
+        char const *: __hope_eq_str,                                           \
+        FILE *: __hope_eq_file)((actual), (desired), file, line)
 #endif
 
 static inline void __hope_isnull(int cond, char const *expr, char const *file,

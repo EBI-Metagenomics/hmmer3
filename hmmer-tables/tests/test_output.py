@@ -62,6 +62,18 @@ def test_output2(files_path: Path):
     assert len(x.queries[2].domains) == 0
 
 
+def test_output3(files_path: Path):
+    x = read_output(files_path / "output3.txt")
+    assert len(x.queries) == 1
+    assert len(x.queries[0].domains) == 1
+    assert len(x.queries[0].domains[0].aligns) == 1
+    desired = (
+        "D+++l+il++++l G+++G + +v+s++++v++++v  +l +++a+ l+    +p +   +a++ l+"
+        "+++ liv+++ ++++k ++   l+ +Dr +Ga +Gl+kg+ll++ v++f++al++ ++ q ++ +S++"
+    )
+    assert x.queries[0].domains[0].aligns[0].align.match == desired
+
+
 def test_output_empty(files_path: Path):
     with pytest.raises(ValueError):
         read_output(files_path / "empty.txt")

@@ -170,7 +170,7 @@ Scores for complete sequence (score includes all domains):
    --- full sequence ---   --- best 1 domain ---    -#dom-
     E-value  score  bias    E-value  score  bias    exp  N  Model           Description
     ------- ------ -----    ------- ------ -----   ---- --  --------        -----------
-...skipping...
+
    [No hits detected that satisfy reporting thresholds]
 
 

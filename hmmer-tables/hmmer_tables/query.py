@@ -112,8 +112,8 @@ def _parse_target_consensus(row: str):
     else:
         start, tgt_cs, stop = row.split()
 
-    x = line.find(tgt_cs)
-    y = x + len(tgt_cs)
+    y = line.rstrip().rindex(" ")
+    x = line[:y].rindex(" ") + 1
     core_interval = RInterval(start=int(start), stop=int(stop))
 
     return slice(x, y), line[slice(x, y)], core_interval

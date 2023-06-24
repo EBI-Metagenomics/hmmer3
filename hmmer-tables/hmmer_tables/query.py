@@ -74,6 +74,7 @@ class DomAnnotList(RootModel):
 
 class QueryAnnot(BaseModel):
     head: str
+    stat: str
     domains: DomAnnotList
 
 
@@ -94,6 +95,12 @@ ALIGN_ANNOUNCE = "  Alignments for each domain:"
 DOM_ANNOT_ANNOUNCE = "Domain annotation for each model (and alignments):"
 PIPE_SUMMARY = "Internal pipeline statistics summary:"
 DOMAIN_ANNOUNCE = "  == domain"
+NO_IND_DOM = (
+    "   [No individual domains that satisfy reporting"
+    " thresholds (although complete target did)]"
+)
+NOT_HIT = "   [No hits detected that satisfy reporting thresholds]"
+NO_TGT_DETECT = "   [No targets detected that satisfy reporting thresholds]"
 
 
 def _parse_target_consensus(row: str):
@@ -188,7 +195,12 @@ def _parse_align(stream: Iterable[str]):
 
 
 def _parse_annot(stream: Iterable[str]):
-    xy = list(split_before(stream, lambda x: x.startswith(ALIGN_ANNOUNCE), 1))
+    rows = list(stream)
+    if len(rows) > 1:
+        if rows[1] == NO_IND_DOM:
+            head = "\n".join(rows)
+            return DomAnnot(head=head, aligns=[])
+    xy = list(split_before(rows, lambda x: x.startswith(ALIGN_ANNOUNCE), 1))
     head = strip_empty_lines(xy[0] if len(xy) > 1 else [""])
     tail = xy[-1]
     tail = list(dropwhile(lambda x: x == ALIGN_ANNOUNCE, tail))
@@ -209,17 +221,20 @@ def parse_query(stream: Iterable[str]):
     scores = xy[0] if len(xy) > 1 else ""
     tail = xy[-1]
 
-    # scores, tail = list(split_at(rows, lambda x: x == "", 1))
-
     scores = strip_empty_lines(scores)
     tail = strip_empty_lines(tail)
+
     tail = list(dropwhile(lambda x: x == DOM_ANNOT_ANNOUNCE, tail))
     xy = list(split_before(tail, lambda x: x == PIPE_SUMMARY, 1))
     annots = xy[0]
     stat = xy[1] if len(xy) > 1 else ""
     annots = strip_empty_lines(annots)
-    stat = strip_empty_lines(stat)
-    return QueryAnnot(head="\n".join(scores), domains=_parse_annots(annots))
+    stat = "\n".join(strip_empty_lines(stat))
+
+    if len(annots) == 1 and annots[0] == NO_TGT_DETECT:
+        return QueryAnnot(head="\n".join(scores), stat=stat, domains=[])
+
+    return QueryAnnot(head="\n".join(scores), stat=stat, domains=_parse_annots(annots))
 
 
 def _read_query(stream: Iterable[str]):

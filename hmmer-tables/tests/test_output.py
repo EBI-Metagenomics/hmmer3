@@ -52,6 +52,16 @@ def test_output(files_path: Path):
     pass
 
 
+def test_output2(files_path: Path):
+    x = read_output(files_path / "output2.txt")
+    assert len(x.queries) == 3
+    head = x.queries[0].domains[2].head.split("\n")
+    assert head[0].startswith(">> AAA  ATPase family associate")
+    assert head[1].startswith("   [No individual domains")
+    assert "[No hits detected that satisfy reporting thresholds]" in x.queries[2].head
+    assert len(x.queries[2].domains) == 0
+
+
 def test_output_empty(files_path: Path):
     with pytest.raises(ValueError):
         read_output(files_path / "empty.txt")

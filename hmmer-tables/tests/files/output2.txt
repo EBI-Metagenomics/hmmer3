@@ -1,0 +1,195 @@
+# hmmscan :: search sequence(s) against a profile database
+# HMMER 3.3.2 (Nov 2020); http://hmmer.org/
+# Copyright (C) 2020 Howard Hughes Medical Institute.
+# Freely distributed under the BSD open source license.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# query sequence file:             translated_cds.faa
+# target HMM database:             /nfs/research/rdf/horta/tune-deciphon/db.hmm
+# output directed to file:         output.txt
+# per-seq hits tabular output:     tbl.txt
+# per-dom hits tabular output:     domtbl.txt
+# pfam-style tabular hit output:   pfamtbl.txt
+# model-specific thresholding:     GA cutoffs
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Query:       lcl|NZ_CP036289.1_prot_WP_261342381.1_1  [L=326]
+Description: [locus_tag=Pan97_RS00005] [protein=DnaA/Hda family protein] [protein_id=WP_261342381.1] [location=103..1083] [gbkey=CDS]
+Scores for complete sequence (score includes all domains):
+   --- full sequence ---   --- best 1 domain ---    -#dom-
+    E-value  score  bias    E-value  score  bias    exp  N  Model      Description
+    ------- ------ -----    ------- ------ -----   ---- --  --------   -----------
+    1.6e-33  115.3   0.0    4.3e-33  113.8   0.0    1.7  1  Bac_DnaA    Bacterial dnaA  protein
+      1e-25   88.4   0.6      1e-25   88.4   0.6    1.6  1  Bac_DnaA_C  Bacterial dnaA protein helix-turn-helix
+    3.2e-05   23.2   0.1    0.00014   21.1   0.0    2.1  0  AAA         ATPase family associated with various cellular ac
+
+
+Domain annotation for each model (and alignments):
+>> Bac_DnaA  Bacterial dnaA  protein
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  113.8   0.0   1.7e-36   4.3e-33      12     217 ..       2     206 ..       1     208 [. 0.97
+
+  Alignments for each domain:
+  == domain 1  score: 113.8 bits;  conditional E-value: 1.7e-36
+                                              --TTTHHHHHHHHHHHHSTTT.S--EEEE-SSSSSHHHHHHHHHHHHHHHSSSS-EEEEEHHHHHHHHHH CS
+                                 Bac_DnaA  12 iGasnrlAlaaalkvaeapgkkynPlfiygevGlGktHLlkaignevlenapelrvvYltaeeFlnelvk 81 
+                                               G+ nr+ + a+ ++ + +  ++ P++iyg++G Gk HLl+ ++  ++e++p+l+v+ +t+ +F++e  +
+  lcl|NZ_CP036289.1_prot_WP_261342381.1_1   2 AGPENRMIQSAVEALKHDAS-QFSPMVIYGPSGSGKSHLLQGLTGVLVEKEPDLKVLSVTGSDFAREYGN 70 
+                                              6999**99999988866655.5************************************************ PP
+
+                                              HHHTT-HHHHHHHHTT-SEEEEE-GGGGTT-HHHHHHHHHHHHHHHTTT-EEEEEESS-TTT-SS--HHH CS
+                                 Bac_DnaA  82 alrdkkaeefkeklrkvDvLliDDiqflagkektqeelfhtfnalleegkqvvlssDrsPkeleeledrl 151
+                                              alr+++a++ + ++  +DvL+i+D++ l +  ++q+ l+h++++l   g  v++s+  +P  +e +   l
+  lcl|NZ_CP036289.1_prot_WP_261342381.1_1  71 ALRQETASTTRTEFFGTDVLVIEDLHELLHFPSMQQVLLHLLDELERRGAAVLVSCRENPIGMEGFSTEL 140
+                                              ********************************************************************** PP
+
+                                              HHHHHSSEEEE-----HHHHHHHHHHHHHHTT----TTHHHHHHHH--S-HHHHHHHHHHHHHHHH CS
+                                 Bac_DnaA 152 rsrfeaGlvvdieppdletrlailkkkieaeklevpeevlefiaervtdnvRelegalnrlkayas 217
+                                              rsr++aGl v +  p++ tr  +++  + +++ ++++ +++ +a  + + + +l g +nrl a ++
+  lcl|NZ_CP036289.1_prot_WP_261342381.1_1 141 RSRLSAGLLVPVVLPEQGTREVLIQGIATRHNRQITKMAAQKLAAAFPHGLLQLSGIVNRLIAQSQ 206
+                                              *************************************************************99876 PP
+
+>> Bac_DnaA_C  Bacterial dnaA protein helix-turn-helix
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   88.4   0.6   3.9e-29     1e-25       3      67 ..     233     297 ..     231     299 .. 0.97
+
+  Alignments for each domain:
+  == domain 1  score: 88.4 bits;  conditional E-value: 3.9e-29
+                                              HHHHTHHHHTT--HHHHHS----CSSHHHHHHHHHHHHHTS---HHHHHHHHT-STTHHHHHHHH CS
+                               Bac_DnaA_C   3 kIieaVaeyfgvsvedlkskkRkkeiveaRqiamYlareltdlslpeIGkafggrdHsTVihaik 67 
+                                              +I +++a+yf+v+v+d+k+++R+++iv+aR +am lar+lt++sl+++Gk+fggrdH+TV+ha+ 
+  lcl|NZ_CP036289.1_prot_WP_261342381.1_1 233 NIASMTAKYFRVKVADMKGSSRRQSIVQARSVAMLLARQLTEESLKAVGKHFGGRDHTTVMHAVS 297
+                                              7999***********************************************************86 PP
+
+>> AAA  ATPase family associated with various cellular activities (AAA)
+   [No individual domains that satisfy reporting thresholds (although complete target did)]
+
+
+
+Internal pipeline statistics summary:
+-------------------------------------
+Query sequence(s):                         1  (326 residues searched)
+Target model(s):                        7789  (1389290 nodes)
+Passed MSV filter:                       429  (0.0550777); expected 155.8 (0.02)
+Passed bias filter:                      340  (0.0436513); expected 155.8 (0.02)
+Passed Vit filter:                        68  (0.00873026); expected 7.8 (0.001)
+Passed Fwd filter:                        24  (0.00308127); expected 0.1 (1e-05)
+Initial search space (Z):               7789  [actual number of targets]
+Domain search space  (domZ):               3  [number of targets reported over threshold]
+# CPU time: 0.13u 0.12s 00:00:00.25 Elapsed: 00:00:00.49
+# Mc/sec: 921.43
+//
+Query:       lcl|NZ_CP036289.1_prot_WP_144969539.1_2  [L=371]
+Description: [gene=dnaN] [locus_tag=Pan97_RS00010] [protein=DNA polymerase III subunit beta] [protein_id=WP_144969539.1] [location=1626..2741] [gbkey=CDS]
+Scores for complete sequence (score includes all domains):
+   --- full sequence ---   --- best 1 domain ---    -#dom-
+    E-value  score  bias    E-value  score  bias    exp  N  Model           Description
+    ------- ------ -----    ------- ------ -----   ---- --  --------        -----------
+    1.4e-24   85.3   0.3    1.2e-20   72.7   0.0    2.7  1  DNA_pol3_beta_2  DNA polymerase III beta subunit, central dom
+    8.4e-23   79.6   0.6    1.1e-18   66.4   0.3    3.1  1  DNA_pol3_beta    DNA polymerase III beta subunit, N-terminal 
+    2.8e-13   48.6   0.1    3.3e-10   38.7   0.0    2.5  1  DNA_pol3_beta_3  DNA polymerase III beta subunit, C-terminal 
+
+
+Domain annotation for each model (and alignments):
+>> DNA_pol3_beta_2  DNA polymerase III beta subunit, central domain
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   72.7   0.0   4.5e-24   1.2e-20       2     116 .]     129     246 ..     128     246 .. 0.93
+
+  Alignments for each domain:
+  == domain 1  score: 72.7 bits;  conditional E-value: 4.5e-24
+                                              EEHHHHHHHHHHHGGGS-SSTTSGGGGEEEEEEETTEEEEEEEESSEEEEEEEEEEECTTC...CEEEEE CS
+                          DNA_pol3_beta_2   2 lkqkelkelieqvafaasedetrpvLtGvrleieedklllaaTdghRlavrkleleeeeed...easviv 68 
+                                              +++ +lkeli+++ fa+ ++  r+ L Gv le+ e +++++aTdg Rla ++ ++++ e +   +a  i+
+  lcl|NZ_CP036289.1_prot_WP_144969539.1_2 129 VSARVLKELIRRTLFATDTESGRYALGGVLLEMGEKSITAVATDGRRLAKMEGPATQVEGHgntDAMTII 198
+                                              78899*********************************************997776665433247889** PP
+
+                                              EHHHHHHHHHHHTSSSSEEEEEEESSEEEEEETTEEEEEE-BSS---B CS
+                          DNA_pol3_beta_2  69 PaktlaelaklledneeqvklalsegkirfevgnvrltsrlldgkfPd 116
+                                              P+++++ +++ l+d e +v++a  ++ + ++vg +++ +rl++g+fP+
+  lcl|NZ_CP036289.1_prot_WP_144969539.1_2 199 PSRAMQLIERSLTDLEATVQIASRTNDVLVKVGPATIYARLVEGRFPK 246
+                                              ***********************************************7 PP
+
+>> DNA_pol3_beta  DNA polymerase III beta subunit, N-terminal domain
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   66.4   0.3   4.1e-22   1.1e-18       1     120 [.       1     118 [.       1     119 [. 0.96
+
+  Alignments for each domain:
+  == domain 1  score: 66.4 bits;  conditional E-value: 4.1e-22
+                                              EEEEEEHHHHHHHHHHHHTTSSSSTSSGGGGEEEEEEETTEEEEEEE-SSEEEEEEEESEECEE-EEEEE CS
+                            DNA_pol3_beta   1 mkftiereellkelekvakvisnRntlpiLsgvllevkdsqlsltgtDleisiestisaeseeeegkvlv 70 
+                                              mk+t  re++ ++ + +a v ++R   piL +v+l+++++  +l +tD+ei ++++++  + e+ g++++
+  lcl|NZ_CP036289.1_prot_WP_144969539.1_2   1 MKITFDREKFQTAFQTAAMVAPSRSPKPILQNVKLDATEKATILMATDMEIGVRIEVEGIEVEQAGSIVL 70 
+                                              99*******************************************************987777******* PP
+
+                                              EHHHHHHHHHHSTTTSEEEEEEETTEEEEEEETTEEEEEE-BEGGGSC-X CS
+                            DNA_pol3_beta  71 parllldivkaLpndkkvkisvneqklliiksgssrfslstlsaeeypnl 120
+                                              p   +  i+k+  + +  +++ +e++  ++ + +s+f+ls  + +e+p++
+  lcl|NZ_CP036289.1_prot_WP_144969539.1_2  71 PVARFGSILKEVRD-ERLSVQREESRTVVQ-AQHSKFTLSSEDPDEFPTV 118
+                                              **************.******999998888.*****************86 PP
+
+>> DNA_pol3_beta_3  DNA polymerase III beta subunit, C-terminal domain
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   38.7   0.0   1.3e-13   3.3e-10       2     120 ..     249     367 ..     248     368 .. 0.90
+
+  Alignments for each domain:
+  == domain 1  score: 38.7 bits;  conditional E-value: 1.3e-13
+                                              GCS-SS-S.EEEEEEHHHHHHHHHHHHTTSSTTTGEEEEEEETTEEEEEEEETTTEEEEEEEECCEESS- CS
+                          DNA_pol3_beta_3   2 rllPkefk.kkvtvdtkellealaRvalladeknrkvrLsveegqlklsaessevgkaeEevdanyiGee 70 
+                                               +lP++ + ++++++++   +al  +a++  + +r +  +++ g++ ls++  evg    e+   y+Ge+
+  lcl|NZ_CP036289.1_prot_WP_144969539.1_2 249 DVLPEKREaAHIEMSVGPAFAALRQAAIVTSDESRGIDFTFGHGSMVLSSNTAEVGDSRVEIPIPYDGEN 318
+                                              5899876527899********************************************************* PP
+
+                                              EEEEEEHHHHHHHHHHH-S.SEEEEEESSTTS-EEEEETTEESEEEEE--B CS
+                          DNA_pol3_beta_3  71 leiafNvrYlldalkalet.eevelqltdstkpvllseaedesvkqvilpm 120
+                                              +ei +  r+++d  k+l + ++  l++ ++ + +l s+  d++  +v++p+
+  lcl|NZ_CP036289.1_prot_WP_144969539.1_2 319 VEITMDHRFVADFYKVLGSeSNFTLNIQNAESAALFST--DDNYDYVVMPL 367
+                                              *****************761578999999998888875..78889999996 PP
+
+
+
+Internal pipeline statistics summary:
+-------------------------------------
+Query sequence(s):                         1  (371 residues searched)
+Target model(s):                        7789  (1389290 nodes)
+Passed MSV filter:                       189  (0.024265); expected 155.8 (0.02)
+Passed bias filter:                      161  (0.0206702); expected 155.8 (0.02)
+Passed Vit filter:                        16  (0.00205418); expected 7.8 (0.001)
+Passed Fwd filter:                         3  (0.000385159); expected 0.1 (1e-05)
+Initial search space (Z):               7789  [actual number of targets]
+Domain search space  (domZ):               3  [number of targets reported over threshold]
+# CPU time: 0.10u 0.07s 00:00:00.17 Elapsed: 00:00:00.19
+# Mc/sec: 2618.59
+//
+Query:       lcl|NZ_CP036289.1_prot_WP_144969539.1_2  [L=371]
+Description: [gene=dnaN] [locus_tag=Pan97_RS00010] [protein=DNA polymerase III subunit beta] [protein_id=WP_144969539.1] [location=1626..2741] [gbkey=CDS]
+Scores for complete sequence (score includes all domains):
+   --- full sequence ---   --- best 1 domain ---    -#dom-
+    E-value  score  bias    E-value  score  bias    exp  N  Model           Description
+    ------- ------ -----    ------- ------ -----   ---- --  --------        -----------
+...skipping...
+   [No hits detected that satisfy reporting thresholds]
+
+
+Domain annotation for each model (and alignments):
+
+   [No targets detected that satisfy reporting thresholds]
+
+
+Internal pipeline statistics summary:
+-------------------------------------
+Query sequence(s):                         1  (244 residues searched)
+Target model(s):                        7789  (1389290 nodes)
+Passed MSV filter:                       183  (0.0234947); expected 155.8 (0.02)
+Passed bias filter:                      167  (0.0214405); expected 155.8 (0.02)
+Passed Vit filter:                        10  (0.00128386); expected 7.8 (0.001)
+Passed Fwd filter:                         0  (0); expected 0.1 (1e-05)
+Initial search space (Z):               7789  [actual number of targets]
+Domain search space  (domZ):               0  [number of targets reported over threshold]
+# CPU time: 0.11u 0.07s 00:00:00.18 Elapsed: 00:00:00.15
+# Mc/sec: 2207.32
+//
+[ok]

@@ -66,3 +66,7 @@ class RInterval:
 
     def offset(self, offset: int) -> RInterval:
         return RInterval(self.start + offset, self.stop + offset)
+
+    @property
+    def size(self):
+        return self.stop - self.start + 1

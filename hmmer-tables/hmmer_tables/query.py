@@ -28,6 +28,7 @@ __all__ = [
 class Align(BaseModel):
     core_interval: RInterval
     query_interval: RInterval
+    profile: str
     hmm_cs: str
     hmm_rf: str
     query_cs: str
@@ -107,8 +108,9 @@ def _parse_target_consensus(row: str):
     line = row
 
     row = remove_multispace(row)
+    profile = ""
     if row.count(" ") == 3:
-        start, tgt_cs, stop = row.split()[1:]
+        profile, start, tgt_cs, stop = row.split()
     else:
         start, tgt_cs, stop = row.split()
 
@@ -116,22 +118,26 @@ def _parse_target_consensus(row: str):
     x = line[:y].rindex(" ") + 1
     core_interval = RInterval(start=int(start), stop=int(stop))
 
-    return slice(x, y), line[slice(x, y)], core_interval
+    return slice(x, y), line[slice(x, y)], core_interval, profile
 
 
 def _parse_match(row: str, line_slice: slice):
     return row[line_slice]
 
 
-def _parse_target(row: str, line_slice: slice):
+def _parse_target(row: str, line_slice: slice, last_pos: int):
     tgt = row[line_slice]
-    start = int(row[: line_slice.start].rstrip().split()[-1])
-    stop = int(row[line_slice.stop :])
+    start = row[: line_slice.start].rstrip().split()[-1]
+    stop = row[line_slice.stop :].strip()
+    if start == "-":
+        assert stop == "-"
+        start = str(last_pos)
+        stop = str(last_pos - 1)
     query_interval = RInterval(start=int(start), stop=int(stop))
     return tgt, query_interval
 
 
-def _parse_align_chunk(stream: Iterable[str]):
+def _parse_align_chunk(stream: Iterable[str], last_pos: int):
     it = iter(stream)
     hmm_cs = ""
     hmm_rf = ""
@@ -145,9 +151,9 @@ def _parse_align_chunk(stream: Iterable[str]):
         else:
             break
 
-    line_slice, tgt_cs, core_interval = _parse_target_consensus(row)
+    line_slice, tgt_cs, core_interval, profile = _parse_target_consensus(row)
     match = _parse_match(next(it), line_slice)
-    tgt, query_interval = _parse_target(next(it), line_slice)
+    tgt, query_interval = _parse_target(next(it), line_slice, last_pos)
 
     row = next(it)
     assert row.endswith(" PP")
@@ -162,6 +168,7 @@ def _parse_align_chunk(stream: Iterable[str]):
     return Align(
         core_interval=core_interval,
         query_interval=query_interval,
+        profile=profile,
         hmm_cs=hmm_cs,
         hmm_rf=hmm_rf,
         query_cs=tgt_cs,
@@ -176,9 +183,11 @@ def _merge_aligns_pair(x: Align, y: Align):
     assert x.query_interval.stop + 1 == y.query_interval.start
     core_interval = RInterval(start=x.core_interval.start, stop=y.core_interval.stop)
     query_interval = RInterval(start=x.query_interval.start, stop=y.query_interval.stop)
+    assert x.profile == y.profile
     return Align(
         core_interval=core_interval,
         query_interval=query_interval,
+        profile=x.profile,
         hmm_cs=x.hmm_cs + y.hmm_cs,
         hmm_rf=x.hmm_rf + y.hmm_rf,
         query_cs=x.query_cs + y.query_cs,
@@ -190,7 +199,12 @@ def _merge_aligns_pair(x: Align, y: Align):
 
 def _parse_align(stream: Iterable[str]):
     head, body = stream[0], stream[1:]
-    aligns = [_parse_align_chunk(i) for i in split_at(body, lambda x: len(x) == 0)]
+    aligns = []
+    last_pos = 1
+    for i in split_at(body, lambda x: len(x) == 0):
+        x = _parse_align_chunk(i, last_pos)
+        aligns.append(x)
+        last_pos = x.query_interval.stop + 1
     return DomAlign(head=head, align=reduce(_merge_aligns_pair, aligns))
 
 

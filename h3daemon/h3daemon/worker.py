@@ -40,6 +40,8 @@ class Worker:
         try:
             lports = self.local_established_ports()
             rports = self.remote_established_ports()
+        except (ProcessLookupError, psutil.ZombieProcess):
+            return False
         except RuntimeError:
             # psutil bug: https://github.com/giampaolo/psutil/issues/2116
             lports = [0]

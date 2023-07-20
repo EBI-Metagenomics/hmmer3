@@ -25,6 +25,15 @@ def test_query(files_path: Path):
     assert x.domains[0].aligns[1].align.hmm_cs == desired
     assert x.domains[0].aligns[1].align.hmm_rf == desired
 
+    query_name = "lcl|NZ_OU912926.1_cds_WP_239795528.1_168"
+    profile = "PF07719.20"
+
+    assert x.domains[0].aligns[0].align.query_name == query_name
+    assert x.domains[0].aligns[0].align.profile == profile
+
+    assert x.domains[0].aligns[1].align.query_name == query_name
+    assert x.domains[0].aligns[1].align.profile == profile
+
     desired = "aealynlGlayyklgdyeeAleafekAleldPn"
     assert x.domains[0].aligns[1].align.query_cs == desired
 

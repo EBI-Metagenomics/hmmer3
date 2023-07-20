@@ -29,6 +29,7 @@ class Align(BaseModel):
     core_interval: RInterval
     query_interval: RInterval
     profile: str
+    query_name: str
     hmm_cs: str
     hmm_rf: str
     query_cs: str
@@ -127,14 +128,16 @@ def _parse_match(row: str, line_slice: slice):
 
 def _parse_target(row: str, line_slice: slice, last_pos: int):
     tgt = row[line_slice]
-    start = row[: line_slice.start].rstrip().split()[-1]
+    vals = row[: line_slice.start].rstrip().split()
+    start = vals[-1]
+    query_name = vals[0] if len(vals) > 1 else ""
     stop = row[line_slice.stop :].strip()
     if start == "-":
         assert stop == "-"
         start = str(last_pos)
         stop = str(last_pos - 1)
     query_interval = RInterval(start=int(start), stop=int(stop))
-    return tgt, query_interval
+    return tgt, query_name, query_interval
 
 
 def _parse_align_chunk(stream: Iterable[str], last_pos: int):
@@ -153,7 +156,7 @@ def _parse_align_chunk(stream: Iterable[str], last_pos: int):
 
     line_slice, tgt_cs, core_interval, profile = _parse_target_consensus(row)
     match = _parse_match(next(it), line_slice)
-    tgt, query_interval = _parse_target(next(it), line_slice, last_pos)
+    tgt, query_name, query_interval = _parse_target(next(it), line_slice, last_pos)
 
     row = next(it)
     assert row.endswith(" PP")
@@ -169,6 +172,7 @@ def _parse_align_chunk(stream: Iterable[str], last_pos: int):
         core_interval=core_interval,
         query_interval=query_interval,
         profile=profile,
+        query_name=query_name,
         hmm_cs=hmm_cs,
         hmm_rf=hmm_rf,
         query_cs=tgt_cs,
@@ -184,10 +188,12 @@ def _merge_aligns_pair(x: Align, y: Align):
     core_interval = RInterval(start=x.core_interval.start, stop=y.core_interval.stop)
     query_interval = RInterval(start=x.query_interval.start, stop=y.query_interval.stop)
     assert x.profile == y.profile
+    assert x.query_name == y.query_name
     return Align(
         core_interval=core_interval,
         query_interval=query_interval,
         profile=x.profile,
+        query_name=x.query_name,
         hmm_cs=x.hmm_cs + y.hmm_cs,
         hmm_rf=x.hmm_rf + y.hmm_rf,
         query_cs=x.query_cs + y.query_cs,

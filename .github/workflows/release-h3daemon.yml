@@ -17,9 +17,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Build
-        run: |
-          pipx install poetry
-          poetry build
+        run: pipx run poetry build
 
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:

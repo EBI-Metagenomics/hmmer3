@@ -1,8 +1,8 @@
 #include "hmmd/domain.h"
+#include "compiler.h"
 #include "h3client/errno.h"
 #include "hmmd/alidisplay.h"
 #include "utils.h"
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

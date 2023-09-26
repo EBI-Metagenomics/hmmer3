@@ -1,8 +1,8 @@
 #include "hmmd/alidisplay.h"
+#include "compiler.h"
 #include "h3client/h3client.h"
 #include "utils.h"
 #include "zc.h"
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 

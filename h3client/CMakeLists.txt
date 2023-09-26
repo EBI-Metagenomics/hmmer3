@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 project(
   h3client
-  VERSION 0.12.4
+  VERSION 0.12.5
   LANGUAGES C)
 
 include(cmake/warnings.cmake)

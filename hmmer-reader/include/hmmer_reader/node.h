@@ -7,6 +7,10 @@
 #include <stddef.h>
 #include <stdio.h>
 
+#ifndef static_assert
+#define static_assert(expr, msg) _Static_assert(expr, msg)
+#endif
+
 enum
 {
     HMR_SYMBOLS_MAX = 32,

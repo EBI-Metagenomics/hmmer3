@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20.2 FATAL_ERROR)
 project(
   hmmer_reader
-  VERSION 0.7.1
+  VERSION 0.7.2
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "HMMER ASCII file reader.")
 

@@ -242,7 +242,7 @@ static int header(struct args *a)
     assert(a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_NL);
     if (a->tok->id == HMR_TOK_WORD)
     {
-        if (a->aux->prof.pos > a->aux->prof.begin + 1)
+        if (a->aux->prof.pos && (a->aux->prof.pos > a->aux->prof.begin + 1))
         {
             *(a->aux->prof.pos - 1) = ' ';
             a->aux->prof.pos++;
@@ -310,7 +310,7 @@ static int field_content(struct args *a)
     if (a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_HMM ||
         a->tok->id == HMR_TOK_COMPO)
     {
-        if (a->aux->prof.pos > a->aux->prof.begin + 1)
+        if (a->aux->prof.pos && (a->aux->prof.pos > a->aux->prof.begin + 1))
         {
             *(a->aux->prof.pos - 1) = ' ';
             a->aux->prof.pos++;

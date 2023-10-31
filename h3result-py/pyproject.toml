@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h3result"
-version = "0.3.0"
+version = "0.3.1"
 description = "Python wrapper for h3result library."
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"
@@ -25,7 +25,13 @@ generate-setup-file = false
 pytest = ">=7.3.2"
 
 [build-system]
-requires = ["poetry-core", "cffi", "cmake", "patchelf;sys_platform=='linux'"]
+requires = [
+	"poetry-core",
+	"cffi",
+	"cmake",
+	"patchelf;sys_platform=='linux'",
+	"setuptools;python_version>='3.12'",
+]
 build-backend = "poetry.core.masonry.api"
 
 [tool.cibuildwheel]

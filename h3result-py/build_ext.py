@@ -42,11 +42,11 @@ class Ext:
 
 
 EXTS = [
-    Ext("EBI-Metagenomics", "lip", "v0.5.2", "./", CMAKE_OPTS),
+    Ext("EBI-Metagenomics", "lip", "v0.5.4", "./", CMAKE_OPTS),
     Ext(
         "EBI-Metagenomics",
         "hmmer3",
-        "h3result-v0.2.1",
+        "h3result-v0.2.2",
         "./h3result",
         CMAKE_OPTS + CPM_OPTS,
     ),

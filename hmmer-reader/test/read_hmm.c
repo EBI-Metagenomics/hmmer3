@@ -11,6 +11,7 @@ void test_hmm_corrupted5(void);
 void test_hmm_corrupted6(void);
 void test_hmm_corrupted7(void);
 void test_hmm_corrupted8(void);
+void test_hmm_noacc(void);
 
 void check_3profs0(struct hmr_prof *prof);
 void check_3profs1(struct hmr_prof *prof);
@@ -34,6 +35,7 @@ int main(void)
     test_hmm_corrupted6();
     test_hmm_corrupted7();
     test_hmm_corrupted8();
+    test_hmm_noacc();
     return hope_status();
 }
 
@@ -307,6 +309,30 @@ void test_hmm_corrupted8(void)
 
     fclose(fp);
 }
+
+void test_hmm_noacc(void)
+{
+    FILE *fp = fopen(ASSETS "/noacc.hmm", "r");
+    NOTNULL(fp);
+
+    HMR_DECLARE(hmr, fp);
+
+    HMR_PROF_DECLARE(prof, &hmr);
+
+    int rc = HMR_OK;
+    rc = hmr_next_prof(&hmr, &prof);
+    EQ(rc, HMR_OK);
+
+    EQ(hmr_prof_length(&prof), 4);
+    EQ(prof.meta.name, "PTHR10000.orig.30.pir");
+    EQ(prof.meta.acc, "PTHR10000.orig.30.pir");
+
+    rc = hmr_next_prof(&hmr, &prof);
+    EQ(rc, HMR_EUSAGE);
+
+    fclose(fp);
+}
+
 void check_3profs0(struct hmr_prof *prof)
 {
     if (prof->node.idx == 0)

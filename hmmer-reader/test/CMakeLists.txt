@@ -10,6 +10,7 @@ file(COPY corrupted5.hmm DESTINATION ${ASSETS})
 file(COPY corrupted6.hmm DESTINATION ${ASSETS})
 file(COPY corrupted7.hmm DESTINATION ${ASSETS})
 file(COPY corrupted8.hmm DESTINATION ${ASSETS})
+file(COPY noacc.hmm DESTINATION ${ASSETS})
 
 function(hmr_add_test name srcs)
   add_executable(${name} ${srcs})

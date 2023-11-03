@@ -334,6 +334,8 @@ static int hmm(struct args *a)
     a->aux->prof.begin = a->prof->symbols;
     a->aux->prof.end = a->aux->prof.begin + HMR_SYMBOLS_MAX;
     a->aux->prof.pos = a->aux->prof.begin + 1;
+    if (a->prof->meta.acc[0] == '\0')
+        strcpy(a->prof->meta.acc, a->prof->meta.name);
     return check_required_metadata(a->prof);
 }
 
@@ -509,9 +511,6 @@ static int check_required_metadata(struct hmr_prof *prof)
 
     if (prof->meta.acc[0] == '\0')
         return hmr_err(rc, prof->error, "missing ACC field");
-
-    if (prof->meta.desc[0] == '\0')
-        return hmr_err(rc, prof->error, "missing DESC field");
 
     if (prof->meta.leng[0] == '\0')
         return hmr_err(rc, prof->error, "missing LENG field");

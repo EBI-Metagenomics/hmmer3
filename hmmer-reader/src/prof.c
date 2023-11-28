@@ -18,6 +18,7 @@ void hmr_prof_dump(struct hmr_prof const *prof, FILE *restrict fp)
     fprintf(fp, "  Desc: %s\n", prof->meta.desc);
     fprintf(fp, "  Leng: %s\n", prof->meta.leng);
     fprintf(fp, "  Alph: %s\n", prof->meta.alph);
+    fprintf(fp, "    GA: %s\n", prof->meta.ga);
     fprintf(fp, "  Name: %s\n", prof->meta.name);
     fprintf(fp, "  ");
     for (unsigned i = 0; i < prof->symbols_size; ++i)
@@ -103,6 +104,7 @@ static void prof_init(struct hmr_prof *prof, char *error)
     prof->meta.desc[0] = '\0';
     prof->meta.leng[0] = '\0';
     prof->meta.alph[0] = '\0';
+    prof->meta.ga[0] = '\0';
     prof->symbols_size = 0;
     prof->symbols[0] = '\0';
     prof->error = error;

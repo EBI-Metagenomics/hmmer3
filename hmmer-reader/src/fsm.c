@@ -293,6 +293,11 @@ static int field_name(struct args *a)
         a->aux->prof.begin = a->prof->meta.alph;
         a->aux->prof.end = a->aux->prof.begin + HMR_ALPH_MAX;
     }
+    else if (!strcmp(a->tok->value, "GA"))
+    {
+        a->aux->prof.begin = a->prof->meta.ga;
+        a->aux->prof.end = a->aux->prof.begin + HMR_GA_MAX;
+    }
     else
     {
         a->aux->prof.begin = a->prof->buff;

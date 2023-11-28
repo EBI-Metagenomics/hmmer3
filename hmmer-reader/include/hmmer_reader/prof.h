@@ -14,6 +14,7 @@ enum
     HMR_DESC_MAX = 128,
     HMR_LENG_MAX = 8,
     HMR_ALPH_MAX = 12,
+    HMR_GA_MAX = 32,
     HMR_BUFF_MAX = 128,
 };
 
@@ -29,6 +30,7 @@ struct hmr_prof
         char desc[HMR_DESC_MAX];
         char leng[HMR_LENG_MAX];
         char alph[HMR_ALPH_MAX];
+        char ga[HMR_GA_MAX];
     } meta;
     char buff[HMR_BUFF_MAX];
     unsigned symbols_size;

@@ -53,8 +53,10 @@ class Worker:
 
     def local_established_ports(self):
         connections = self._proc.connections(kind="tcp")
-        return [x.laddr.port for x in connections if x.status == "ESTABLISHED"]
+        connections = [x for x in connections if x.status == "ESTABLISHED"]
+        return [x.laddr.port for x in connections if x.laddr.ip == "127.0.0.1"]
 
     def remote_established_ports(self):
         connections = self._proc.connections(kind="tcp")
-        return [x.raddr.port for x in connections if x.status == "ESTABLISHED"]
+        connections = [x for x in connections if x.status == "ESTABLISHED"]
+        return [x.raddr.port for x in connections if x.raddr.ip == "127.0.0.1"]

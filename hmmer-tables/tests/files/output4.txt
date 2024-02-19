@@ -1,0 +1,125 @@
+Query:       lcl|NZ_LR881183.1_prot_WP_188202880.1_42  [L=437]
+Description: [gene=hisS] [locus_tag=TIRI35C_RS00210] [db_xref=GeneID:58917779] [protein=histidine--tRNA ligase] [protein_id=WP_188202880.1] [location=42064..43377] [gbkey=CDS]
+Scores for complete sequence (score includes all domains):
+   --- full sequence ---   --- best 1 domain ---    -#dom-
+    E-value  score  bias    E-value  score  bias    exp  N  Model          Description
+    ------- ------ -----    ------- ------ -----   ---- --  --------       -----------
+    7.5e-66  222.6   0.0    9.8e-66  222.2   0.0    1.1  1  tRNA-synt_His   Histidyl-tRNA synthetase
+    1.8e-19   69.8   0.3    3.5e-19   68.9   0.3    1.5  1  HGTP_anticodon  Anticodon binding domain
+    1.5e-12   48.0   0.0    2.7e-12   47.2   0.0    1.4  1  tRNA-synt_2b    tRNA synthetase class II core domain (G, H, P
+
+
+Domain annotation for each model (and alignments):
+>> tRNA-synt_His  Histidyl-tRNA synthetase
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !  222.2   0.0   1.5e-69   9.8e-66       1     309 []      10     324 ..      10     324 .. 0.94
+
+  Alignments for each domain:
+  == domain 1  score: 222.2 bits;  conditional E-value: 1.5e-69
+                                               T-----TTHHHHHHHHHHHHHHHHHHTT-EE----SEEEHHHHHTTSTTS.-----B----SSS-EEE- CS
+                             tRNA-synt_His   1 girdllpeeakkieelrrrlldlfeshGYelVkpPlleyldslltgaged.ldqtfklvDqsgrllglR 68 
+                                               g+rdllpee++k++++ +r+ ++fe++ + +V +P++ey++ +  ++ge+  +q++ + D+ gr+l+lR
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42  10 GTRDLLPEEMAKRRWVFERIREVFERYNFHEVLTPTFEYTELFKLRSGEEvVEQLYAFDDKGGRNLSLR 78 
+                                               78******************************************99999945699999999******** PP
+
+                                               SSSHHHHHHHHHHHHH.T----EEEEEEEEEE---------EEEEEEEEEE-SS--HHHHHHHHHHHHH CS
+                             tRNA-synt_His  69 aDiTpqvaRiaatrln.rerplRlcYaGsvlrtrpkglgrsreplQvGaEliGaegveadlevlsllle 136
+                                               +D+T +vaR++ + ++ +++p +++Y+++++r ++ ++gr re+ Q+G+El+G+++vead+ev++l++e
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42  79 PDMTSSVARLYVNGFQnAPKPVKWYYMANMFRYEEPQSGRYREFWQAGVELLGSDKVEADAEVIALFVE 147
+                                               ***************88**************************************************** PP
+
+                                               HH.HHT--S-EEEEEETTHHHHHHHHTT--HHHHHHHHHHHHHT-...HHHHHHHHHHH-S---SS-TT CS
+                             tRNA-synt_His 137 alaaagveevtldlghvglvrallealglseeleeallaaLqrkd...aaelaelaaeaalkeaareal 202
+                                               +  a g+e++t+ +g   l+++ ++ lg++++    l++++++kd     ++a  ++e +l+++ +e +
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 148 SYLATGLEDFTVNIGDRVLLDEFAKMLGVKDD--IGLMRLIDKKDkmsRGDFAVALREFGLDDDGVEKV 214
+                                               ****************************8885..6788888888833356788889999********** PP
+
+                                               ....-HHHHHHHHHHHHTT-S-HHHHHHHHHHHHHHHHHHHHHHH-TTEEE-TT---S-TT--SEEEEE CS
+                             tRNA-synt_His 203 kalaelygdkevleealaalaakpalaealdeleelaallealakeveltlDlaelrgyeYytGlvFaa 271
+                                                al+e++g +e++   +++l   ++++e +++l el++ll+a++    + +Dl+  rg++Yyt +vF+a
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 215 MALVEIKGLPEEVLPRAEELFTGEKAREEIKRLYELVDLLDAYGVLKWIRIDLGIARGFDYYTSVVFEA 283
+                                               ********99999999999*9*********************9877889******************** PP
+
+                                               E-TT-SS..-SEEEEE-TTTTGGG.T-----EEEEEEHHHH CS
+                             tRNA-synt_His 272 yaegvge..alarGGrYDelgaaf.grarpAtGfsldleal 309
+                                               +a++  +   +++GGrYD+l+++f g+  pAtGf++ +e+l
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 284 IAPNDLGigSIGGGGRYDNLISVFgGKPTPATGFAIGIERL 324
+                                               ***966445***************99***********9987 PP
+
+>> HGTP_anticodon  Anticodon binding domain
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   68.9   0.3   5.4e-23   3.5e-19       1      93 [.     342     433 ..     342     434 .. 0.97
+
+  Alignments for each domain:
+  == domain 1  score: 68.9 bits;  conditional E-value: 5.4e-23
+                                               SEEEEESSSSHHHHHHHHHHHHHHHHTTTSEEEEESSSSTHHHHHHHHHHTT-SEEEEE-HHHHHHTEE CS
+                            HGTP_anticodon   1 qvvviplnekaeeleeyakklaeeLrkagirvelddssesigkkireadllgipfavvvGekelekgtv 69 
+                                               +v+v+p+++ + el   a ++ ++Lr+ag++++    +++++k++ +a +lg+p++v vG+k+l +g+v
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 342 DVYVVPIGK-DAELRRAAAEITSALRAAGVKTDCELTGRKLRKALDYAGKLGVPYVVLVGKKDLAEGKV 409
+                                               69*******.666******************************************************** PP
+
+                                               EEEETTTCEEEEEETTHHHHHHHH CS
+                            HGTP_anticodon  70 tvrdrdtreqervsleelveklke 93 
+                                               tvrd++++eq+ v+ e++v++l+e
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 410 TVRDMESGEQRFVKKENVVGELIE 433
+                                               ********************9987 PP
+
+>> tRNA-synt_2b  tRNA synthetase class II core domain (G, H, P, S and T)
+   #    score  bias  c-Evalue  i-Evalue hmmfrom  hmm to    alifrom  ali to    envfrom  env to     acc
+ ---   ------ ----- --------- --------- ------- -------    ------- -------    ------- -------    ----
+   1 !   47.2   0.0   4.1e-16   2.7e-12       1     174 [.      65     327 ..      65     329 .. 0.90
+
+  Alignments for each domain:
+  == domain 1  score: 47.2 bits;  conditional E-value: 4.1e-16
+                                               EEEEETTSEEEEE-SSSHHHHHHHHHHHEEEB.GGSSEEEEEEEEEEBTTTSTBCTTTB-SEEEEEEEE CS
+                                               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx RF
+                              tRNA-synt_2b   1 YkledrndreyiLkPtneetfvelirdevlrs.krLPlklyqiqtkyRdEksdsrGLlRvreFhqkdgy 68 
+                                               Y ++d+ +r++ L+P  +  +++l+ +   +  k  P+k y++  ++R+E++ ++G  R+reF q + +
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42  65 YAFDDKGGRNLSLRPDMTSSVARLYVNGFQNApK--PVKWYYMANMFRYEEP-QSG--RYREFWQAGVE 128
+                                               899************************9778878..****************.***..*********** PP
+
+                                               EEESGGGHHHHHHHHHHHHHHHHHHTT.SCEEE.EEE...GTTSC........................ CS
+                                               xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxx...xxxxx........................ RF
+                              tRNA-synt_2b  69 vfhaeaslddslrdlikaisriferlglefrai.iel...msaks........................ 109
+                                                 ++++   + ++++i +  + + + gle + + i++       +                        
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 129 LLGSDK--VEADAEVIALFVESYLATGLEDFTVnIGDrvlL---Defakmlgvkddiglmrlidkkdkm 192
+                                               ***999..9*******************8753313334331...14556788889999*********** PP
+
+                                               ..................................................................... CS
+                                               ..................................................................... RF
+                              tRNA-synt_2b 110 ..................................................................... 109
+                                                                                                                    
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 193 srgdfavalrefgldddgvekvmalveikglpeevlpraeelftgekareeikrlyelvdlldaygvlk 261
+                                               ********************************************************************* PP
+
+                                               ...........BTTSEEEEEEEEETTTSEEEEEEEEEE..EETHHHHHTTEEEECTTSSEEEEEEEEEE CS
+                                               ...........xxxxxxxxxxxxxxxxxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxxxxxxxxxxxx RF
+                              tRNA-synt_2b 110 ...........adykdkkefeavsesltkgieigtiqk..lgtrlserlgatvldennreksvimicaa 165
+                                                          +dy+ + +fea+ +     + ig+i++  ++++l + +g++         ++ ++++a
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 262 wiridlgiargFDYYTSVVFEAIAP---NDLGIGSIGGggRYDNLISVFGGKP--------TP-ATGFA 318
+                                               *************************...4555899875226678888888887........89.999** PP
+
+                                               EEHHHHHHH CS
+                                               xxxxxxxxx RF
+                              tRNA-synt_2b 166 igveRllsa 174
+                                               ig+eRl+ +
+  lcl|NZ_LR881183.1_prot_WP_188202880.1_42 319 IGIERLIPI 327
+                                               *****9965 PP
+
+
+
+Internal pipeline statistics summary:
+-------------------------------------
+Query sequence(s):                         1  (437 residues searched)
+Target model(s):                       19632  (3329936 nodes)
+Passed MSV filter:                       365  (0.0185921); expected 392.6 (0.02)
+Passed bias filter:                      346  (0.0176243); expected 392.6 (0.02)
+Passed Vit filter:                        34  (0.00173187); expected 19.6 (0.001)
+Passed Fwd filter:                         5  (0.000254686); expected 0.2 (1e-05)
+Initial search space (Z):              19632  [actual number of targets]
+Domain search space  (domZ):               3  [number of targets reported over threshold]
+# CPU time: 0.71u 0.21s 00:00:00.92 Elapsed: 00:00:00.55
+# Mc/sec: 2605.55
+//

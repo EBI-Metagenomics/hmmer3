@@ -77,3 +77,19 @@ def test_output3(files_path: Path):
 def test_output_empty(files_path: Path):
     with pytest.raises(ValueError):
         read_output(files_path / "empty.txt")
+
+
+def test_output4(files_path: Path):
+    x = read_output(files_path / "output4.txt")
+    assert len(x.queries) == 1
+    assert len(x.queries[0].domains) == 3
+    assert len(x.queries[0].domains[0].aligns) == 1
+    desired = (
+        "g+rdllpee++k++++ +r+ ++fe++ + +V +P++ey++ +  ++ge+  +q++ + D+"
+        " gr+l+lR+D+T +vaR++ + ++ +++p +++Y+++++r ++ ++gr re+ "
+        "Q+G+El+G+++vead+ev++l++e+  a g+e++t+ +g"
+        "   l+++ ++ lg++++    l++++++kd     ++a  ++e +l+++"
+        " +e + al+e++g +e++   +++l   ++++e +++l el++ll+a++"
+        "    + +Dl+  rg++Yyt +vF+a+a++  +   +++GGrYD+l+++f g+  pAtGf++ +e+l"
+    )
+    assert x.queries[0].domains[0].aligns[0].align.match == desired

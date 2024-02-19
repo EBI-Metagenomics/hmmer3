@@ -10,7 +10,7 @@ from hmmer_tables.cleanup import (
     rstrip_newlines,
     strip_empty_lines,
 )
-from hmmer_tables.interval import RInterval
+from deciphon_intervals import RInterval
 from hmmer_tables.path_like import PathLike
 
 __all__ = [

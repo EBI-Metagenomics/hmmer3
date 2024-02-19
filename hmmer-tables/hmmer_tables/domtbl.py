@@ -4,7 +4,7 @@ from typing import List, Iterable
 from pydantic import BaseModel, RootModel
 
 from hmmer_tables.csv_iter import csv_iter
-from hmmer_tables.interval import PyInterval, RInterval
+from deciphon_intervals import PyInterval, RInterval
 from hmmer_tables.path_like import PathLike
 
 __all__ = [
@@ -65,8 +65,8 @@ class DomTBLCoord(BaseModel):
         PyInterval
             Interval.
         """
-        rinterval = RInterval(self.start, self.stop)
-        return rinterval.to_pyinterval()
+        rinterval = RInterval(start=self.start, stop=self.stop)
+        return rinterval.py
 
 
 class DomTBLRow(BaseModel):

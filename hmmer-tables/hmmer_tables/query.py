@@ -38,8 +38,20 @@ class Align(BaseModel):
     query: str
     score: str
 
+    @property
+    def core_positions(self):
+        positions: list[int] = []
+        offset = self.core_interval.start - 1
+        for i, c in enumerate(self.query_cs):
+            if c != ".":
+                offset += 1
+            positions.append(offset)
+        assert positions[-1] == self.core_interval.stop
+        return positions
+
 
 class DomAlign(BaseModel):
+    raw: str
     head: str
     align: Align
 
@@ -213,7 +225,9 @@ def _parse_align(stream: Iterable[str]):
         x = _parse_align_chunk(i, last_pos)
         aligns.append(x)
         last_pos = x.query_interval.stop + 1
-    return DomAlign(head=head, align=reduce(_merge_aligns_pair, aligns))
+    return DomAlign(
+        raw="\n".join(stream), head=head, align=reduce(_merge_aligns_pair, aligns)
+    )
 
 
 def _parse_annot(stream: Iterable[str]):

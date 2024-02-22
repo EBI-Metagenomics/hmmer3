@@ -75,6 +75,7 @@ class DomAnnotList(RootModel):
 
 
 class QueryAnnot(BaseModel):
+    raw: str
     head: str
     stat: str
     domains: DomAnnotList
@@ -252,9 +253,16 @@ def parse_query(stream: Iterable[str]):
     stat = "\n".join(strip_empty_lines(stat))
 
     if len(annots) == 1 and annots[0] == NO_TGT_DETECT:
-        return QueryAnnot(head="\n".join(scores), stat=stat, domains=[])
+        return QueryAnnot(
+            raw="\n".join(rows), head="\n".join(scores), stat=stat, domains=[]
+        )
 
-    return QueryAnnot(head="\n".join(scores), stat=stat, domains=_parse_annots(annots))
+    return QueryAnnot(
+        raw="\n".join(rows),
+        head="\n".join(scores),
+        stat=stat,
+        domains=_parse_annots(annots),
+    )
 
 
 def _read_query(stream: Iterable[str]):

@@ -1,4 +1,5 @@
-from typing import List, Iterable
+from io import TextIOBase
+from typing import Iterable, List
 
 from pydantic import BaseModel, RootModel
 
@@ -52,8 +53,8 @@ class TBL(RootModel):
         return len(self.root)
 
 
-def _read_tbl_stream(stream: Iterable[str]) -> List[TBLRow]:
-    rows = []
+def _read_tbl_stream(stream: Iterable[str]) -> TBL:
+    rows: list[TBLRow] = []
     for x in csv_iter(stream):
         seq = TBLScore(e_value=float(x[4]), score=float(x[5]), bias=float(x[6]))
         dom = TBLScore(e_value=float(x[7]), score=float(x[8]), bias=float(x[9]))
@@ -78,9 +79,7 @@ def _read_tbl_stream(stream: Iterable[str]) -> List[TBLRow]:
     return TBL.model_validate(rows)
 
 
-def read_tbl(
-    filename: PathLike | None = None, stream: Iterable[str] | None = None
-) -> TBL:
+def read_tbl(filename: PathLike | None = None, stream: TextIOBase | None = None) -> TBL:
     """
     Read tbl file type.
     """
@@ -89,4 +88,5 @@ def read_tbl(
         with open(filename, "r") as stream:
             return _read_tbl_stream(stream)
     else:
+        assert stream is not None
         return _read_tbl_stream(stream)

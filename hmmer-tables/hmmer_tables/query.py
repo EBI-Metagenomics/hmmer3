@@ -1,7 +1,9 @@
 from functools import reduce
+from io import TextIOBase
 from itertools import dropwhile
 from typing import Iterable, List
 
+from deciphon_intervals import RInterval
 from more_itertools import split_at, split_before
 from pydantic import BaseModel, RootModel
 
@@ -10,7 +12,6 @@ from hmmer_tables.cleanup import (
     rstrip_newlines,
     strip_empty_lines,
 )
-from deciphon_intervals import RInterval
 from hmmer_tables.path_like import PathLike
 
 __all__ = [
@@ -205,7 +206,7 @@ def _merge_aligns_pair(x: Align, y: Align):
 
 
 def _parse_align(stream: Iterable[str]):
-    head, body = stream[0], stream[1:]
+    head, *body = stream
     aligns = []
     last_pos = 1
     for i in split_at(body, lambda x: len(x) == 0):
@@ -220,19 +221,24 @@ def _parse_annot(stream: Iterable[str]):
     if len(rows) > 1:
         if rows[1] == NO_IND_DOM:
             head = "\n".join(rows)
-            return DomAnnot(head=head, aligns=[])
+            return DomAnnot(head=head, aligns=DomAlignList(root=[]))
     xy = list(split_before(rows, lambda x: x.startswith(ALIGN_ANNOUNCE), 1))
     head = strip_empty_lines(xy[0] if len(xy) > 1 else [""])
     tail = xy[-1]
     tail = list(dropwhile(lambda x: x == ALIGN_ANNOUNCE, tail))
     aligns = list(split_before(tail, lambda x: x.startswith(DOMAIN_ANNOUNCE)))
     aligns = [strip_empty_lines(x) for x in aligns]
-    return DomAnnot(head=head[0], aligns=[_parse_align(x) for x in aligns])
+    return DomAnnot(
+        head=head[0],
+        aligns=DomAlignList.model_validate(_parse_align(x) for x in aligns),
+    )
 
 
 def _parse_annots(stream: Iterable[str]):
     annots = list(split_before(stream, lambda x: x.startswith(">> ")))
-    return [_parse_annot(strip_empty_lines(x)) for x in annots]
+    return DomAnnotList.model_validate(
+        _parse_annot(strip_empty_lines(x)) for x in annots
+    )
 
 
 def parse_query(stream: Iterable[str]):
@@ -254,7 +260,10 @@ def parse_query(stream: Iterable[str]):
 
     if len(annots) == 1 and annots[0] == NO_TGT_DETECT:
         return QueryAnnot(
-            raw="\n".join(rows), head="\n".join(scores), stat=stat, domains=[]
+            raw="\n".join(rows),
+            head="\n".join(scores),
+            stat=stat,
+            domains=DomAnnotList(root=[]),
         )
 
     return QueryAnnot(
@@ -271,7 +280,7 @@ def _read_query(stream: Iterable[str]):
     return parse_query(rows)
 
 
-def read_query(filename: PathLike | None = None, stream: Iterable[str] | None = None):
+def read_query(filename: PathLike | None = None, stream: TextIOBase | None = None):
     """
     Read query.
     """
@@ -280,4 +289,5 @@ def read_query(filename: PathLike | None = None, stream: Iterable[str] | None = 
         with open(filename, "r") as stream:
             return _read_query(stream)
     else:
+        assert stream is not None
         return _read_query(stream)

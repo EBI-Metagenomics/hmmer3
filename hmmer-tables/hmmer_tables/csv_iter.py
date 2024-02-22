@@ -1,14 +1,14 @@
 import csv
-from io import TextIOWrapper
+from typing import Iterable
 
 __all__ = ["csv_iter"]
 
 
-def csv_iter(stream: TextIOWrapper):
+def csv_iter(stream: Iterable[str]):
     return csv.reader(uncomment(stream), delimiter=" ", skipinitialspace=True)
 
 
-def uncomment(stream: TextIOWrapper):
+def uncomment(stream: Iterable[str]):
     for line in stream:
         if line.startswith("#"):
             continue

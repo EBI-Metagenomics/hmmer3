@@ -1,10 +1,11 @@
 import dataclasses
-from typing import List, Iterable
+from io import TextIOBase
+from typing import Iterable, List
 
+from deciphon_intervals import PyInterval, RInterval
 from pydantic import BaseModel, RootModel
 
 from hmmer_tables.csv_iter import csv_iter
-from deciphon_intervals import PyInterval, RInterval
 from hmmer_tables.path_like import PathLike
 
 __all__ = [
@@ -83,9 +84,6 @@ class DomTBLRow(BaseModel):
     def _asdict(self):
         return dataclasses.asdict(self)
 
-    def __iter__(self):
-        return iter(self._asdict().values())
-
     def _field_types(self):
         return {f.name: f.type for f in dataclasses.fields(self)}
 
@@ -133,7 +131,8 @@ def _read_domtbl_stream(stream: Iterable[str]):
 
 
 def read_domtbl(
-    filename: PathLike | None = None, stream: Iterable[str] | None = None
+    filename: PathLike | None = None,
+    stream: TextIOBase | None = None,
 ) -> DomTBL:
     """
     Read domtbl file type.
@@ -143,4 +142,5 @@ def read_domtbl(
         with open(filename, "r") as stream:
             return _read_domtbl_stream(stream)
     else:
+        assert stream is not None
         return _read_domtbl_stream(stream)

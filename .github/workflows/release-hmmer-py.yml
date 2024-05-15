@@ -59,11 +59,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build wheels
-        run: pipx run cibuildwheel==2.18.0
-
       - name: Install autoconf
         run: brew install autoconf
+
+      - name: Build wheels
+        run: pipx run cibuildwheel==2.18.0
 
       - uses: actions/upload-artifact@v3
         with:

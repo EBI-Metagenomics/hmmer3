@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hmmer"
-version = "3.4.0"
+version = "3.4.0.0"
 description = "HMMER binaries."
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"

@@ -62,12 +62,15 @@ jobs:
       - name: Build wheels
         run: pipx run cibuildwheel==2.18.0
 
+      - name: Install autoconf
+        run: brew install autoconf
+
       - uses: actions/upload-artifact@v3
         with:
           path: hmmer-py/wheelhouse/*.whl
 
   upload_all:
-    needs: [make_linux_wheels, make_macos_wheels, make_sdist]
+    needs: [make_linux_wheels, make_macos_intel_wheels, make_macos_arm_wheels, make_sdist]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3

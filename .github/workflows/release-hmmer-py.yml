@@ -36,19 +36,31 @@ jobs:
           platforms: all
 
       - name: Build wheels
-        run: pipx run cibuildwheel==2.13.1
+        run: pipx run cibuildwheel==2.18.0
 
       - uses: actions/upload-artifact@v3
         with:
           path: hmmer-py/wheelhouse/*.whl
 
-  make_macos_wheels:
-    runs-on: macos-latest
+  make_macos_intel_wheels:
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
 
       - name: Build wheels
-        run: pipx run cibuildwheel==2.13.1
+        run: pipx run cibuildwheel==2.18.0
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: hmmer-py/wheelhouse/*.whl
+
+  make_macos_arm_wheels:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build wheels
+        run: pipx run cibuildwheel==2.18.0
 
       - uses: actions/upload-artifact@v3
         with:

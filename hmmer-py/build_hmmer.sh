@@ -10,13 +10,13 @@ mkdir "$TMP"
 (
     git clone https://github.com/horta/hmmer.git "$TMP/hmmer"
     cd "$TMP/hmmer"
-    git reset --hard 0a6d8bef0634f002fe649cff674e7a5f104af43e
+    git reset --hard 1277e6d4aa760b2c6f38f7e9b88f46e1530ead44
 )
 
 (
-    git clone https://github.com/horta/easel.git "$TMP/hmmer/easel"
+    git clone https://github.com/EddyRivasLab/easel.git "$TMP/hmmer/easel"
     cd "$TMP/hmmer/easel"
-    git reset --hard fc4a44acc0773125bb16dc13cf529adc99d6ddd6
+    git reset --hard 07ca83ba9ef0414dba9ce0a9331d465b5eb58f2b
 )
 
 (cd "$TMP/hmmer" && autoconf && ./configure && make)

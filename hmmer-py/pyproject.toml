@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hmmer"
-version = "0.2.4"
+version = "3.4.0"
 description = "HMMER binaries."
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"
@@ -21,7 +21,7 @@ script = "build_hmmer.py"
 generate-setup-file = false
 
 [tool.poetry.group.dev.dependencies]
-pytest = ">=7.3.2"
+pytest = "^8.2"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hmmer-tables"
-version = "0.6.0"
+version = "0.6.1"
 description = "Read tables produced by HMMER software."
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"
@@ -9,16 +9,16 @@ packages = [{ include = "hmmer_tables" }]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-deciphon-intervals = "^0.1.1"
-more-itertools = "^10.2.0"
-pydantic = "^2.6.1"
-typer = "^0.9.0"
-
-[tool.poetry.group.dev.dependencies]
-pytest = ">=7.3.2"
+deciphon-intervals = "^0.1"
+more-itertools = "^10.2"
+pydantic = "^2.7"
+typer = "^0.12"
 
 [tool.poetry.scripts]
 hmmer-tables = 'hmmer_tables.cli:app'
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2"
 
 [build-system]
 requires = ["poetry-core"]

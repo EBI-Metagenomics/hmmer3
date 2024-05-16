@@ -36,26 +36,41 @@ jobs:
           platforms: all
 
       - name: Build wheels
-        run: pipx run cibuildwheel==2.16.1
+        run: pipx run cibuildwheel==2.18.0
 
       - uses: actions/upload-artifact@v3
         with:
           path: h3result-py/wheelhouse/*.whl
 
-  make_macos_wheels:
+  make_macos_intel_wheels:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
 
       - name: Build wheels
-        run: pipx run cibuildwheel==2.16.1
+        run: pipx run cibuildwheel==2.18.0
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: h3result-py/wheelhouse/*.whl
+
+  make_macos_arm_wheels:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install autoconf
+        run: brew install autoconf
+
+      - name: Build wheels
+        run: pipx run cibuildwheel==2.18.0
 
       - uses: actions/upload-artifact@v3
         with:
           path: h3result-py/wheelhouse/*.whl
 
   upload_all:
-    needs: [make_linux_wheels, make_macos_wheels, make_sdist]
+    needs: [make_linux_wheels, make_macos_intel_wheels, make_macos_arm_wheels, make_sdist]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3

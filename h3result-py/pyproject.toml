@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h3result"
-version = "0.3.1"
+version = "0.3.2"
 description = "Python wrapper for h3result library."
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"

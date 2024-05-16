@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h3daemon"
-version = "0.13.8"
+version = "0.14.0"
 description = "HMMER server"
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"
@@ -8,11 +8,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-typer = "^0"
-python-daemon = "^3"
-psutil = "^5"
-pidlockfile = "^0"
-hmmer = "^0"
+hmmer = "^3.4"
+psutil = "^5.9"
+pylockfile = "^0.0.3.3"
+python-daemon = "^3.0"
+typer = "^0.12"
 
 [build-system]
 requires = ["poetry-core"]

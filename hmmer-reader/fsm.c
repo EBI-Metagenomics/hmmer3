@@ -1,10 +1,10 @@
 #define _XOPEN_SOURCE 600
-
 #include "fsm.h"
 #include "aux.h"
 #include "error.h"
 #include "hmr_aux.h"
 #include "hmr_prof.h"
+#include "hmr_rc.h"
 #include "hmr_tok.h"
 #include "hmr_trans.h"
 #include "to.h"

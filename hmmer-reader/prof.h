@@ -1,9 +1,9 @@
 #ifndef PROF_H
 #define PROF_H
 
+#include "hmr_state.h"
 #include <stdio.h>
 
-enum hmr_state;
 struct hmr_aux;
 struct hmr_prof;
 struct hmr_tok;

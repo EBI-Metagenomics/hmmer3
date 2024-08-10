@@ -1,6 +1,7 @@
 #define _POSIX_C_SOURCE 200112L
 #include "error.h"
 #include "hmr_error.h"
+#include "hmr_rc.h"
 #include "hmr_tok.h"
 #include <assert.h>
 #include <stdarg.h>

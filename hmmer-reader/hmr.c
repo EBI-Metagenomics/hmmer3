@@ -1,6 +1,5 @@
-#include "error.h"
+#include "hmr.h"
 #include "fsm.h"
-#include "hmmer_reader/hmmer_reader.h"
 #include "prof.h"
 #include "tok.h"
 #include <string.h>

@@ -3,14 +3,13 @@
 #include "fsm.h"
 #include "aux.h"
 #include "error.h"
-#include "hmmer_reader/aux.h"
-#include "hmmer_reader/prof.h"
-#include "hmmer_reader/tok.h"
-#include "hmmer_reader/trans.h"
+#include "hmr_aux.h"
+#include "hmr_prof.h"
+#include "hmr_tok.h"
+#include "hmr_trans.h"
 #include "to.h"
 #include "tok.h"
 #include <assert.h>
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -1,11 +1,12 @@
-#include "hmmer_reader/prof.h"
+#include "prof.h"
 #include "aux.h"
 #include "error.h"
 #include "fsm.h"
-#include "hmmer_reader/hmmer_reader.h"
-#include "hmmer_reader/tok.h"
+#include "hmr.h"
+#include "hmr_prof.h"
+#include "hmr_rc.h"
+#include "hmr_tok.h"
 #include "node.h"
-#include "prof.h"
 #include "tok.h"
 #include <limits.h>
 #include <stdlib.h>

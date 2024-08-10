@@ -24,7 +24,7 @@ static bool to_double(char const *str, double *val)
 {
     if (str[0] == '*' && str[1] == '\0')
     {
-        *val = INFINITY;
+        *val = (double)INFINITY;
         return true;
     }
     char *ptr = NULL;

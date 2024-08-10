@@ -1,5 +1,5 @@
 #include "node.h"
-#include "hmmer_reader/node.h"
+#include "hmr_node.h"
 #include <math.h>
 
 void hmr_node_dump(struct hmr_node const *node, FILE *restrict fp)
@@ -29,9 +29,9 @@ void hmr_node_init(struct hmr_node *node)
     node->idx = 0;
     for (unsigned i = 0; i < HMR_SYMBOLS_MAX; ++i)
     {
-        node->compo[i] = NAN;
-        node->insert[i] = NAN;
+        node->compo[i] = (double)NAN;
+        node->insert[i] = (double)NAN;
     }
     for (unsigned i = 0; i < HMR_TRANS_SIZE; ++i)
-        node->trans[i] = NAN;
+        node->trans[i] = (double)NAN;
 }

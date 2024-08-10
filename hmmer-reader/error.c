@@ -1,13 +1,10 @@
 #define _POSIX_C_SOURCE 200112L
-
 #include "error.h"
-#include "aux.h"
-#include "hmmer_reader/aux.h"
-#include "hmmer_reader/error.h"
-#include "hmmer_reader/prof.h"
-#include "hmmer_reader/tok.h"
+#include "hmr_error.h"
+#include "hmr_tok.h"
 #include <assert.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <string.h>
 
 static char prefix[][20] = {

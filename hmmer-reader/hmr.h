@@ -1,5 +1,5 @@
-#ifndef HMR_HMR_H
-#define HMR_HMR_H
+#ifndef HMR_H
+#define HMR_H
 
 #include "hmr_aux.h"
 #include "hmr_error.h"

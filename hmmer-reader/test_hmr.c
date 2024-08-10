@@ -1,4 +1,5 @@
-#include "hmmer_reader/hmmer_reader.h"
+#include "hmr.h"
+#include "hmr_rc.h"
 #include "hope.h"
 
 void test_hmm_3profs(void);
@@ -17,7 +18,7 @@ void check_3profs0(struct hmr_prof *prof);
 void check_3profs1(struct hmr_prof *prof);
 void check_3profs2(struct hmr_prof *prof);
 
-void (*check_prof[3])(struct hmr_prof *prof) = {
+static void (*check_prof[3])(struct hmr_prof *prof) = {
     check_3profs0,
     check_3profs1,
     check_3profs2,
@@ -41,7 +42,7 @@ int main(void)
 
 void test_hmm_3profs(void)
 {
-    FILE *fp = fopen(ASSETS "/three-profs.hmm", "r");
+    FILE *fp = fopen("three-profs.hmm", "r");
     NOTNULL(fp);
     unsigned symbol_size = 20;
     unsigned prof_size[] = {40, 235, 449};
@@ -73,7 +74,7 @@ void test_hmm_3profs(void)
 
 void test_hmm_empty(void)
 {
-    FILE *fp = fopen(ASSETS "/empty.hmm", "r");
+    FILE *fp = fopen("empty.hmm", "r");
     NOTNULL(fp);
 
     HMR_DECLARE(hmr, fp);
@@ -91,7 +92,7 @@ void test_hmm_empty(void)
 
 void test_hmm_corrupted1(void)
 {
-    FILE *fp = fopen(ASSETS "/corrupted1.hmm", "r");
+    FILE *fp = fopen("corrupted1.hmm", "r");
     NOTNULL(fp);
 
     HMR_DECLARE(hmr, fp);
@@ -125,7 +126,7 @@ void test_hmm_corrupted1(void)
 
 void test_hmm_corrupted2(void)
 {
-    FILE *fp = fopen(ASSETS "/corrupted2.hmm", "r");
+    FILE *fp = fopen("corrupted2.hmm", "r");
     NOTNULL(fp);
     unsigned prof_size[] = {40};
 
@@ -159,7 +160,7 @@ void test_hmm_corrupted2(void)
 
 void test_hmm_corrupted3(void)
 {
-    FILE *fp = fopen(ASSETS "/corrupted3.hmm", "r");
+    FILE *fp = fopen("corrupted3.hmm", "r");
     NOTNULL(fp);
     unsigned prof_size[] = {40};
 
@@ -192,7 +193,7 @@ void test_hmm_corrupted3(void)
 
 void test_hmm_corrupted4(void)
 {
-    FILE *fp = fopen(ASSETS "/corrupted4.hmm", "r");
+    FILE *fp = fopen("corrupted4.hmm", "r");
     NOTNULL(fp);
 
     HMR_DECLARE(hmr, fp);
@@ -225,7 +226,7 @@ void test_hmm_corrupted4(void)
 
 void test_hmm_corrupted5(void)
 {
-    FILE *fp = fopen(ASSETS "/corrupted5.hmm", "r");
+    FILE *fp = fopen("corrupted5.hmm", "r");
     NOTNULL(fp);
 
     HMR_DECLARE(hmr, fp);
@@ -247,7 +248,7 @@ void test_hmm_corrupted5(void)
 
 void test_hmm_corrupted6(void)
 {
-    FILE *fp = fopen(ASSETS "/corrupted6.hmm", "r");
+    FILE *fp = fopen("corrupted6.hmm", "r");
     NOTNULL(fp);
 
     HMR_DECLARE(hmr, fp);
@@ -268,7 +269,7 @@ void test_hmm_corrupted6(void)
 
 void test_hmm_corrupted7(void)
 {
-    FILE *fp = fopen(ASSETS "/corrupted7.hmm", "r");
+    FILE *fp = fopen("corrupted7.hmm", "r");
     NOTNULL(fp);
 
     HMR_DECLARE(hmr, fp);
@@ -290,7 +291,7 @@ void test_hmm_corrupted7(void)
 
 void test_hmm_corrupted8(void)
 {
-    FILE *fp = fopen(ASSETS "/corrupted8.hmm", "r");
+    FILE *fp = fopen("corrupted8.hmm", "r");
     NOTNULL(fp);
 
     HMR_DECLARE(hmr, fp);
@@ -312,7 +313,7 @@ void test_hmm_corrupted8(void)
 
 void test_hmm_noacc(void)
 {
-    FILE *fp = fopen(ASSETS "/noacc.hmm", "r");
+    FILE *fp = fopen("noacc.hmm", "r");
     NOTNULL(fp);
 
     HMR_DECLARE(hmr, fp);

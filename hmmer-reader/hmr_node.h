@@ -1,7 +1,6 @@
 #ifndef HMR_NODE_H
 #define HMR_NODE_H
 
-#include "hmmer_reader/export.h"
 #include <assert.h>
 #include <limits.h>
 #include <stddef.h>
@@ -54,6 +53,6 @@ static_assert(HMR_OFFSET(cs) - HMR_OFFSET(mm) == 1, "must be packed");
 static_assert(HMR_OFFSET(buf) - HMR_OFFSET(cons) == 0, "must be packed");
 #undef HMR_OFFSET
 
-HMR_API void hmr_node_dump(struct hmr_node const *node, FILE *restrict fp);
+void hmr_node_dump(struct hmr_node const *node, FILE *restrict fp);
 
 #endif

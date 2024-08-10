@@ -1,9 +1,7 @@
 #ifndef HMR_PROF_H
 #define HMR_PROF_H
 
-#include "hmmer_reader/export.h"
-#include "hmmer_reader/node.h"
-#include "hmmer_reader/rc.h"
+#include "hmr_node.h"
 #include <stdio.h>
 
 enum
@@ -44,8 +42,8 @@ struct hmr_prof
     struct hmr_prof name;                                                      \
     hmr_prof_init(&name, (hmr))
 
-HMR_API void hmr_prof_dump(struct hmr_prof const *prof, FILE *restrict fp);
-HMR_API void hmr_prof_init(struct hmr_prof *prof, struct hmr *hmr);
-HMR_API unsigned hmr_prof_length(struct hmr_prof const *prof);
+void hmr_prof_dump(struct hmr_prof const *prof, FILE *restrict fp);
+void hmr_prof_init(struct hmr_prof *prof, struct hmr *hmr);
+unsigned hmr_prof_length(struct hmr_prof const *prof);
 
 #endif

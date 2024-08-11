@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -O2 -MMD -MP
 SRC = $(filter-out $(wildcard test_*.c),$(wildcard *.c))
 OBJ = $(SRC:.c=.o)
-HDR = $(wildcard hmr*.h)
+HDR = hmr.h
 LIB = libhmmer_reader.a
 PREFIX ?= /usr/local
 

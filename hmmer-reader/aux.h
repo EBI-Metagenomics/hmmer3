@@ -1,7 +1,7 @@
 #ifndef AUX_H
 #define AUX_H
 
-#include "hmr_aux.h"
+#include "hmr.h"
 #include <stddef.h>
 
 static void hmr_aux_init(struct hmr_aux *aux)

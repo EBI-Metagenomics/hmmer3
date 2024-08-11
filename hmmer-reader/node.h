@@ -1,7 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "hmr_node.h"
+#include "hmr.h"
 #include <math.h>
 
 static void hmr_node_init(struct hmr_node *node)

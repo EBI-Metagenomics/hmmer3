@@ -3,8 +3,6 @@
 #include "error.h"
 #include "fsm.h"
 #include "hmr.h"
-#include "hmr_prof.h"
-#include "hmr_tok.h"
 #include "node.h"
 #include "tok.h"
 #include <limits.h>

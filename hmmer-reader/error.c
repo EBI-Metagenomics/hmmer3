@@ -1,7 +1,5 @@
-#define _POSIX_C_SOURCE 200112L
 #include "error.h"
-#include "hmr_struct.h"
-#include "hmr_tok.h"
+#include "hmr.h"
 #include <assert.h>
 #include <string.h>
 

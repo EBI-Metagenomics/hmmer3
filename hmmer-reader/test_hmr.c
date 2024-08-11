@@ -64,7 +64,7 @@ int main(void)
 
 void test_hmm_3profs(void)
 {
-    FILE *fp = fopen("three-profs.hmm", "r");
+    FILE *fp = fopen("data/three-profs.hmm", "r");
     aye(fp != NULL);
     unsigned symbol_size = 20;
     unsigned prof_size[] = {40, 235, 449};
@@ -96,7 +96,7 @@ void test_hmm_3profs(void)
 
 void test_hmm_empty(void)
 {
-    FILE *fp = fopen("empty.hmm", "r");
+    FILE *fp = fopen("data/empty.hmm", "r");
     aye(fp != NULL);
 
     HMR_DECLARE(hmr, fp);
@@ -114,7 +114,7 @@ void test_hmm_empty(void)
 
 void test_hmm_corrupted1(void)
 {
-    FILE *fp = fopen("corrupted1.hmm", "r");
+    FILE *fp = fopen("data/corrupted1.hmm", "r");
     aye(fp != NULL);
 
     HMR_DECLARE(hmr, fp);
@@ -149,7 +149,7 @@ void test_hmm_corrupted1(void)
 
 void test_hmm_corrupted2(void)
 {
-    FILE *fp = fopen("corrupted2.hmm", "r");
+    FILE *fp = fopen("data/corrupted2.hmm", "r");
     aye(fp != NULL);
     unsigned prof_size[] = {40};
 
@@ -184,7 +184,7 @@ void test_hmm_corrupted2(void)
 
 void test_hmm_corrupted3(void)
 {
-    FILE *fp = fopen("corrupted3.hmm", "r");
+    FILE *fp = fopen("data/corrupted3.hmm", "r");
     aye(fp != NULL);
     unsigned prof_size[] = {40};
 
@@ -217,7 +217,7 @@ void test_hmm_corrupted3(void)
 
 void test_hmm_corrupted4(void)
 {
-    FILE *fp = fopen("corrupted4.hmm", "r");
+    FILE *fp = fopen("data/corrupted4.hmm", "r");
     aye(fp != NULL);
 
     HMR_DECLARE(hmr, fp);
@@ -251,7 +251,7 @@ void test_hmm_corrupted4(void)
 
 void test_hmm_corrupted5(void)
 {
-    FILE *fp = fopen("corrupted5.hmm", "r");
+    FILE *fp = fopen("data/corrupted5.hmm", "r");
     aye(fp != NULL);
 
     HMR_DECLARE(hmr, fp);
@@ -273,7 +273,7 @@ void test_hmm_corrupted5(void)
 
 void test_hmm_corrupted6(void)
 {
-    FILE *fp = fopen("corrupted6.hmm", "r");
+    FILE *fp = fopen("data/corrupted6.hmm", "r");
     aye(fp != NULL);
 
     HMR_DECLARE(hmr, fp);
@@ -295,7 +295,7 @@ void test_hmm_corrupted6(void)
 
 void test_hmm_corrupted7(void)
 {
-    FILE *fp = fopen("corrupted7.hmm", "r");
+    FILE *fp = fopen("data/corrupted7.hmm", "r");
     aye(fp != NULL);
 
     HMR_DECLARE(hmr, fp);
@@ -317,7 +317,7 @@ void test_hmm_corrupted7(void)
 
 void test_hmm_corrupted8(void)
 {
-    FILE *fp = fopen("corrupted8.hmm", "r");
+    FILE *fp = fopen("data/corrupted8.hmm", "r");
     aye(fp != NULL);
 
     HMR_DECLARE(hmr, fp);
@@ -339,7 +339,7 @@ void test_hmm_corrupted8(void)
 
 void test_hmm_noacc(void)
 {
-    FILE *fp = fopen("noacc.hmm", "r");
+    FILE *fp = fopen("data/noacc.hmm", "r");
     aye(fp != NULL);
 
     HMR_DECLARE(hmr, fp);

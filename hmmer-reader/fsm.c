@@ -6,6 +6,7 @@
 #include "to.h"
 #include "trans.h"
 #include <assert.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -360,8 +361,8 @@ static int field_content(struct args *a)
             a->pos->prof.pos++;
         }
         a->pos->prof.pos =
-            memccpy(a->pos->prof.pos - 1, a->tok->value, '\0',
-                    (unsigned long)(a->pos->prof.end - a->pos->prof.pos));
+            memccpy_musl(a->pos->prof.pos - 1, a->tok->value, '\0',
+                         (unsigned long)(a->pos->prof.end - a->pos->prof.pos));
     }
     else
     {

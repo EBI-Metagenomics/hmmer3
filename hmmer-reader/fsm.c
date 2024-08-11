@@ -50,27 +50,27 @@ static int arrow(struct args *a);
 
 static int unexpect_eof(struct args *a)
 {
-    return hmr_eparse(a->tok, "unexpected end-of-file");
+    return hmr_error_parse(a->tok, "unexpected end-of-file");
 }
 
 static int unexpect_eon(struct args *a)
 {
-    return hmr_eparse(a->tok, "unexpected end-of-node");
+    return hmr_error_parse(a->tok, "unexpected end-of-node");
 }
 
 static int unexpect_symbol(struct args *a)
 {
-    return hmr_eparse(a->tok, "unexpected symbol");
+    return hmr_error_parse(a->tok, "unexpected symbol");
 }
 
 static int unexpect_tok(struct args *a)
 {
-    return hmr_eparse(a->tok, "unexpected token");
+    return hmr_error_parse(a->tok, "unexpected token");
 }
 
 static int unexpect_nl(struct args *a)
 {
-    return hmr_eparse(a->tok, "unexpected newline");
+    return hmr_error_parse(a->tok, "unexpected newline");
 }
 
 static int header(struct args *a);
@@ -198,19 +198,19 @@ char const *hmr_fsm_name(enum hmr_state state) { return state_name[state]; }
 static int error_parse_arrow(struct hmr_tok *tok, unsigned i)
 {
     if (i == HMR_TRANS_MM)
-        return hmr_eparse(tok, "expected m->m");
+        return hmr_error_parse(tok, "expected m->m");
     else if (i == HMR_TRANS_MI)
-        return hmr_eparse(tok, "expected m->i");
+        return hmr_error_parse(tok, "expected m->i");
     else if (i == HMR_TRANS_MD)
-        return hmr_eparse(tok, "expected m->d");
+        return hmr_error_parse(tok, "expected m->d");
     else if (i == HMR_TRANS_IM)
-        return hmr_eparse(tok, "expected i->m");
+        return hmr_error_parse(tok, "expected i->m");
     else if (i == HMR_TRANS_II)
-        return hmr_eparse(tok, "expected i->i");
+        return hmr_error_parse(tok, "expected i->i");
     else if (i == HMR_TRANS_DM)
-        return hmr_eparse(tok, "expected d->m");
+        return hmr_error_parse(tok, "expected d->m");
     else if (i == HMR_TRANS_DD)
-        return hmr_eparse(tok, "expected d->d");
+        return hmr_error_parse(tok, "expected d->d");
     assert(false);
     return HMR_OK;
 }
@@ -229,7 +229,7 @@ static int arrow(struct args *a)
     else
     {
         if (a->aux->idx != HMR_TRANS_SIZE)
-            return hmr_eparse(a->tok, "unexpected end-of-line");
+            return hmr_error_parse(a->tok, "unexpected end-of-line");
         hmr_aux_init(a->aux);
     }
     return HMR_OK;
@@ -258,7 +258,8 @@ static int header(struct args *a)
     else
     {
         *(a->aux->prof.pos - 1) = '\0';
-        if (check_header(a->prof)) return hmr_eparse(a->tok, "invalid header");
+        if (check_header(a->prof))
+            return hmr_error_parse(a->tok, "invalid header");
         hmr_aux_init(a->aux);
     }
     return HMR_OK;
@@ -325,7 +326,8 @@ static int field_content(struct args *a)
     else
     {
         if (a->aux->prof.pos == a->aux->prof.begin + 1)
-            return hmr_eparse(a->tok, "expected content before end-of-line");
+            return hmr_error_parse(a->tok,
+                                   "expected content before end-of-line");
         *(a->aux->prof.pos - 1) = '\0';
         hmr_aux_init(a->aux);
     }
@@ -366,16 +368,16 @@ static int compo(struct args *a)
     if (a->tok->id == HMR_TOK_WORD)
     {
         if (a->aux->idx >= a->prof->symbols_size)
-            return hmr_eparse(a->tok, "too many compo numbers");
+            return hmr_error_parse(a->tok, "too many compo numbers");
 
         if (!hmr_to_lprob(a->tok->value, a->prof->node.compo + a->aux->idx++))
-            return hmr_eparse(a->tok, DEC_ERROR);
+            return hmr_error_parse(a->tok, DEC_ERROR);
     }
     else
     {
         if (a->aux->idx != a->prof->symbols_size)
-            return hmr_eparse(a->tok,
-                              "compo length not equal to symbols length");
+            return hmr_error_parse(a->tok,
+                                   "compo length not equal to symbols length");
         hmr_aux_init(a->aux);
     }
     return HMR_OK;
@@ -387,16 +389,16 @@ static int insert(struct args *a)
     if (a->tok->id == HMR_TOK_WORD)
     {
         if (a->aux->idx >= a->prof->symbols_size)
-            return hmr_eparse(a->tok, "too many insert numbers");
+            return hmr_error_parse(a->tok, "too many insert numbers");
 
         if (!hmr_to_lprob(a->tok->value, a->prof->node.insert + a->aux->idx++))
-            return hmr_eparse(a->tok, DEC_ERROR);
+            return hmr_error_parse(a->tok, DEC_ERROR);
     }
     else
     {
         if (a->aux->idx != a->prof->symbols_size)
-            return hmr_eparse(a->tok,
-                              "insert length not equal to symbols length");
+            return hmr_error_parse(a->tok,
+                                   "insert length not equal to symbols length");
         hmr_aux_init(a->aux);
     }
     return HMR_OK;
@@ -409,16 +411,16 @@ static int read_match_excess(struct args *a)
     unsigned sz = a->prof->symbols_size;
     unsigned excess = MEMBER_SIZE(struct hmr_node, excess.buf) + 1;
     if (a->aux->idx >= sz + excess)
-        return hmr_eparse(a->tok, "too many match numbers");
+        return hmr_error_parse(a->tok, "too many match numbers");
 
     if (a->aux->idx == sz)
     {
-        if (!read_map(a)) return hmr_eparse(a->tok, INT_ERROR);
+        if (!read_map(a)) return hmr_error_parse(a->tok, INT_ERROR);
         return HMR_OK;
     }
 
     if (a->tok->value[0] == '\0' || a->tok->value[1] != '\0')
-        return hmr_eparse(a->tok, "excesses must be single character");
+        return hmr_error_parse(a->tok, "excesses must be single character");
 
     a->prof->node.excess.buf[a->aux->idx++ - sz - 1] = a->tok->value[0];
     return HMR_OK;
@@ -434,18 +436,18 @@ static int match(struct args *a)
         if (a->state == HMR_FSM_PAUSE)
         {
             if (!hmr_to_uint(a->tok->value, &a->prof->node.idx))
-                return hmr_eparse(a->tok, INT_ERROR);
+                return hmr_error_parse(a->tok, INT_ERROR);
             return HMR_OK;
         }
         if (a->aux->idx >= sz) return read_match_excess(a);
 
         if (!hmr_to_lprob(a->tok->value, a->prof->node.match + a->aux->idx++))
-            return hmr_eparse(a->tok, DEC_ERROR);
+            return hmr_error_parse(a->tok, DEC_ERROR);
     }
     else
     {
         if (a->aux->idx > sz + excess)
-            return hmr_eparse(a->tok, "too many match numbers");
+            return hmr_error_parse(a->tok, "too many match numbers");
         hmr_aux_init(a->aux);
     }
     return HMR_OK;
@@ -457,15 +459,15 @@ static int trans(struct args *a)
     if (a->tok->id == HMR_TOK_WORD)
     {
         if (a->aux->idx >= HMR_TRANS_SIZE)
-            return hmr_eparse(a->tok, "too many trans numbers");
+            return hmr_error_parse(a->tok, "too many trans numbers");
 
         if (!hmr_to_lprob(a->tok->value, a->prof->node.trans + a->aux->idx++))
-            return hmr_eparse(a->tok, DEC_ERROR);
+            return hmr_error_parse(a->tok, DEC_ERROR);
     }
     else
     {
         if (a->aux->idx != HMR_TRANS_SIZE)
-            return hmr_eparse(
+            return hmr_error_parse(
                 a->tok, "trans length not equal to " XSTR(HMR_TRANS_SIZE));
         hmr_aux_init(a->aux);
     }
@@ -513,13 +515,13 @@ static int check_required_metadata(struct hmr_prof *prof)
     int rc = HMR_EPARSE;
 
     if (prof->meta.acc[0] == '\0')
-        return hmr_err(rc, prof->error, "missing ACC field");
+        return hmr_error(rc, prof->error, "missing ACC field");
 
     if (prof->meta.leng[0] == '\0')
-        return hmr_err(rc, prof->error, "missing LENG field");
+        return hmr_error(rc, prof->error, "missing LENG field");
 
     if (prof->meta.alph[0] == '\0')
-        return hmr_err(rc, prof->error, "missing ALPH field");
+        return hmr_error(rc, prof->error, "missing ALPH field");
 
     return HMR_OK;
 }

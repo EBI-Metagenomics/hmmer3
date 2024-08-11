@@ -3,8 +3,8 @@
 
 struct hmr_tok;
 
-int hmr_err(int rc, char *dst, char const *msg);
-int hmr_eio(char *dst, int errnum);
-int hmr_eparse(struct hmr_tok *tok, char const *msg);
+int hmr_error(int rc, char *dst, char const *msg);
+int hmr_error_io(char *dst, int errnum);
+int hmr_error_parse(struct hmr_tok *tok, char const *msg);
 
 #endif

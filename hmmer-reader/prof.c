@@ -40,8 +40,8 @@ int hmr_prof_next_node(struct hmr_prof *prof, FILE *restrict fp,
                        struct hmr_tok *tok)
 {
     if (*state != HMR_FSM_PAUSE)
-        return hmr_err(HMR_EUSAGE, prof->error,
-                       "unexpected prof_next_node call");
+        return hmr_error(HMR_EUSAGE, prof->error,
+                         "unexpected prof_next_node call");
 
     hmr_aux_init(aux);
     do
@@ -54,7 +54,7 @@ int hmr_prof_next_node(struct hmr_prof *prof, FILE *restrict fp,
         if (*state == HMR_FSM_BEGIN)
         {
             if (hmr_prof_length(prof) != prof->node.idx)
-                return hmr_eparse(tok, "profile length mismatch");
+                return hmr_error_parse(tok, "profile length mismatch");
             return HMR_END;
         }
 
@@ -68,8 +68,8 @@ int hmr_prof_next_prof(struct hmr_prof *prof, FILE *restrict fp,
                        struct hmr_tok *tok)
 {
     if (*state != HMR_FSM_BEGIN)
-        return hmr_err(HMR_EUSAGE, prof->error,
-                       "unexpected prof_next_prof call");
+        return hmr_error(HMR_EUSAGE, prof->error,
+                         "unexpected prof_next_prof call");
 
     prof_init(prof, tok->error);
     hmr_aux_init(aux);

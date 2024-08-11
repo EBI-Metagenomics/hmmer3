@@ -71,7 +71,7 @@ static int next_line(FILE *restrict fp, char error[HMR_ERROR_SIZE],
     {
         if (feof(fp)) return HMR_EOF;
 
-        return hmr_eio(error, ferror(fp));
+        return hmr_error_io(error, ferror(fp));
     }
 
     add_space_before_newline(line);

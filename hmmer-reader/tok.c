@@ -1,10 +1,9 @@
-#define _POSIX_C_SOURCE 200112L
-
-#include "tok.h"
-#include "error.h"
-#include "hmr_error.h"
-#include "hmr_rc.h"
+#include "hmr_struct.h"
 #include "hmr_tok.h"
+
+#define _POSIX_C_SOURCE 200112L
+#include "error.h"
+#include "tok.h"
 #include <string.h>
 
 #define DELIM " \t\r"

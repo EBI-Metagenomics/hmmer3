@@ -2,7 +2,6 @@
 #define HMR_PROF_H
 
 #include "hmr_node.h"
-#include <stdio.h>
 
 enum
 {
@@ -15,8 +14,6 @@ enum
     HMR_GA_MAX = 32,
     HMR_BUFF_MAX = 128,
 };
-
-struct hmr;
 
 struct hmr_prof
 {
@@ -37,13 +34,5 @@ struct hmr_prof
     struct hmr_node node;
     char *error;
 };
-
-#define HMR_PROF_DECLARE(name, hmr)                                            \
-    struct hmr_prof name;                                                      \
-    hmr_prof_init(&name, (hmr))
-
-void hmr_prof_dump(struct hmr_prof const *prof, FILE *restrict fp);
-void hmr_prof_init(struct hmr_prof *prof, struct hmr *hmr);
-unsigned hmr_prof_length(struct hmr_prof const *prof);
 
 #endif

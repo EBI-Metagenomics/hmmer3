@@ -1,8 +1,20 @@
 #ifndef NODE_H
 #define NODE_H
 
-struct hmr_node;
+#include "hmr_node.h"
+#include <math.h>
 
-void hmr_node_init(struct hmr_node *node);
+static void hmr_node_init(struct hmr_node *node)
+{
+    node->symbols_size = 0;
+    node->idx = 0;
+    for (unsigned i = 0; i < HMR_SYMBOLS_MAX; ++i)
+    {
+        node->compo[i] = (double)NAN;
+        node->insert[i] = (double)NAN;
+    }
+    for (unsigned i = 0; i < HMR_TRANS_SIZE; ++i)
+        node->trans[i] = (double)NAN;
+}
 
 #endif

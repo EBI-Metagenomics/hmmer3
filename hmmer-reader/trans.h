@@ -1,5 +1,5 @@
-#ifndef HMR_TRANS_H
-#define HMR_TRANS_H
+#ifndef TRANS_H
+#define TRANS_H
 
 enum hmr_trans
 {

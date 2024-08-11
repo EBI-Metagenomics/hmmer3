@@ -4,7 +4,6 @@
 #include <assert.h>
 #include <limits.h>
 #include <stddef.h>
-#include <stdio.h>
 
 #ifndef static_assert
 #define static_assert(expr, msg) _Static_assert(expr, msg)
@@ -44,15 +43,11 @@ struct hmr_node
     } excess;
 };
 
-#define HMR_NODE_MAP_NULL UINT_MAX
-
 #define HMR_OFFSET(field) offsetof(struct hmr_node, excess.field)
 static_assert(HMR_OFFSET(rf) - HMR_OFFSET(cons) == 1, "must be packed");
 static_assert(HMR_OFFSET(mm) - HMR_OFFSET(rf) == 1, "must be packed");
 static_assert(HMR_OFFSET(cs) - HMR_OFFSET(mm) == 1, "must be packed");
 static_assert(HMR_OFFSET(buf) - HMR_OFFSET(cons) == 0, "must be packed");
 #undef HMR_OFFSET
-
-void hmr_node_dump(struct hmr_node const *node, FILE *restrict fp);
 
 #endif

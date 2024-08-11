@@ -4,11 +4,10 @@
 #include "error.h"
 #include "hmr_aux.h"
 #include "hmr_prof.h"
-#include "hmr_rc.h"
 #include "hmr_tok.h"
-#include "hmr_trans.h"
 #include "to.h"
 #include "tok.h"
+#include "trans.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -524,6 +523,8 @@ static int check_required_metadata(struct hmr_prof *prof)
 
     return HMR_OK;
 }
+
+#define HMR_NODE_MAP_NULL UINT_MAX
 
 static bool read_map(struct args *a)
 {

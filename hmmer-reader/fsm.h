@@ -1,7 +1,7 @@
 #ifndef FSM_H
 #define FSM_H
 
-#include "hmr_state.h"
+#include "hmr.h"
 
 struct hmr_aux;
 struct hmr_prof;

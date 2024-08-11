@@ -1,7 +1,7 @@
 #ifndef PROF_H
 #define PROF_H
 
-#include "hmr_state.h"
+#include "hmr.h"
 #include <stdio.h>
 
 struct hmr_aux;

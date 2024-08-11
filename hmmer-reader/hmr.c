@@ -1,7 +1,7 @@
 #include "hmr.h"
 #include "fsm.h"
-#include "prof.h"
-#include "tok.h"
+#include "profile.h"
+#include "token.h"
 #include <string.h>
 
 void hmr_init(struct hmr *hmr, FILE *restrict fp)

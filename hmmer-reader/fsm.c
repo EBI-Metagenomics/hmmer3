@@ -1,4 +1,3 @@
-#define _XOPEN_SOURCE 600
 #include "fsm.h"
 #include "aux.h"
 #include "error.h"

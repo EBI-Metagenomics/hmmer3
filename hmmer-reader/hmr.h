@@ -169,7 +169,7 @@ struct hmr
     FILE *restrict fp;
     enum hmr_state state;
     struct hmr_token tok;
-    struct hmr_position aux;
+    struct hmr_position pos;
     char error[HMR_ERROR_SIZE];
 };
 

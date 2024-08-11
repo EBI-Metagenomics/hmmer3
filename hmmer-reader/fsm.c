@@ -1,7 +1,7 @@
 #include "fsm.h"
-#include "aux.h"
 #include "error.h"
 #include "hmr.h"
+#include "position.h"
 #include "to.h"
 #include "trans.h"
 #include <assert.h>
@@ -21,7 +21,7 @@ struct args
 {
     struct hmr_token *tok;
     enum hmr_state state;
-    struct hmr_position *aux;
+    struct hmr_position *pos;
     struct hmr_profile *prof;
 };
 
@@ -179,12 +179,12 @@ static char state_name[][10] = {
 void hmr_fsm_init(enum hmr_state *state) { *state = HMR_FSM_BEGIN; }
 
 enum hmr_state hmr_fsm_next(enum hmr_state state, struct hmr_token *tok,
-                            struct hmr_position *aux, struct hmr_profile *prof)
+                            struct hmr_position *pos, struct hmr_profile *prof)
 {
     unsigned row = (unsigned)state;
     unsigned col = (unsigned)tok->id;
     struct trans const *const t = &transition[row][col];
-    struct args args = {tok, state, aux, prof};
+    struct args args = {tok, state, pos, prof};
     if (t->action(&args)) return HMR_FSM_ERROR;
     return t->next;
 }
@@ -216,17 +216,17 @@ static int arrow(struct args *a)
     assert(a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_NL);
     if (a->tok->id == HMR_TOK_WORD)
     {
-        if (a->aux->idx >= HMR_TRANS_SIZE) return unexpect_tok(a);
+        if (a->pos->idx >= HMR_TRANS_SIZE) return unexpect_tok(a);
 
-        if (strcmp(a->tok->value, arrows[a->aux->idx]))
-            return error_parse_arrow(a->tok, a->aux->idx);
-        a->aux->idx++;
+        if (strcmp(a->tok->value, arrows[a->pos->idx]))
+            return error_parse_arrow(a->tok, a->pos->idx);
+        a->pos->idx++;
     }
     else
     {
-        if (a->aux->idx != HMR_TRANS_SIZE)
+        if (a->pos->idx != HMR_TRANS_SIZE)
             return hmr_error_parse(a->tok, "unexpected end-of-line");
-        hmr_aux_init(a->aux);
+        hmr_position_init(a->pos);
     }
     return HMR_OK;
 }
@@ -236,27 +236,27 @@ static int header(struct args *a)
     assert(a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_NL);
     if (a->tok->id == HMR_TOK_WORD)
     {
-        if (a->aux->prof.pos && (a->aux->prof.pos > a->aux->prof.begin + 1))
+        if (a->pos->prof.pos && (a->pos->prof.pos > a->pos->prof.begin + 1))
         {
-            *(a->aux->prof.pos - 1) = ' ';
-            a->aux->prof.pos++;
+            *(a->pos->prof.pos - 1) = ' ';
+            a->pos->prof.pos++;
         }
         else
         {
-            a->aux->prof.begin = a->prof->header;
-            a->aux->prof.pos = a->aux->prof.begin + 1;
-            a->aux->prof.end = a->aux->prof.begin + HMR_HEADER_MAX;
+            a->pos->prof.begin = a->prof->header;
+            a->pos->prof.pos = a->pos->prof.begin + 1;
+            a->pos->prof.end = a->pos->prof.begin + HMR_HEADER_MAX;
         }
-        a->aux->prof.pos =
-            memccpy(a->aux->prof.pos - 1, a->tok->value, '\0',
-                    (unsigned long)(a->aux->prof.end - a->aux->prof.pos));
+        a->pos->prof.pos =
+            memccpy(a->pos->prof.pos - 1, a->tok->value, '\0',
+                    (unsigned long)(a->pos->prof.end - a->pos->prof.pos));
     }
     else
     {
-        *(a->aux->prof.pos - 1) = '\0';
+        *(a->pos->prof.pos - 1) = '\0';
         if (check_header(a->prof))
             return hmr_error_parse(a->tok, "invalid header");
-        hmr_aux_init(a->aux);
+        hmr_position_init(a->pos);
     }
     return HMR_OK;
 }
@@ -265,40 +265,40 @@ static int field_name(struct args *a)
 {
     if (!strcmp(a->tok->value, "NAME"))
     {
-        a->aux->prof.begin = a->prof->meta.name;
-        a->aux->prof.end = a->aux->prof.begin + HMR_NAME_MAX;
+        a->pos->prof.begin = a->prof->meta.name;
+        a->pos->prof.end = a->pos->prof.begin + HMR_NAME_MAX;
     }
     else if (!strcmp(a->tok->value, "ACC"))
     {
-        a->aux->prof.begin = a->prof->meta.acc;
-        a->aux->prof.end = a->aux->prof.begin + HMR_ACC_MAX;
+        a->pos->prof.begin = a->prof->meta.acc;
+        a->pos->prof.end = a->pos->prof.begin + HMR_ACC_MAX;
     }
     else if (!strcmp(a->tok->value, "DESC"))
     {
-        a->aux->prof.begin = a->prof->meta.desc;
-        a->aux->prof.end = a->aux->prof.begin + HMR_DESC_MAX;
+        a->pos->prof.begin = a->prof->meta.desc;
+        a->pos->prof.end = a->pos->prof.begin + HMR_DESC_MAX;
     }
     else if (!strcmp(a->tok->value, "LENG"))
     {
-        a->aux->prof.begin = a->prof->meta.leng;
-        a->aux->prof.end = a->aux->prof.begin + HMR_LENG_MAX;
+        a->pos->prof.begin = a->prof->meta.leng;
+        a->pos->prof.end = a->pos->prof.begin + HMR_LENG_MAX;
     }
     else if (!strcmp(a->tok->value, "ALPH"))
     {
-        a->aux->prof.begin = a->prof->meta.alph;
-        a->aux->prof.end = a->aux->prof.begin + HMR_ALPH_MAX;
+        a->pos->prof.begin = a->prof->meta.alph;
+        a->pos->prof.end = a->pos->prof.begin + HMR_ALPH_MAX;
     }
     else if (!strcmp(a->tok->value, "GA"))
     {
-        a->aux->prof.begin = a->prof->meta.ga;
-        a->aux->prof.end = a->aux->prof.begin + HMR_GA_MAX;
+        a->pos->prof.begin = a->prof->meta.ga;
+        a->pos->prof.end = a->pos->prof.begin + HMR_GA_MAX;
     }
     else
     {
-        a->aux->prof.begin = a->prof->buff;
-        a->aux->prof.end = a->aux->prof.begin + HMR_BUFF_MAX;
+        a->pos->prof.begin = a->prof->buff;
+        a->pos->prof.end = a->pos->prof.begin + HMR_BUFF_MAX;
     }
-    a->aux->prof.pos = a->aux->prof.begin + 1;
+    a->pos->prof.pos = a->pos->prof.begin + 1;
     return HMR_OK;
 }
 
@@ -310,31 +310,31 @@ static int field_content(struct args *a)
     if (a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_HMM ||
         a->tok->id == HMR_TOK_COMPO)
     {
-        if (a->aux->prof.pos && (a->aux->prof.pos > a->aux->prof.begin + 1))
+        if (a->pos->prof.pos && (a->pos->prof.pos > a->pos->prof.begin + 1))
         {
-            *(a->aux->prof.pos - 1) = ' ';
-            a->aux->prof.pos++;
+            *(a->pos->prof.pos - 1) = ' ';
+            a->pos->prof.pos++;
         }
-        a->aux->prof.pos =
-            memccpy(a->aux->prof.pos - 1, a->tok->value, '\0',
-                    (unsigned long)(a->aux->prof.end - a->aux->prof.pos));
+        a->pos->prof.pos =
+            memccpy(a->pos->prof.pos - 1, a->tok->value, '\0',
+                    (unsigned long)(a->pos->prof.end - a->pos->prof.pos));
     }
     else
     {
-        if (a->aux->prof.pos == a->aux->prof.begin + 1)
+        if (a->pos->prof.pos == a->pos->prof.begin + 1)
             return hmr_error_parse(a->tok,
                                    "expected content before end-of-line");
-        *(a->aux->prof.pos - 1) = '\0';
-        hmr_aux_init(a->aux);
+        *(a->pos->prof.pos - 1) = '\0';
+        hmr_position_init(a->pos);
     }
     return HMR_OK;
 }
 
 static int hmm(struct args *a)
 {
-    a->aux->prof.begin = a->prof->symbols;
-    a->aux->prof.end = a->aux->prof.begin + HMR_SYMBOLS_MAX;
-    a->aux->prof.pos = a->aux->prof.begin + 1;
+    a->pos->prof.begin = a->prof->symbols;
+    a->pos->prof.end = a->pos->prof.begin + HMR_SYMBOLS_MAX;
+    a->pos->prof.pos = a->pos->prof.begin + 1;
     if (a->prof->meta.acc[0] == '\0')
         strcpy(a->prof->meta.acc, a->prof->meta.name);
     return check_required_metadata(a->prof);
@@ -345,15 +345,15 @@ static int symbol(struct args *a)
     assert(a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_NL);
     if (a->tok->id == HMR_TOK_WORD)
     {
-        *(a->aux->prof.pos - 1) = *a->tok->value;
-        a->aux->prof.pos++;
+        *(a->pos->prof.pos - 1) = *a->tok->value;
+        a->pos->prof.pos++;
     }
     else
     {
-        *(a->aux->prof.pos - 1) = '\0';
+        *(a->pos->prof.pos - 1) = '\0';
         a->prof->symbols_size = (unsigned)strlen(a->prof->symbols);
         a->prof->node.symbols_size = a->prof->symbols_size;
-        hmr_aux_init(a->aux);
+        hmr_position_init(a->pos);
     }
     return HMR_OK;
 }
@@ -363,18 +363,18 @@ static int compo(struct args *a)
     assert(a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_NL);
     if (a->tok->id == HMR_TOK_WORD)
     {
-        if (a->aux->idx >= a->prof->symbols_size)
+        if (a->pos->idx >= a->prof->symbols_size)
             return hmr_error_parse(a->tok, "too many compo numbers");
 
-        if (!hmr_to_lprob(a->tok->value, a->prof->node.compo + a->aux->idx++))
+        if (!hmr_to_lprob(a->tok->value, a->prof->node.compo + a->pos->idx++))
             return hmr_error_parse(a->tok, DEC_ERROR);
     }
     else
     {
-        if (a->aux->idx != a->prof->symbols_size)
+        if (a->pos->idx != a->prof->symbols_size)
             return hmr_error_parse(a->tok,
                                    "compo length not equal to symbols length");
-        hmr_aux_init(a->aux);
+        hmr_position_init(a->pos);
     }
     return HMR_OK;
 }
@@ -384,18 +384,18 @@ static int insert(struct args *a)
     assert(a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_NL);
     if (a->tok->id == HMR_TOK_WORD)
     {
-        if (a->aux->idx >= a->prof->symbols_size)
+        if (a->pos->idx >= a->prof->symbols_size)
             return hmr_error_parse(a->tok, "too many insert numbers");
 
-        if (!hmr_to_lprob(a->tok->value, a->prof->node.insert + a->aux->idx++))
+        if (!hmr_to_lprob(a->tok->value, a->prof->node.insert + a->pos->idx++))
             return hmr_error_parse(a->tok, DEC_ERROR);
     }
     else
     {
-        if (a->aux->idx != a->prof->symbols_size)
+        if (a->pos->idx != a->prof->symbols_size)
             return hmr_error_parse(a->tok,
                                    "insert length not equal to symbols length");
-        hmr_aux_init(a->aux);
+        hmr_position_init(a->pos);
     }
     return HMR_OK;
 }
@@ -406,10 +406,10 @@ static int read_match_excess(struct args *a)
 {
     unsigned sz = a->prof->symbols_size;
     unsigned excess = MEMBER_SIZE(struct hmr_node, excess.buf) + 1;
-    if (a->aux->idx >= sz + excess)
+    if (a->pos->idx >= sz + excess)
         return hmr_error_parse(a->tok, "too many match numbers");
 
-    if (a->aux->idx == sz)
+    if (a->pos->idx == sz)
     {
         if (!read_map(a)) return hmr_error_parse(a->tok, INT_ERROR);
         return HMR_OK;
@@ -418,7 +418,7 @@ static int read_match_excess(struct args *a)
     if (a->tok->value[0] == '\0' || a->tok->value[1] != '\0')
         return hmr_error_parse(a->tok, "excesses must be single character");
 
-    a->prof->node.excess.buf[a->aux->idx++ - sz - 1] = a->tok->value[0];
+    a->prof->node.excess.buf[a->pos->idx++ - sz - 1] = a->tok->value[0];
     return HMR_OK;
 }
 
@@ -435,16 +435,16 @@ static int match(struct args *a)
                 return hmr_error_parse(a->tok, INT_ERROR);
             return HMR_OK;
         }
-        if (a->aux->idx >= sz) return read_match_excess(a);
+        if (a->pos->idx >= sz) return read_match_excess(a);
 
-        if (!hmr_to_lprob(a->tok->value, a->prof->node.match + a->aux->idx++))
+        if (!hmr_to_lprob(a->tok->value, a->prof->node.match + a->pos->idx++))
             return hmr_error_parse(a->tok, DEC_ERROR);
     }
     else
     {
-        if (a->aux->idx > sz + excess)
+        if (a->pos->idx > sz + excess)
             return hmr_error_parse(a->tok, "too many match numbers");
-        hmr_aux_init(a->aux);
+        hmr_position_init(a->pos);
     }
     return HMR_OK;
 }
@@ -454,18 +454,18 @@ static int trans(struct args *a)
     assert(a->tok->id == HMR_TOK_WORD || a->tok->id == HMR_TOK_NL);
     if (a->tok->id == HMR_TOK_WORD)
     {
-        if (a->aux->idx >= HMR_TRANS_SIZE)
+        if (a->pos->idx >= HMR_TRANS_SIZE)
             return hmr_error_parse(a->tok, "too many trans numbers");
 
-        if (!hmr_to_lprob(a->tok->value, a->prof->node.trans + a->aux->idx++))
+        if (!hmr_to_lprob(a->tok->value, a->prof->node.trans + a->pos->idx++))
             return hmr_error_parse(a->tok, DEC_ERROR);
     }
     else
     {
-        if (a->aux->idx != HMR_TRANS_SIZE)
+        if (a->pos->idx != HMR_TRANS_SIZE)
             return hmr_error_parse(
                 a->tok, "trans length not equal to " XSTR(HMR_TRANS_SIZE));
-        hmr_aux_init(a->aux);
+        hmr_position_init(a->pos);
     }
     return HMR_OK;
 }
@@ -533,6 +533,6 @@ static bool read_map(struct args *a)
         if (!hmr_to_uint(a->tok->value, &a->prof->node.excess.map))
             return false;
     }
-    a->aux->idx++;
+    a->pos->idx++;
     return true;
 }

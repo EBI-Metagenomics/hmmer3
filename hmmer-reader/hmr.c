@@ -14,13 +14,13 @@ void hmr_init(struct hmr *hmr, FILE *restrict fp)
 
 int hmr_next_profile(struct hmr *hmr, struct hmr_profile *prof)
 {
-    return hmr_profile_next_profile(prof, hmr->fp, &hmr->aux, &hmr->state,
+    return hmr_profile_next_profile(prof, hmr->fp, &hmr->pos, &hmr->state,
                                     &hmr->tok);
 }
 
 int hmr_next_node(struct hmr *hmr, struct hmr_profile *prof)
 {
-    return hmr_profile_next_node(prof, hmr->fp, &hmr->aux, &hmr->state,
+    return hmr_profile_next_node(prof, hmr->fp, &hmr->pos, &hmr->state,
                                  &hmr->tok);
 }
 

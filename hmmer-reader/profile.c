@@ -1,9 +1,9 @@
 #include "profile.h"
-#include "aux.h"
 #include "error.h"
 #include "fsm.h"
 #include "hmr.h"
 #include "node.h"
+#include "position.h"
 #include "token.h"
 #include <limits.h>
 #include <stdlib.h>
@@ -34,20 +34,20 @@ void hmr_profile_init(struct hmr_profile *prof, struct hmr *hmr)
 }
 
 int hmr_profile_next_node(struct hmr_profile *prof, FILE *restrict fp,
-                          struct hmr_position *aux, enum hmr_state *state,
+                          struct hmr_position *pos, enum hmr_state *state,
                           struct hmr_token *tok)
 {
     if (*state != HMR_FSM_PAUSE)
         return hmr_error(HMR_EUSAGE, prof->error,
                          "unexpected prof_next_node call");
 
-    hmr_aux_init(aux);
+    hmr_position_init(pos);
     do
     {
         int rc = HMR_OK;
         if ((rc = hmr_token_next(tok, fp))) return rc;
 
-        *state = hmr_fsm_next(*state, tok, aux, prof);
+        *state = hmr_fsm_next(*state, tok, pos, prof);
         if (*state == HMR_FSM_ERROR) return HMR_EPARSE;
         if (*state == HMR_FSM_BEGIN)
         {
@@ -62,7 +62,7 @@ int hmr_profile_next_node(struct hmr_profile *prof, FILE *restrict fp,
 }
 
 int hmr_profile_next_profile(struct hmr_profile *prof, FILE *restrict fp,
-                             struct hmr_position *aux, enum hmr_state *state,
+                             struct hmr_position *pos, enum hmr_state *state,
                              struct hmr_token *tok)
 {
     if (*state != HMR_FSM_BEGIN)
@@ -70,13 +70,13 @@ int hmr_profile_next_profile(struct hmr_profile *prof, FILE *restrict fp,
                          "unexpected prof_next_prof call");
 
     prof_init(prof, tok->error);
-    hmr_aux_init(aux);
+    hmr_position_init(pos);
     do
     {
         int rc = HMR_OK;
         if ((rc = hmr_token_next(tok, fp))) return rc;
 
-        if ((*state = hmr_fsm_next(*state, tok, aux, prof)) == HMR_FSM_ERROR)
+        if ((*state = hmr_fsm_next(*state, tok, pos, prof)) == HMR_FSM_ERROR)
             return HMR_EPARSE;
 
     } while (*state != HMR_FSM_PAUSE && *state != HMR_FSM_END);

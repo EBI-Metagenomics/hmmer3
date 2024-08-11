@@ -2,6 +2,7 @@
 #include "error.h"
 #include "hmr.h"
 #include "position.h"
+#include "strtok_reentrant.h"
 #include "to.h"
 #include "trans.h"
 #include <assert.h>
@@ -481,27 +482,27 @@ static int check_header(struct hmr_profile *prof)
     char *ptr = NULL;
     char *tok = NULL;
 
-    if (!(tok = strtok_r(tmp, " ", &ptr))) return HMR_EPARSE;
+    if (!(tok = strtok_reentrant(tmp, " ", &ptr))) return HMR_EPARSE;
 
     if (strcmp(tok, "HMMER3/f")) return HMR_EPARSE;
 
-    if (!(tok = strtok_r(NULL, " ", &ptr))) return HMR_EPARSE;
+    if (!(tok = strtok_reentrant(NULL, " ", &ptr))) return HMR_EPARSE;
 
     if (*tok != '[') return HMR_EPARSE;
 
-    if (!(tok = strtok_r(NULL, " ", &ptr))) return HMR_EPARSE;
+    if (!(tok = strtok_reentrant(NULL, " ", &ptr))) return HMR_EPARSE;
 
     if (*tok != '|') return HMR_EPARSE;
 
     /* Month */
-    if (!(tok = strtok_r(NULL, " ", &ptr))) return HMR_EPARSE;
+    if (!(tok = strtok_reentrant(NULL, " ", &ptr))) return HMR_EPARSE;
 
     /* Year] */
-    if (!(tok = strtok_r(NULL, " ", &ptr))) return HMR_EPARSE;
+    if (!(tok = strtok_reentrant(NULL, " ", &ptr))) return HMR_EPARSE;
 
     if (!(tok = strchr(tok, ']'))) return HMR_EPARSE;
 
-    if (strtok_r(NULL, " ", &ptr)) return HMR_EPARSE;
+    if (strtok_reentrant(NULL, " ", &ptr)) return HMR_EPARSE;
 
     return HMR_OK;
 }

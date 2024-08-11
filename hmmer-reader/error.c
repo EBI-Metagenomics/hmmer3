@@ -22,7 +22,7 @@ int hmr_error_io(char *dst, int errnum)
     return HMR_EIO;
 }
 
-int hmr_error_parse(struct hmr_tok *tok, char const *msg)
+int hmr_error_parse(struct hmr_token *tok, char const *msg)
 {
     int n = snprintf(tok->error, HMR_ERROR_SIZE, "%s %s: line %d",
                      prefix[HMR_EPARSE], msg, tok->line.number);

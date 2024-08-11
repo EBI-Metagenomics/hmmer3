@@ -13,11 +13,11 @@ void test_hmm_corrupted7(void);
 void test_hmm_corrupted8(void);
 void test_hmm_noacc(void);
 
-void check_3profs0(struct hmr_prof *prof);
-void check_3profs1(struct hmr_prof *prof);
-void check_3profs2(struct hmr_prof *prof);
+void check_3profs0(struct hmr_profile *prof);
+void check_3profs1(struct hmr_profile *prof);
+void check_3profs2(struct hmr_profile *prof);
 
-static void (*check_prof[3])(struct hmr_prof *prof) = {
+static void (*check_prof[3])(struct hmr_profile *prof) = {
     check_3profs0,
     check_3profs1,
     check_3profs2,
@@ -52,7 +52,7 @@ void test_hmm_3profs(void)
 
     unsigned prof_idx = 0;
     int rc = HMR_OK;
-    while (!(rc = hmr_next_prof(&hmr, &prof)))
+    while (!(rc = hmr_next_profile(&hmr, &prof)))
     {
         EQ(prof.symbols_size, symbol_size);
         unsigned node_idx = 0;
@@ -63,7 +63,7 @@ void test_hmm_3profs(void)
             node_idx++;
         }
         EQ(prof.node.idx, prof_size[prof_idx]);
-        EQ(hmr_prof_length(&prof), prof_size[prof_idx]);
+        EQ(hmr_profile_length(&prof), prof_size[prof_idx]);
         prof_idx++;
     }
     EQ(prof_idx, 3);
@@ -80,8 +80,8 @@ void test_hmm_empty(void)
 
     HMR_PROF_DECLARE(prof, &hmr);
 
-    EQ(hmr_next_prof(&hmr, &prof), HMR_EOF);
-    EQ(hmr_next_prof(&hmr, &prof), HMR_EUSAGE);
+    EQ(hmr_next_profile(&hmr, &prof), HMR_EOF);
+    EQ(hmr_next_profile(&hmr, &prof), HMR_EUSAGE);
     EQ(hmr.error, "Runtime error: unexpected prof_next_prof call");
     hmr_clear_error(&hmr);
     EQ(hmr.error, "");
@@ -100,7 +100,7 @@ void test_hmm_corrupted1(void)
 
     unsigned prof_idx = 0;
     int rc = HMR_OK;
-    while (!(rc = hmr_next_prof(&hmr, &prof)))
+    while (!(rc = hmr_next_profile(&hmr, &prof)))
     {
         unsigned node_idx = 0;
         while (!(rc = hmr_next_node(&hmr, &prof)))
@@ -136,14 +136,14 @@ void test_hmm_corrupted2(void)
     unsigned prof_idx = 0;
     unsigned node_idx = 0;
     int rc = HMR_OK;
-    while (!(rc = hmr_next_prof(&hmr, &prof)))
+    while (!(rc = hmr_next_profile(&hmr, &prof)))
     {
         while (!(rc = hmr_next_node(&hmr, &prof)))
         {
             node_idx++;
         }
         EQ(prof.node.idx, prof_size[prof_idx]);
-        EQ(hmr_prof_length(&prof), prof_size[prof_idx]);
+        EQ(hmr_profile_length(&prof), prof_size[prof_idx]);
         prof_idx++;
         EQ(rc, HMR_END);
     }
@@ -170,14 +170,14 @@ void test_hmm_corrupted3(void)
     unsigned prof_idx = 0;
     unsigned node_idx = 0;
     int rc = HMR_OK;
-    while (!(rc = hmr_next_prof(&hmr, &prof)))
+    while (!(rc = hmr_next_profile(&hmr, &prof)))
     {
         while (!(rc = hmr_next_node(&hmr, &prof)))
         {
             node_idx++;
         }
         EQ(prof.node.idx, prof_size[prof_idx]);
-        EQ(hmr_prof_length(&prof), 0);
+        EQ(hmr_profile_length(&prof), 0);
         prof_idx++;
     }
     EQ(node_idx, 0);
@@ -201,7 +201,7 @@ void test_hmm_corrupted4(void)
 
     unsigned prof_idx = 0;
     int rc = HMR_OK;
-    while (!(rc = hmr_next_prof(&hmr, &prof)))
+    while (!(rc = hmr_next_profile(&hmr, &prof)))
     {
         unsigned node_idx = 0;
         while (!(rc = hmr_next_node(&hmr, &prof)))
@@ -212,7 +212,7 @@ void test_hmm_corrupted4(void)
         EQ(hmr.error, "Parse error: profile length mismatch: line 33");
         EQ(node_idx, 3);
         EQ(prof.node.idx, 2);
-        EQ(hmr_prof_length(&prof), 40);
+        EQ(hmr_profile_length(&prof), 40);
         prof_idx++;
     }
     EQ(prof_idx, 1);
@@ -233,7 +233,7 @@ void test_hmm_corrupted5(void)
     HMR_PROF_DECLARE(prof, &hmr);
 
     int rc = HMR_OK;
-    rc = hmr_next_prof(&hmr, &prof);
+    rc = hmr_next_profile(&hmr, &prof);
     EQ(rc, HMR_EPARSE);
     EQ(hmr.error, "Parse error: unexpected token: line 4");
     rc = hmr_next_node(&hmr, &prof);
@@ -255,7 +255,7 @@ void test_hmm_corrupted6(void)
     HMR_PROF_DECLARE(prof, &hmr);
 
     int rc = HMR_OK;
-    rc = hmr_next_prof(&hmr, &prof);
+    rc = hmr_next_profile(&hmr, &prof);
     EQ(rc, HMR_OK);
     rc = hmr_next_node(&hmr, &prof);
     EQ(rc, HMR_EPARSE);
@@ -276,7 +276,7 @@ void test_hmm_corrupted7(void)
     HMR_PROF_DECLARE(prof, &hmr);
 
     int rc = HMR_OK;
-    rc = hmr_next_prof(&hmr, &prof);
+    rc = hmr_next_profile(&hmr, &prof);
     EQ(rc, HMR_EPARSE);
     EQ(hmr.error, "Parse error: invalid header: line 1");
     rc = hmr_next_node(&hmr, &prof);
@@ -298,7 +298,7 @@ void test_hmm_corrupted8(void)
     HMR_PROF_DECLARE(prof, &hmr);
 
     int rc = HMR_OK;
-    rc = hmr_next_prof(&hmr, &prof);
+    rc = hmr_next_profile(&hmr, &prof);
     EQ(rc, HMR_EPARSE);
     EQ(hmr.error, "Parse error: expected i->i: line 9");
     rc = hmr_next_node(&hmr, &prof);
@@ -320,20 +320,20 @@ void test_hmm_noacc(void)
     HMR_PROF_DECLARE(prof, &hmr);
 
     int rc = HMR_OK;
-    rc = hmr_next_prof(&hmr, &prof);
+    rc = hmr_next_profile(&hmr, &prof);
     EQ(rc, HMR_OK);
 
-    EQ(hmr_prof_length(&prof), 4);
+    EQ(hmr_profile_length(&prof), 4);
     EQ(prof.meta.name, "PTHR10000.orig.30.pir");
     EQ(prof.meta.acc, "PTHR10000.orig.30.pir");
 
-    rc = hmr_next_prof(&hmr, &prof);
+    rc = hmr_next_profile(&hmr, &prof);
     EQ(rc, HMR_EUSAGE);
 
     fclose(fp);
 }
 
-void check_3profs0(struct hmr_prof *prof)
+void check_3profs0(struct hmr_profile *prof)
 {
     if (prof->node.idx == 0)
     {
@@ -377,7 +377,7 @@ void check_3profs0(struct hmr_prof *prof)
     }
 }
 
-void check_3profs1(struct hmr_prof *prof)
+void check_3profs1(struct hmr_profile *prof)
 {
     if (prof->node.idx == 0)
     {
@@ -411,7 +411,7 @@ void check_3profs1(struct hmr_prof *prof)
     }
 }
 
-void check_3profs2(struct hmr_prof *prof)
+void check_3profs2(struct hmr_profile *prof)
 {
     if (prof->node.idx == 0)
     {

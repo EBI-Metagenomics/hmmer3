@@ -61,7 +61,7 @@ enum
     HMR_BUFF_MAX = 128,
 };
 
-struct hmr_prof
+struct hmr_profile
 {
     char header[HMR_HEADER_MAX];
     struct
@@ -81,7 +81,7 @@ struct hmr_prof
     char *error;
 };
 
-struct hmr_aux
+struct hmr_position
 {
     union
     {
@@ -102,7 +102,7 @@ struct hmr_aux
     unsigned idx;
 };
 
-enum hmr_tok_id
+enum hmr_token_id
 {
     HMR_TOK_NL,
     HMR_TOK_WORD,
@@ -117,9 +117,9 @@ enum
     HMR_TOK_LINE_MAX = 256,
 };
 
-struct hmr_tok
+struct hmr_token
 {
-    enum hmr_tok_id id;
+    enum hmr_token_id id;
     char const *value;
     struct
     {
@@ -168,23 +168,23 @@ struct hmr
 {
     FILE *restrict fp;
     enum hmr_state state;
-    struct hmr_tok tok;
-    struct hmr_aux aux;
+    struct hmr_token tok;
+    struct hmr_position aux;
     char error[HMR_ERROR_SIZE];
 };
 
 #define HMR_DECLARE(name, fp) struct hmr name; hmr_init(&name, fp)
 
 void hmr_init(struct hmr *hmr, FILE *restrict fp);
-int  hmr_next_prof(struct hmr *hmr, struct hmr_prof *prof);
-int  hmr_next_node(struct hmr *hmr, struct hmr_prof *prof);
+int  hmr_next_profile(struct hmr *hmr, struct hmr_profile *prof);
+int  hmr_next_node(struct hmr *hmr, struct hmr_profile *prof);
 void hmr_clear_error(struct hmr *hmr);
 int  hmr_count_profiles(char const *filepath);
 
-#define HMR_PROF_DECLARE(name, hmr) struct hmr_prof name; hmr_prof_init(&name, (hmr))
+#define HMR_PROF_DECLARE(name, hmr) struct hmr_profile name; hmr_profile_init(&name, (hmr))
 
-void     hmr_prof_dump(struct hmr_prof const *prof, FILE *restrict fp);
-void     hmr_prof_init(struct hmr_prof *prof, struct hmr *hmr);
-unsigned hmr_prof_length(struct hmr_prof const *prof);
+void     hmr_profile_dump(struct hmr_profile const *prof, FILE *restrict fp);
+void     hmr_profile_init(struct hmr_profile *prof, struct hmr *hmr);
+unsigned hmr_profile_length(struct hmr_profile const *prof);
 
 #endif

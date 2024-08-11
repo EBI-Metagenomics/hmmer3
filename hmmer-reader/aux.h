@@ -4,7 +4,7 @@
 #include "hmr.h"
 #include <stddef.h>
 
-static void hmr_aux_init(struct hmr_aux *aux)
+static void hmr_aux_init(struct hmr_position *aux)
 {
     aux->prof.begin = NULL;
     aux->prof.pos = NULL;

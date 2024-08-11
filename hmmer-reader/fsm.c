@@ -4,7 +4,6 @@
 #include "error.h"
 #include "hmr.h"
 #include "to.h"
-#include "tok.h"
 #include "trans.h"
 #include <assert.h>
 #include <stdlib.h>
@@ -21,10 +20,10 @@
 
 struct args
 {
-    struct hmr_tok *tok;
+    struct hmr_token *tok;
     enum hmr_state state;
-    struct hmr_aux *aux;
-    struct hmr_prof *prof;
+    struct hmr_position *aux;
+    struct hmr_profile *prof;
 };
 
 struct trans
@@ -89,9 +88,9 @@ static int match(struct args *a);
 
 static int trans(struct args *a);
 
-static int check_header(struct hmr_prof *prof);
+static int check_header(struct hmr_profile *prof);
 
-static int check_required_metadata(struct hmr_prof *prof);
+static int check_required_metadata(struct hmr_profile *prof);
 
 static struct trans const transition[][6] = {
     [HMR_FSM_BEGIN] = {[HMR_TOK_WORD] = {HMR_FSM_HEADER, &header},
@@ -180,8 +179,8 @@ static char state_name[][10] = {
 
 void hmr_fsm_init(enum hmr_state *state) { *state = HMR_FSM_BEGIN; }
 
-enum hmr_state hmr_fsm_next(enum hmr_state state, struct hmr_tok *tok,
-                            struct hmr_aux *aux, struct hmr_prof *prof)
+enum hmr_state hmr_fsm_next(enum hmr_state state, struct hmr_token *tok,
+                            struct hmr_position *aux, struct hmr_profile *prof)
 {
     unsigned row = (unsigned)state;
     unsigned col = (unsigned)tok->id;
@@ -193,7 +192,7 @@ enum hmr_state hmr_fsm_next(enum hmr_state state, struct hmr_tok *tok,
 
 char const *hmr_fsm_name(enum hmr_state state) { return state_name[state]; }
 
-static int error_parse_arrow(struct hmr_tok *tok, unsigned i)
+static int error_parse_arrow(struct hmr_token *tok, unsigned i)
 {
     if (i == HMR_TRANS_MM)
         return hmr_error_parse(tok, "expected m->m");
@@ -474,7 +473,7 @@ static int trans(struct args *a)
 
 #define HEADER_EXAMPLE "HMMER3/f [3.3.1 | Jul 2020]"
 
-static int check_header(struct hmr_prof *prof)
+static int check_header(struct hmr_profile *prof)
 {
     char tmp[sizeof HEADER_EXAMPLE + 10];
     if (strlen(prof->header) >= ARRAY_SIZE(tmp)) return HMR_EPARSE;
@@ -508,7 +507,7 @@ static int check_header(struct hmr_prof *prof)
     return HMR_OK;
 }
 
-static int check_required_metadata(struct hmr_prof *prof)
+static int check_required_metadata(struct hmr_profile *prof)
 {
     int rc = HMR_EPARSE;
 

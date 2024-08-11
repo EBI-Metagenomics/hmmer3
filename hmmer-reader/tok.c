@@ -9,7 +9,7 @@ static void add_space_before_newline(char line[HMR_TOK_LINE_MAX]);
 static int next_line(FILE *restrict fp, char error[HMR_ERROR_SIZE],
                      char line[HMR_TOK_LINE_MAX]);
 
-void hmr_tok_init(struct hmr_tok *tok, char *error)
+void hmr_token_init(struct hmr_token *tok, char *error)
 {
     tok->id = HMR_TOK_NL;
     tok->value = tok->line.data;
@@ -20,7 +20,7 @@ void hmr_tok_init(struct hmr_tok *tok, char *error)
     tok->error = error;
 }
 
-int hmr_tok_next(struct hmr_tok *tok, FILE *restrict fp)
+int hmr_token_next(struct hmr_token *tok, FILE *restrict fp)
 {
     int rc = HMR_OK;
 

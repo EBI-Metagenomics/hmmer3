@@ -9,17 +9,19 @@ void hmr_init(struct hmr *hmr, FILE *restrict fp)
     hmr->fp = fp;
     hmr_fsm_init(&hmr->state);
     hmr->error[0] = '\0';
-    hmr_tok_init(&hmr->tok, hmr->error);
+    hmr_token_init(&hmr->tok, hmr->error);
 }
 
-int hmr_next_prof(struct hmr *hmr, struct hmr_prof *prof)
+int hmr_next_profile(struct hmr *hmr, struct hmr_profile *prof)
 {
-    return hmr_prof_next_prof(prof, hmr->fp, &hmr->aux, &hmr->state, &hmr->tok);
+    return hmr_profile_next_profile(prof, hmr->fp, &hmr->aux, &hmr->state,
+                                    &hmr->tok);
 }
 
-int hmr_next_node(struct hmr *hmr, struct hmr_prof *prof)
+int hmr_next_node(struct hmr *hmr, struct hmr_profile *prof)
 {
-    return hmr_prof_next_node(prof, hmr->fp, &hmr->aux, &hmr->state, &hmr->tok);
+    return hmr_profile_next_node(prof, hmr->fp, &hmr->aux, &hmr->state,
+                                 &hmr->tok);
 }
 
 void hmr_clear_error(struct hmr *hmr) { hmr->error[0] = '\0'; }

@@ -3,9 +3,9 @@
 
 #include <stdio.h>
 
-struct hmr_tok;
+struct hmr_token;
 
-void hmr_tok_init(struct hmr_tok *tok, char *error);
-int hmr_tok_next(struct hmr_tok *tok, FILE *restrict fp);
+void hmr_token_init(struct hmr_token *tok, char *error);
+int hmr_token_next(struct hmr_token *tok, FILE *restrict fp);
 
 #endif

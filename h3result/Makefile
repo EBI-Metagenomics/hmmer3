@@ -17,7 +17,7 @@ $(LIB): $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 test_h3result: %: %.o $(LIB) $(HDR)
-	$(CC) $(CFLAGS) $< -L. -lh3result -llio -llite_pack -o $@
+	$(CC) $(CFLAGS) $< -L. -lh3result -llio -llite_pack -lm -o $@
 
 check: test_h3result
 	./test_h3result

@@ -1,116 +1,135 @@
 #include "domain.h"
 #include "alidisplay.h"
+#include "bsd.h"
 #include "expect.h"
-#include "lip/lip.h"
+#include "lio.h"
 #include "rc.h"
-#include "reallocf.h"
+#include "read.h"
+#include "write.h"
 #include <stdlib.h>
 #include <string.h>
 
-void h3result_domain_init(struct domain *dom)
+static inline void unset(struct domain *x)
 {
-  memset(dom, 0, offsetof(struct domain, ad));
-  h3result_alidisplay_init(&dom->ad);
+  x->ienv = 0;
+  x->jenv = 0;
+  x->iali = 0;
+  x->jali = 0;
+  x->envsc = 0;
+  x->domcorrection = 0;
+  x->dombias = 0;
+  x->oasc = 0;
+  x->bitscore = 0;
+  x->lnP = 0;
+  x->is_reported = false;
+  x->is_included = false;
+  x->pos_score_size = 0;
+  x->pos_score = NULL;
 }
 
-static int grow_scores(struct domain *dom, unsigned size)
+int h3result_domain_init(struct domain *x)
 {
-  size_t sz = size * sizeof(*dom->pos_score);
-  if (!(dom->pos_score = h3result_reallocf(dom->pos_score, sz)))
+  unset(x);
+  return h3result_alidisplay_init(&x->ad);
+}
+
+static int grow_scores(struct domain *x, unsigned size)
+{
+  size_t sz = size * sizeof(*x->pos_score);
+  if (!(x->pos_score = bsd_reallocf(x->pos_score, sz)))
   {
-    h3result_domain_cleanup(dom);
+    h3result_domain_cleanup(x);
     return H3RESULT_ENOMEM;
   }
   return 0;
 }
 
-static void shrink_scores(struct domain *dom, unsigned size)
+static void shrink_scores(struct domain *x, unsigned size)
 {
-  dom->pos_score_size = size;
+  x->pos_score_size = size;
 }
 
-int h3result_domain_setup(struct domain *dom, unsigned scores_size)
+int h3result_domain_setup(struct domain *x, unsigned scores_size)
 {
-  if (dom->pos_score_size < scores_size) return grow_scores(dom, scores_size);
-  shrink_scores(dom, scores_size);
+  if (x->pos_score_size < scores_size) return grow_scores(x, scores_size);
+  shrink_scores(x, scores_size);
   return 0;
 }
 
-void h3result_domain_cleanup(struct domain *dom)
+void h3result_domain_cleanup(struct domain *x)
 {
-  free(dom->pos_score);
-  dom->pos_score = NULL;
-  dom->pos_score_size = 0;
-  h3result_alidisplay_cleanup(&dom->ad);
+  free(x->pos_score);
+  unset(x);
+  h3result_alidisplay_cleanup(&x->ad);
 }
 
-int h3result_domain_pack(struct domain const *dom, struct lip_file *f)
+int h3result_domain_pack(struct domain const *dom, struct lio_writer *f)
 {
-  lip_write_array_size(f, 14);
+  if (write_array(f, 14)) return H3RESULT_EPACK;
 
-  lip_write_int(f, dom->ienv);
-  lip_write_int(f, dom->jenv);
+  if (write_int(f, dom->ienv)) return H3RESULT_EPACK;
+  if (write_int(f, dom->jenv)) return H3RESULT_EPACK;
 
-  lip_write_int(f, dom->iali);
-  lip_write_int(f, dom->jali);
+  if (write_int(f, dom->iali)) return H3RESULT_EPACK;
+  if (write_int(f, dom->jali)) return H3RESULT_EPACK;
 
-  lip_write_float(f, dom->envsc);
-  lip_write_float(f, dom->domcorrection);
-  lip_write_float(f, dom->dombias);
-  lip_write_float(f, dom->oasc);
-  lip_write_float(f, dom->bitscore);
-  lip_write_float(f, dom->lnP);
+  if (write_float(f, dom->envsc)) return H3RESULT_EPACK;
+  if (write_float(f, dom->domcorrection)) return H3RESULT_EPACK;
+  if (write_float(f, dom->dombias)) return H3RESULT_EPACK;
+  if (write_float(f, dom->oasc)) return H3RESULT_EPACK;
+  if (write_float(f, dom->bitscore)) return H3RESULT_EPACK;
+  if (write_float(f, dom->lnP)) return H3RESULT_EPACK;
 
-  lip_write_bool(f, dom->is_reported);
-  lip_write_bool(f, dom->is_included);
+  if (write_bool(f, dom->is_reported)) return H3RESULT_EPACK;
+  if (write_bool(f, dom->is_included)) return H3RESULT_EPACK;
 
-  lip_write_array_size(f, dom->pos_score_size);
+  if (write_array(f, dom->pos_score_size)) return H3RESULT_EPACK;
   for (unsigned long i = 0; i < dom->pos_score_size; i++)
-    lip_write_float(f, dom->pos_score[i]);
+  {
+    if (write_float(f, dom->pos_score[i])) return H3RESULT_EPACK;
+  }
 
-  lip_write_map_size(f, 1);
-  lip_write_cstr(f, "alidisplay");
+  if (write_map(f, 1)) return H3RESULT_EPACK;
+  if (write_cstring(f, "alidisplay")) return H3RESULT_EPACK;
 
   return h3result_alidisplay_pack(&dom->ad, f);
 }
 
-int h3result_domain_unpack(struct domain *dom, struct lip_file *f)
+int h3result_domain_unpack(struct domain *x, struct lio_reader *f)
 {
-  int rc = H3RESULT_EUNPACK;
+  int rc = 0;
 
-  if (!h3result_expect_array_size(f, 14)) goto cleanup;
+  if (!h3result_expect_array_size(f, 14)) return H3RESULT_EUNPACK;
 
-  lip_read_int(f, &dom->ienv);
-  lip_read_int(f, &dom->jenv);
+  if (read_int(f, &x->ienv)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->jenv)) return H3RESULT_EUNPACK;
 
-  lip_read_int(f, &dom->iali);
-  lip_read_int(f, &dom->jali);
+  if (read_int(f, &x->iali)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->jali)) return H3RESULT_EUNPACK;
 
-  lip_read_float(f, &dom->envsc);
-  lip_read_float(f, &dom->domcorrection);
-  lip_read_float(f, &dom->dombias);
-  lip_read_float(f, &dom->oasc);
-  lip_read_float(f, &dom->bitscore);
-  lip_read_float(f, &dom->lnP);
+  if (read_float(f, &x->envsc)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->domcorrection)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->dombias)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->oasc)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->bitscore)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->lnP)) return H3RESULT_EUNPACK;
 
-  lip_read_bool(f, &dom->is_reported);
-  lip_read_bool(f, &dom->is_included);
+  if (read_bool(f, &x->is_reported)) return H3RESULT_EUNPACK;
+  if (read_bool(f, &x->is_included)) return H3RESULT_EUNPACK;
 
   unsigned size = 0;
-  lip_read_array_size(f, &size);
-  if ((rc = h3result_domain_setup(dom, size))) goto cleanup;
+  if (read_array(f, &size)) return H3RESULT_EUNPACK;
+  if ((rc = h3result_domain_setup(x, size))) return H3RESULT_EUNPACK;
 
-  for (unsigned long i = 0; i < dom->pos_score_size; i++)
-    lip_read_float(f, dom->pos_score + i);
+  for (unsigned long i = 0; i < x->pos_score_size; i++)
+  {
+    if (read_float(f, x->pos_score + i)) return H3RESULT_EUNPACK;
+  }
 
-  if (!h3result_expect_map_size(f, 1)) goto cleanup;
-  if (!h3result_expect_key(f, "alidisplay")) goto cleanup;
+  if (!h3result_expect_map_size(f, 1)) return H3RESULT_EUNPACK;
+  if (!h3result_expect_key(f, "alidisplay")) return H3RESULT_EUNPACK;
 
-  if ((rc = h3result_alidisplay_unpack(&dom->ad, f))) goto cleanup;
+  if ((rc = h3result_alidisplay_unpack(&x->ad, f))) return H3RESULT_EUNPACK;
 
-  return 0;
-
-cleanup:
-  h3result_domain_cleanup(dom);
   return rc;
 }

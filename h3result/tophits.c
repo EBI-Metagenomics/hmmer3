@@ -3,10 +3,12 @@
 #include "echo.h"
 #include "expect.h"
 #include "hit.h"
-#include "lip/lip.h"
+#include "lio.h"
 #include "max.h"
 #include "rc.h"
+#include "read.h"
 #include "tophits.h"
+#include "write.h"
 #include "zero_clip.h"
 #include <inttypes.h>
 #include <math.h>
@@ -66,13 +68,13 @@ void h3result_tophits_cleanup(struct tophits *th)
   th->nhits = 0;
 }
 
-int h3result_tophits_pack(struct tophits const *th, struct lip_file *f)
+int h3result_tophits_pack(struct tophits const *th, struct lio_writer *f)
 {
-  lip_write_array_size(f, 5);
+  if (write_array(f, 5)) return H3RESULT_EPACK;
 
-  lip_write_map_size(f, 1);
-  lip_write_cstr(f, "hits");
-  if (!lip_write_array_size(f, th->nhits)) return H3RESULT_EPACK;
+  if (write_map(f, 1)) return H3RESULT_EPACK;
+  if (write_cstring(f, "hits")) return H3RESULT_EPACK;
+  if (write_array(f, th->nhits)) return H3RESULT_EPACK;
 
   for (unsigned i = 0; i < th->nhits; ++i)
   {
@@ -80,15 +82,15 @@ int h3result_tophits_pack(struct tophits const *th, struct lip_file *f)
     if (rc) return rc;
   }
 
-  lip_write_int(f, th->nreported);
-  lip_write_int(f, th->nincluded);
-  lip_write_bool(f, th->is_sorted_by_sortkey);
-  lip_write_bool(f, th->is_sorted_by_seqidx);
+  if (write_int(f, th->nreported)) return H3RESULT_EPACK;
+  if (write_int(f, th->nincluded)) return H3RESULT_EPACK;
+  if (write_bool(f, th->is_sorted_by_sortkey)) return H3RESULT_EPACK;
+  if (write_bool(f, th->is_sorted_by_seqidx)) return H3RESULT_EPACK;
 
-  return lip_file_error(f) ? H3RESULT_EPACK : 0;
+  return 0;
 }
 
-int h3result_tophits_unpack(struct tophits *th, struct lip_file *f)
+int h3result_tophits_unpack(struct tophits *th, struct lio_reader *f)
 {
   int rc = H3RESULT_EUNPACK;
 
@@ -98,7 +100,7 @@ int h3result_tophits_unpack(struct tophits *th, struct lip_file *f)
   if (!h3result_expect_key(f, "hits")) goto cleanup;
 
   unsigned size = 0;
-  if (!lip_read_array_size(f, &size)) goto cleanup;
+  if (read_array(f, &size)) goto cleanup;
 
   if ((rc = h3result_tophits_setup(th, size))) goto cleanup;
 
@@ -107,12 +109,10 @@ int h3result_tophits_unpack(struct tophits *th, struct lip_file *f)
     if ((rc = h3result_hit_unpack(th->hits + i, f))) goto cleanup;
   }
 
-  lip_read_int(f, &th->nreported);
-  lip_read_int(f, &th->nincluded);
-  lip_read_bool(f, &th->is_sorted_by_sortkey);
-  lip_read_bool(f, &th->is_sorted_by_seqidx);
-
-  if (lip_file_error(f)) goto cleanup;
+  if (read_int(f, &th->nreported)) goto cleanup;
+  if (read_int(f, &th->nincluded)) goto cleanup;
+  if (read_bool(f, &th->is_sorted_by_sortkey)) goto cleanup;
+  if (read_bool(f, &th->is_sorted_by_seqidx)) goto cleanup;
 
   return 0;
 
@@ -126,8 +126,8 @@ static unsigned max_shown_length(struct tophits const *h)
   unsigned max = 0;
   for (unsigned i = 0; i < h->nhits; i++)
   {
-    max = h3result_max(max, (unsigned)strlen(h->hits[i].acc));
-    max = h3result_max(max, (unsigned)strlen(h->hits[i].name));
+    max = max(max, (unsigned)strlen(h->hits[i].acc));
+    max = max(max, (unsigned)strlen(h->hits[i].name));
   }
   return max;
 }
@@ -136,7 +136,7 @@ static unsigned max_name_length(struct tophits const *h)
 {
   unsigned max = 0;
   for (unsigned i = 0; i < h->nhits; i++)
-    max = h3result_max(max, (unsigned)strlen(h->hits[i].name));
+    max = max(max, (unsigned)strlen(h->hits[i].name));
   return max;
 }
 
@@ -183,40 +183,40 @@ static inline float unbiased_score(struct hit const *hit)
 static inline double evalue(double lnP, double Z) { return exp(lnP) * Z; }
 static inline double evalue_ln(double lnP, double Z) { return lnP + log(Z); }
 
-void h3result_tophits_print_targets(struct tophits const *th, FILE *f, double Z)
+void h3result_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
 {
-  unsigned namew = h3result_max(8U, max_shown_length(th));
-  unsigned descw = h3result_max(32U, h3result_zero_clip(120 - namew - 61));
+  unsigned namew = max(8U, max_shown_length(x));
+  unsigned descw = max(32U, h3result_zero_clip(120 - namew - 61));
 
-  h3result_echo(f,
+  h3result_echo(fp,
                 "Scores for complete sequence (score includes all domains):");
 
-  h3result_echo(f, "  %22s  %22s  %8s", " --- full sequence ---",
+  h3result_echo(fp, "  %22s  %22s  %8s", " --- full sequence ---",
                 " --- best 1 domain ---", "-#dom-");
 
-  h3result_echo(f, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "E-value",
+  h3result_echo(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "E-value",
                 " score", " bias", "E-value", " score", " bias", "  exp", "N",
                 namew, "Model", "Description");
 
-  h3result_echo(f, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "-------",
+  h3result_echo(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "-------",
                 "------", "-----", "-------", "------", "-----", " ----", "--",
                 namew, "--------", "-----------");
 
   bool printed_incthresh = false;
-  for (unsigned i = 0; i < th->nhits; i++)
+  for (unsigned i = 0; i < x->nhits; i++)
   {
-    struct hit *const hit = th->hits + i;
+    struct hit *const hit = x->hits + i;
     if (!(hit->flags & p7_IS_REPORTED)) continue;
 
     struct domain const *dom = hit->domains + hit->best_domain;
 
     if (!(hit->flags & p7_IS_INCLUDED) && !printed_incthresh)
     {
-      h3result_echo(f, "  ------ inclusion threshold ------");
+      h3result_echo(fp, "  ------ inclusion threshold ------");
       printed_incthresh = true;
     }
 
-    h3result_echo(f,
+    h3result_echo(fp,
                   "%c %9.2g %6.1f %5.1f  %9.2g %6.1f %5.1f  %5.1f %2d  %-*s  "
                   "%-.*s",
                   newness(hit), evalue(hit->lnP, Z), hit->score,
@@ -225,8 +225,8 @@ void h3result_tophits_print_targets(struct tophits const *th, FILE *f, double Z)
                   show_name(hit), descw, hit->desc);
   }
 
-  if (th->nreported == 0)
-    h3result_echo(f,
+  if (x->nreported == 0)
+    h3result_echo(fp,
                   "\n   [No hits detected that satisfy reporting thresholds]");
 }
 
@@ -253,19 +253,19 @@ static char included_symbol(struct domain const *dom)
   return dom->is_included ? '!' : '?';
 }
 
-void h3result_tophits_print_domains(struct tophits const *th, FILE *f, double Z,
+void h3result_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
                                     double domZ)
 {
   h3result_echo(f, "Domain annotation for each model (and alignments):");
 
-  for (unsigned i = 0; i < th->nhits; i++)
+  for (unsigned i = 0; i < x->nhits; i++)
   {
-    struct hit *const hit = th->hits + i;
+    struct hit *const hit = x->hits + i;
     if (!(hit->flags & p7_IS_REPORTED)) continue;
 
     char const *name = show_name(hit);
     unsigned namew = (unsigned)strlen(name);
-    unsigned descw = h3result_max(32U, h3result_zero_clip(120 - namew - 5));
+    unsigned descw = max(32U, h3result_zero_clip(120 - namew - 5));
 
     h3result_echo(f, ">> %s  %-.*s", name, descw, hit->desc);
 
@@ -328,7 +328,7 @@ void h3result_tophits_print_domains(struct tophits const *th, FILE *f, double Z,
     }
   }
 
-  if (th->nreported == 0)
+  if (x->nreported == 0)
     h3result_echo(f, "\n   [No targets detected that satisfy reporting "
                      "thresholds]");
 }
@@ -337,7 +337,7 @@ static unsigned max_acc_length(struct tophits const *th)
 {
   unsigned max = 0;
   for (unsigned i = 0; i < th->nhits; i++)
-    max = h3result_max(max, (unsigned)strlen(th->hits[i].acc));
+    max = max(max, (unsigned)strlen(th->hits[i].acc));
   return max;
 }
 
@@ -351,7 +351,7 @@ static unsigned qname_width(struct tophits const *th)
     for (unsigned j = 0; j < hit->ndomains; j++)
     {
       struct domain const *dom = hit->domains + j;
-      width = h3result_max(width, (unsigned)strlen(dom->ad.sqname));
+      width = max(width, (unsigned)strlen(dom->ad.sqname));
     }
   }
   return width;
@@ -392,10 +392,9 @@ void h3result_tophits_print_targets_table(char const *qacc,
                                           struct tophits const *th, FILE *f,
                                           bool show_header, double Z)
 {
-  struct header_width w = {qname_width(th),
-                           h3result_max(10U, (unsigned)strlen(qacc)),
-                           h3result_max(20U, max_name_length(th)),
-                           h3result_max(10U, max_acc_length(th))};
+  struct header_width w = {qname_width(th), max(10U, (unsigned)strlen(qacc)),
+                           max(20U, max_name_length(th)),
+                           max(10U, max_acc_length(th))};
 
   if (show_header) print_targets_table_header(f, w);
 
@@ -454,12 +453,12 @@ void h3result_tophits_print_domains_table(char const *qacc,
   {
     struct hit *const hit = th->hits + i;
     struct domain const *dom = hit->domains + hit->best_domain;
-    w.qname = h3result_max(w.qname, (unsigned)strlen(dom->ad.sqname));
+    w.qname = max(w.qname, (unsigned)strlen(dom->ad.sqname));
   }
 
-  w.tname = h3result_max(w.tname, max_name_length(th));
-  w.qacc = h3result_max(w.qacc, (unsigned)strlen(qacc));
-  w.tacc = h3result_max(w.tacc, max_acc_length(th));
+  w.tname = max(w.tname, max_name_length(th));
+  w.qacc = max(w.qacc, (unsigned)strlen(qacc));
+  w.tacc = max(w.tacc, max_acc_length(th));
 
   if (show_header) print_domains_table_header(w, f);
 

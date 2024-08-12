@@ -6,7 +6,8 @@
 #include <stdio.h>
 
 struct tophits;
-struct lip_file;
+struct lio_writer;
+struct lio_reader;
 
 struct tophits
 {
@@ -24,8 +25,8 @@ void h3result_tophits_init(struct tophits *);
 int h3result_tophits_setup(struct tophits *, unsigned nhits);
 void h3result_tophits_cleanup(struct tophits *);
 
-int h3result_tophits_pack(struct tophits const *, struct lip_file *);
-int h3result_tophits_unpack(struct tophits *result, struct lip_file *);
+int h3result_tophits_pack(struct tophits const *, struct lio_writer *);
+int h3result_tophits_unpack(struct tophits *result, struct lio_reader *);
 
 void h3result_tophits_print_targets(struct tophits const *, FILE *, double Z);
 void h3result_tophits_print_domains(struct tophits const *, FILE *, double Z,

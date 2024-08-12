@@ -4,8 +4,9 @@
 #include "static_assert.h"
 #include <stdint.h>
 
-struct lip_file;
 struct domain;
+struct lio_writer;
+struct lio_reader;
 
 struct hit
 {
@@ -42,7 +43,7 @@ h3result_static_assert(sizeof(unsigned) >= 4);
 int h3result_hit_init(struct hit *);
 int h3result_hit_setup(struct hit *, unsigned ndomains);
 void h3result_hit_cleanup(struct hit *);
-int h3result_hit_pack(struct hit const *, struct lip_file *);
-int h3result_hit_unpack(struct hit *, struct lip_file *);
+int h3result_hit_pack(struct hit const *, struct lio_writer *);
+int h3result_hit_unpack(struct hit *, struct lio_reader *);
 
 #endif

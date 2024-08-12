@@ -4,11 +4,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-struct lip_file;
+struct lio_reader;
 
-bool h3result_expect_key(struct lip_file *f, char const *key);
-bool h3result_expect_array_size(struct lip_file *f, unsigned size);
-bool h3result_expect_map_size(struct lip_file *f, unsigned size);
-int h3result_read_string(struct lip_file *f, char **str);
+bool h3result_expect_key(struct lio_reader *f, char const *key);
+bool h3result_expect_array_size(struct lio_reader *f, unsigned size);
+bool h3result_expect_map_size(struct lio_reader *f, unsigned size);
+int h3result_read_string(struct lio_reader *f, char **str);
 
 #endif

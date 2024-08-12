@@ -1,9 +1,12 @@
 #include "alidisplay.h"
+#include "defer_return.h"
 #include "echo.h"
 #include "expect.h"
-#include "lip/lip.h"
+#include "lio.h"
 #include "max.h"
 #include "rc.h"
+#include "read.h"
+#include "write.h"
 #include "zero_clip.h"
 #include <stdlib.h>
 #include <string.h>
@@ -15,32 +18,62 @@
 #define ASEQ_PRESENT (1 << 4)
 #define NTSEQ_PRESENT (1 << 5)
 
-int h3result_alidisplay_init(struct alidisplay *ad)
+static inline void unset(struct alidisplay *x)
 {
-  memset(ad, 0, sizeof(*ad));
+  x->presence = 0;
 
-  if (!(ad->rfline = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->mmline = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->csline = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->model = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->mline = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->aseq = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->ntseq = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->ppline = calloc(1, sizeof(char)))) goto cleanup;
+  x->rfline = NULL;
+  x->mmline = NULL;
+  x->csline = NULL;
+  x->model = NULL;
+  x->mline = NULL;
+  x->aseq = NULL;
+  x->ntseq = NULL;
+  x->ppline = NULL;
+  x->N = 0;
 
-  if (!(ad->hmmname = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->hmmacc = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->hmmdesc = calloc(1, sizeof(char)))) goto cleanup;
+  x->hmmname = NULL;
+  x->hmmacc = NULL;
+  x->hmmdesc = NULL;
+  x->hmmfrom = 0;
+  x->hmmto = 0;
+  x->M = 0;
 
-  if (!(ad->sqname = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->sqacc = calloc(1, sizeof(char)))) goto cleanup;
-  if (!(ad->sqdesc = calloc(1, sizeof(char)))) goto cleanup;
+  x->sqname = NULL;
+  x->sqacc = NULL;
+  x->sqdesc = NULL;
+  x->sqfrom = 0;
+  x->sqto = 0;
+  x->L = 0;
+}
+
+int h3result_alidisplay_init(struct alidisplay *x)
+{
+  int rc = 0;
+  unset(x);
+
+  if (!(x->rfline = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->mmline = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->csline = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->model = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->mline = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->aseq = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->ntseq = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->ppline = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+
+  if (!(x->hmmname = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->hmmacc = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->hmmdesc = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+
+  if (!(x->sqname = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->sqacc = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->sqdesc = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
 
   return 0;
 
-cleanup:
-  h3result_alidisplay_cleanup(ad);
-  return H3RESULT_ENOMEM;
+defer:
+  h3result_alidisplay_cleanup(x);
+  return rc;
 }
 
 #define DEL(ptr)                                                               \
@@ -50,104 +83,101 @@ cleanup:
     (ptr) = NULL;                                                              \
   } while (0);
 
-void h3result_alidisplay_cleanup(struct alidisplay *ad)
+void h3result_alidisplay_cleanup(struct alidisplay *x)
 {
-  DEL(ad->rfline);
-  DEL(ad->mmline);
-  DEL(ad->csline);
-  DEL(ad->model);
-  DEL(ad->mline);
-  DEL(ad->aseq);
-  DEL(ad->ntseq);
-  DEL(ad->ppline);
+  DEL(x->rfline);
+  DEL(x->mmline);
+  DEL(x->csline);
+  DEL(x->model);
+  DEL(x->mline);
+  DEL(x->aseq);
+  DEL(x->ntseq);
+  DEL(x->ppline);
 
-  DEL(ad->hmmname);
-  DEL(ad->hmmacc);
-  DEL(ad->hmmdesc);
+  DEL(x->hmmname);
+  DEL(x->hmmacc);
+  DEL(x->hmmdesc);
 
-  DEL(ad->sqname);
-  DEL(ad->sqacc);
-  DEL(ad->sqdesc);
+  DEL(x->sqname);
+  DEL(x->sqacc);
+  DEL(x->sqdesc);
 }
 
-static void write_cstr(bool presence, struct lip_file *f, char const *str)
+int h3result_alidisplay_pack(struct alidisplay const *x, struct lio_writer *f)
 {
-  if (presence)
-    lip_write_cstr(f, str);
-  else
-    lip_write_cstr(f, "");
+  if (write_array(f, 22)) return H3RESULT_EPACK;
+
+  if (write_int(f, x->presence)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & RFLINE_PRESENT ? x->rfline : ""))
+    return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & MMLINE_PRESENT ? x->mmline : ""))
+    return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & CSLINE_PRESENT ? x->csline : ""))
+    return H3RESULT_EPACK;
+  if (write_cstring(f, x->model)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->mline)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & ASEQ_PRESENT ? x->aseq : ""))
+    return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & NTSEQ_PRESENT ? x->ntseq : ""))
+    return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & PPLINE_PRESENT ? x->ppline : ""))
+    return H3RESULT_EPACK;
+  if (write_int(f, x->N)) return H3RESULT_EPACK;
+
+  if (write_cstring(f, x->hmmname)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->hmmacc)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->hmmdesc)) return H3RESULT_EPACK;
+  if (write_int(f, x->hmmfrom)) return H3RESULT_EPACK;
+  if (write_int(f, x->hmmto)) return H3RESULT_EPACK;
+  if (write_int(f, x->M)) return H3RESULT_EPACK;
+
+  if (write_cstring(f, x->sqname)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->sqacc)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->sqdesc)) return H3RESULT_EPACK;
+  if (write_int(f, x->sqfrom)) return H3RESULT_EPACK;
+  if (write_int(f, x->sqto)) return H3RESULT_EPACK;
+  if (write_int(f, x->L)) return H3RESULT_EPACK;
+
+  return 0;
 }
 
-int h3result_alidisplay_pack(struct alidisplay const *ad, struct lip_file *f)
-{
-  lip_write_array_size(f, 22);
-
-  lip_write_int(f, ad->presence);
-  write_cstr(ad->presence & RFLINE_PRESENT, f, ad->rfline);
-  write_cstr(ad->presence & MMLINE_PRESENT, f, ad->mmline);
-  write_cstr(ad->presence & CSLINE_PRESENT, f, ad->csline);
-  lip_write_cstr(f, ad->model);
-  lip_write_cstr(f, ad->mline);
-  write_cstr(ad->presence & ASEQ_PRESENT, f, ad->aseq);
-  write_cstr(ad->presence & NTSEQ_PRESENT, f, ad->ntseq);
-  write_cstr(ad->presence & PPLINE_PRESENT, f, ad->ppline);
-  lip_write_int(f, ad->N);
-
-  lip_write_cstr(f, ad->hmmname);
-  lip_write_cstr(f, ad->hmmacc);
-  lip_write_cstr(f, ad->hmmdesc);
-  lip_write_int(f, ad->hmmfrom);
-  lip_write_int(f, ad->hmmto);
-  lip_write_int(f, ad->M);
-
-  lip_write_cstr(f, ad->sqname);
-  lip_write_cstr(f, ad->sqacc);
-  lip_write_cstr(f, ad->sqdesc);
-  lip_write_int(f, ad->sqfrom);
-  lip_write_int(f, ad->sqto);
-  lip_write_int(f, ad->L);
-
-  return lip_file_error(f) ? H3RESULT_EPACK : 0;
-}
-
-int h3result_alidisplay_unpack(struct alidisplay *ad, struct lip_file *f)
+int h3result_alidisplay_unpack(struct alidisplay *x, struct lio_reader *f)
 {
   int rc = H3RESULT_EUNPACK;
 
-  if (!h3result_expect_array_size(f, 22)) goto cleanup;
+  if (!h3result_expect_array_size(f, 22)) defer_return(H3RESULT_ENOMEM);
 
-  if (!lip_read_int(f, &ad->presence)) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->rfline))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->mmline))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->csline))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->model))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->mline))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->aseq))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->ntseq))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->ppline))) goto cleanup;
-  lip_read_int(f, &ad->N);
+  if (read_int(f, &x->presence)) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->rfline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->mmline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->csline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->model))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->mline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->aseq))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->ntseq))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->ppline))) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->N)) defer_return(H3RESULT_ENOMEM);
 
-  if ((rc = h3result_read_string(f, &ad->hmmname))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->hmmacc))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->hmmdesc))) goto cleanup;
-  lip_read_int(f, &ad->hmmfrom);
-  lip_read_int(f, &ad->hmmto);
-  lip_read_int(f, &ad->M);
+  if ((rc = h3result_read_string(f, &x->hmmname)))
+    defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->hmmacc))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->hmmdesc)))
+    defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->hmmfrom)) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->hmmto)) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->M)) defer_return(H3RESULT_ENOMEM);
 
-  if ((rc = h3result_read_string(f, &ad->sqname))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->sqacc))) goto cleanup;
-  if ((rc = h3result_read_string(f, &ad->sqdesc))) goto cleanup;
-  lip_read_int(f, &ad->sqfrom);
-  lip_read_int(f, &ad->sqto);
-  lip_read_int(f, &ad->L);
-
-  rc = H3RESULT_EUNPACK;
-  if (lip_file_error(f)) goto cleanup;
+  if ((rc = h3result_read_string(f, &x->sqname))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->sqacc))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = h3result_read_string(f, &x->sqdesc))) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->sqfrom)) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->sqto)) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->L)) defer_return(H3RESULT_ENOMEM);
 
   return 0;
 
-cleanup:
-  h3result_alidisplay_cleanup(ad);
+defer:
+  h3result_alidisplay_cleanup(x);
   return rc;
 }
 
@@ -162,71 +192,70 @@ static unsigned textwidth(unsigned n)
   return w;
 }
 
-void h3result_alidisplay_print(struct alidisplay const *ad, FILE *f)
+void h3result_alidisplay_print(struct alidisplay const *x, FILE *f)
 {
   /* implement the --acc option for preferring accessions over names in output
    */
-  char const *hmmname = ad->hmmacc[0] != 0 ? ad->hmmacc : ad->hmmname;
-  char const *seqname = ad->sqacc[0] != 0 ? ad->sqacc : ad->sqname;
+  char const *hmmname = x->hmmacc[0] != 0 ? x->hmmacc : x->hmmname;
+  char const *seqname = x->sqacc[0] != 0 ? x->sqacc : x->sqname;
 
   /* dynamically size the output lines */
-  unsigned namewidth = h3result_max(strlen(hmmname), strlen(seqname));
-  unsigned coordwidth =
-      h3result_max(h3result_max(textwidth(ad->hmmfrom), textwidth(ad->hmmto)),
-                   h3result_max(textwidth(ad->sqfrom), textwidth(ad->sqto)));
+  unsigned namewidth = max(strlen(hmmname), strlen(seqname));
+  unsigned coordwidth = max(max(textwidth(x->hmmfrom), textwidth(x->hmmto)),
+                            max(textwidth(x->sqfrom), textwidth(x->sqto)));
 
   unsigned aliwidth = h3result_zero_clip(120 - namewidth - 2 * coordwidth - 5);
-  if (aliwidth < ad->N && aliwidth < 40) aliwidth = 40;
+  if (aliwidth < x->N && aliwidth < 40) aliwidth = 40;
 
   char buf[121] = {0};
 
   /* Break the alignment into multiple blocks of width aliwidth for printing
    */
-  unsigned i1 = ad->sqfrom;
-  unsigned k1 = ad->hmmfrom;
-  for (unsigned pos = 0; pos < ad->N; pos += aliwidth)
+  unsigned i1 = x->sqfrom;
+  unsigned k1 = x->hmmfrom;
+  for (unsigned pos = 0; pos < x->N; pos += aliwidth)
   {
     if (pos > 0) h3result_echo(f, "%s", "");
 
     unsigned ni = 0;
     unsigned nk = 0;
-    for (unsigned z = pos; z < pos + aliwidth && z < ad->N; z++)
+    for (unsigned z = pos; z < pos + aliwidth && z < x->N; z++)
     {
-      if (ad->model[z] != '.') nk++; /* k advances except on insert states */
-      if (ad->aseq[z] != '-') ni++;  /* i advances except on delete states */
+      if (x->model[z] != '.') nk++; /* k advances except on insert states */
+      if (x->aseq[z] != '-') ni++;  /* i advances except on delete states */
     }
 
     unsigned k2 = k1 + nk - 1;
     unsigned i2 = 0;
-    if (ad->sqfrom < ad->sqto)
+    if (x->sqfrom < x->sqto)
       i2 = (unsigned)(i1 + ni - 1);
     else
       i2 = (unsigned)(i1 - ni + 1); // revcomp hit for DNA
 
-    if (ad->presence & CSLINE_PRESENT)
+    if (x->presence & CSLINE_PRESENT)
     {
-      strncpy(buf, ad->csline + pos, aliwidth);
+      strncpy(buf, x->csline + pos, aliwidth);
       h3result_echo(f, "  %*s %s CS", namewidth + coordwidth + 1, "", buf);
     }
-    if (ad->presence & RFLINE_PRESENT)
+    if (x->presence & RFLINE_PRESENT)
     {
-      strncpy(buf, ad->rfline + pos, aliwidth);
+      strncpy(buf, x->rfline + pos, aliwidth);
       h3result_echo(f, "  %*s %s RF", namewidth + coordwidth + 1, "", buf);
     }
-    if (ad->presence & MMLINE_PRESENT)
+    if (x->presence & MMLINE_PRESENT)
     {
-      strncpy(buf, ad->mmline + pos, aliwidth);
+      strncpy(buf, x->mmline + pos, aliwidth);
       h3result_echo(f, "  %*s %s MM", namewidth + coordwidth + 1, "", buf);
     }
 
-    strncpy(buf, ad->model + pos, aliwidth);
+    strncpy(buf, x->model + pos, aliwidth);
     h3result_echo(f, "  %*s %*d %s %-*d", namewidth, hmmname, coordwidth, k1,
                   buf, coordwidth, k2);
 
-    strncpy(buf, ad->mline + pos, aliwidth);
+    strncpy(buf, x->mline + pos, aliwidth);
     h3result_echo(f, "  %*s %s", namewidth + coordwidth + 1, " ", buf);
 
-    strncpy(buf, ad->aseq + pos, aliwidth);
+    strncpy(buf, x->aseq + pos, aliwidth);
     if (ni > 0)
     {
       h3result_echo(f, "  %*s %*u %s %-*u", namewidth, seqname, coordwidth, i1,
@@ -238,14 +267,14 @@ void h3result_alidisplay_print(struct alidisplay const *ad, FILE *f)
                     buf, coordwidth, "-");
     }
 
-    if (ad->ppline != 0)
+    if (x->ppline != 0)
     {
-      strncpy(buf, ad->ppline + pos, aliwidth);
+      strncpy(buf, x->ppline + pos, aliwidth);
       h3result_echo(f, "  %*s %s PP", namewidth + coordwidth + 1, "", buf);
     }
 
     k1 += nk;
-    if (ad->sqfrom < ad->sqto)
+    if (x->sqfrom < x->sqto)
       i1 += ni;
     else
       i1 -= ni; // revcomp hit for DNA

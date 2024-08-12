@@ -7,7 +7,8 @@
 #include <stdint.h>
 
 struct domain;
-struct lip_file;
+struct lio_writer;
+struct lio_reader;
 
 struct domain
 {
@@ -30,10 +31,10 @@ struct domain
 
 h3result_static_assert(sizeof(long) >= 8);
 
-void h3result_domain_init(struct domain *);
+int h3result_domain_init(struct domain *);
 int h3result_domain_setup(struct domain *, unsigned scores_size);
 void h3result_domain_cleanup(struct domain *);
-int h3result_domain_pack(struct domain const *, struct lip_file *);
-int h3result_domain_unpack(struct domain *, struct lip_file *);
+int h3result_domain_pack(struct domain const *, struct lio_writer *);
+int h3result_domain_unpack(struct domain *, struct lio_reader *);
 
 #endif

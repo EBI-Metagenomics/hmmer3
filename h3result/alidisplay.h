@@ -4,8 +4,8 @@
 #include "static_assert.h"
 #include <stdio.h>
 
-struct lip_file;
-
+struct lio_writer;
+struct lio_reader;
 struct alidisplay
 {
   unsigned presence;
@@ -39,8 +39,8 @@ h3result_static_assert(sizeof(unsigned) >= 4);
 
 int h3result_alidisplay_init(struct alidisplay *);
 void h3result_alidisplay_cleanup(struct alidisplay *);
-int h3result_alidisplay_pack(struct alidisplay const *, struct lip_file *);
-int h3result_alidisplay_unpack(struct alidisplay *, struct lip_file *);
+int h3result_alidisplay_pack(struct alidisplay const *, struct lio_writer *);
+int h3result_alidisplay_unpack(struct alidisplay *, struct lio_reader *);
 void h3result_alidisplay_print(struct alidisplay const *, FILE *file);
 
 #endif

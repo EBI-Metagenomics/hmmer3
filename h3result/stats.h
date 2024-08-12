@@ -6,7 +6,8 @@
 #include <stdint.h>
 
 struct stats;
-struct lip_file;
+struct lio_writer;
+struct lio_reader;
 
 struct stats
 {
@@ -31,7 +32,7 @@ struct stats
 h3result_static_assert(sizeof(unsigned) >= 4);
 
 void h3result_stats_init(struct stats *);
-int h3result_stats_pack(struct stats const *, struct lip_file *);
-int h3result_stats_unpack(struct stats *, struct lip_file *);
+int h3result_stats_pack(struct stats const *, struct lio_writer *);
+int h3result_stats_unpack(struct stats *, struct lio_reader *);
 
 #endif

@@ -40,7 +40,7 @@ int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *,
                                     double domZ);
 
 char const *h3r_tophits_hit_name(struct tophits const *, unsigned idx);
-char const *h3r_tophits_hit_acc(struct tophits const *, unsigned idx);
+char const *h3r_tophits_hit_accession(struct tophits const *, unsigned idx);
 double      h3r_tophits_hit_logevalue(struct tophits const *, unsigned idx, double Z);
 
 #endif

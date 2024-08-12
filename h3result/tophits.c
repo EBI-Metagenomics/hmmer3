@@ -489,7 +489,7 @@ char const *h3r_tophits_hit_name(struct tophits const *x, unsigned idx)
   return x->hits[idx].name;
 }
 
-char const *h3r_tophits_hit_acc(struct tophits const *x, unsigned idx)
+char const *h3r_tophits_hit_accession(struct tophits const *x, unsigned idx)
 {
   return x->hits[idx].acc;
 }

@@ -1,10 +1,10 @@
-#ifndef STRTOK_REENTRANT
-#define STRTOK_REENTRANT
+#ifndef POSIX_H
+#define POSIX_H
 
 #include <string.h>
 
-static char *strtok_reentrant(char *restrict s, const char *restrict sep,
-                              char **restrict p)
+static char *posix_strtok_r(char *restrict s, const char *restrict sep,
+                            char **restrict p)
 {
     if (!s && !(s = *p)) return NULL;
     s += strspn(s, sep);

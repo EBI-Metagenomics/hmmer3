@@ -1,7 +1,7 @@
 #include "token.h"
 #include "error.h"
 #include "hmr.h"
-#include "strtok_reentrant.h"
+#include "posix.h"
 #include <string.h>
 
 #define DELIM " \t\r"
@@ -38,13 +38,13 @@ int hmr_token_next(struct hmr_token *tok, FILE *restrict fp)
             }
             return rc;
         }
-        tok->value = strtok_reentrant(tok->line.data, DELIM, &tok->line.ctx);
+        tok->value = posix_strtok_r(tok->line.data, DELIM, &tok->line.ctx);
         tok->line.number++;
 
         if (!tok->value) return HMR_EPARSE;
     }
     else
-        tok->value = strtok_reentrant(NULL, DELIM, &tok->line.ctx);
+        tok->value = posix_strtok_r(NULL, DELIM, &tok->line.ctx);
 
     if (!strcmp(tok->value, "\n"))
         tok->id = HMR_TOK_NL;

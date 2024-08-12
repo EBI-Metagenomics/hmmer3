@@ -1,11 +1,12 @@
-#ifndef H3RESULT_ALIDISPLAY_H
-#define H3RESULT_ALIDISPLAY_H
+#ifndef ALIDISPLAY_H
+#define ALIDISPLAY_H
 
 #include "static_assert2.h"
 #include <stdio.h>
 
 struct lio_writer;
 struct lio_reader;
+
 struct alidisplay
 {
   unsigned presence;
@@ -37,10 +38,10 @@ struct alidisplay
 
 static_assert2(sizeof(unsigned) >= 4);
 
-int h3result_alidisplay_init(struct alidisplay *);
-void h3result_alidisplay_cleanup(struct alidisplay *);
-int h3result_alidisplay_pack(struct alidisplay const *, struct lio_writer *);
-int h3result_alidisplay_unpack(struct alidisplay *, struct lio_reader *);
-void h3result_alidisplay_print(struct alidisplay const *, FILE *file);
+int  h3r_alidisplay_init(struct alidisplay *);
+void h3r_alidisplay_cleanup(struct alidisplay *);
+int  h3r_alidisplay_pack(struct alidisplay const *, struct lio_writer *);
+int  h3r_alidisplay_unpack(struct alidisplay *, struct lio_reader *);
+int  h3r_alidisplay_print(struct alidisplay const *, FILE *file);
 
 #endif

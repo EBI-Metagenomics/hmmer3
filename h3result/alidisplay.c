@@ -47,7 +47,7 @@ static inline void unset(struct alidisplay *x)
   x->L = 0;
 }
 
-int h3result_alidisplay_init(struct alidisplay *x)
+int h3r_alidisplay_init(struct alidisplay *x)
 {
   int rc = 0;
   unset(x);
@@ -72,11 +72,11 @@ int h3result_alidisplay_init(struct alidisplay *x)
   return 0;
 
 defer:
-  h3result_alidisplay_cleanup(x);
+  h3r_alidisplay_cleanup(x);
   return rc;
 }
 
-void h3result_alidisplay_cleanup(struct alidisplay *x)
+void h3r_alidisplay_cleanup(struct alidisplay *x)
 {
   free(x->rfline);
   free(x->mmline);
@@ -98,79 +98,73 @@ void h3result_alidisplay_cleanup(struct alidisplay *x)
   unset(x);
 }
 
-int h3result_alidisplay_pack(struct alidisplay const *x, struct lio_writer *f)
+int h3r_alidisplay_pack(struct alidisplay const *x, struct lio_writer *f)
 {
   if (write_array(f, 22)) return H3RESULT_EPACK;
 
-  if (write_int(f, x->presence)) return H3RESULT_EPACK;
-  if (write_cstring(f, x->presence & RFLINE_PRESENT ? x->rfline : ""))
-    return H3RESULT_EPACK;
-  if (write_cstring(f, x->presence & MMLINE_PRESENT ? x->mmline : ""))
-    return H3RESULT_EPACK;
-  if (write_cstring(f, x->presence & CSLINE_PRESENT ? x->csline : ""))
-    return H3RESULT_EPACK;
-  if (write_cstring(f, x->model)) return H3RESULT_EPACK;
-  if (write_cstring(f, x->mline)) return H3RESULT_EPACK;
-  if (write_cstring(f, x->presence & ASEQ_PRESENT ? x->aseq : ""))
-    return H3RESULT_EPACK;
-  if (write_cstring(f, x->presence & NTSEQ_PRESENT ? x->ntseq : ""))
-    return H3RESULT_EPACK;
-  if (write_cstring(f, x->presence & PPLINE_PRESENT ? x->ppline : ""))
-    return H3RESULT_EPACK;
-  if (write_int(f, x->N)) return H3RESULT_EPACK;
+  if (write_int(f, x->presence))                                       return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & RFLINE_PRESENT ? x->rfline : "")) return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & MMLINE_PRESENT ? x->mmline : "")) return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & CSLINE_PRESENT ? x->csline : "")) return H3RESULT_EPACK;
+  if (write_cstring(f, x->model))                                      return H3RESULT_EPACK;
+  if (write_cstring(f, x->mline))                                      return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & ASEQ_PRESENT ? x->aseq : ""))     return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & NTSEQ_PRESENT ? x->ntseq : ""))   return H3RESULT_EPACK;
+  if (write_cstring(f, x->presence & PPLINE_PRESENT ? x->ppline : "")) return H3RESULT_EPACK;
+  if (write_int(f, x->N))                                              return H3RESULT_EPACK;
 
   if (write_cstring(f, x->hmmname)) return H3RESULT_EPACK;
-  if (write_cstring(f, x->hmmacc)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->hmmacc))  return H3RESULT_EPACK;
   if (write_cstring(f, x->hmmdesc)) return H3RESULT_EPACK;
-  if (write_int(f, x->hmmfrom)) return H3RESULT_EPACK;
-  if (write_int(f, x->hmmto)) return H3RESULT_EPACK;
-  if (write_int(f, x->M)) return H3RESULT_EPACK;
+  if (write_int(f, x->hmmfrom))     return H3RESULT_EPACK;
+  if (write_int(f, x->hmmto))       return H3RESULT_EPACK;
+  if (write_int(f, x->M))           return H3RESULT_EPACK;
 
   if (write_cstring(f, x->sqname)) return H3RESULT_EPACK;
-  if (write_cstring(f, x->sqacc)) return H3RESULT_EPACK;
+  if (write_cstring(f, x->sqacc))  return H3RESULT_EPACK;
   if (write_cstring(f, x->sqdesc)) return H3RESULT_EPACK;
-  if (write_int(f, x->sqfrom)) return H3RESULT_EPACK;
-  if (write_int(f, x->sqto)) return H3RESULT_EPACK;
-  if (write_int(f, x->L)) return H3RESULT_EPACK;
+  if (write_int(f, x->sqfrom))     return H3RESULT_EPACK;
+  if (write_int(f, x->sqto))       return H3RESULT_EPACK;
+  if (write_int(f, x->L))          return H3RESULT_EPACK;
 
   return 0;
 }
 
-int h3result_alidisplay_unpack(struct alidisplay *x, struct lio_reader *f)
+int h3r_alidisplay_unpack(struct alidisplay *x, struct lio_reader *f)
 {
-  int rc = H3RESULT_EUNPACK;
+  int rc = 0;
 
   if (!expect_array(f, 22)) defer_return(H3RESULT_ENOMEM);
 
-  if (read_int(f, &x->presence)) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->presence))           defer_return(H3RESULT_ENOMEM);
   if ((rc = read_cstring2(f, &x->rfline))) defer_return(H3RESULT_ENOMEM);
   if ((rc = read_cstring2(f, &x->mmline))) defer_return(H3RESULT_ENOMEM);
   if ((rc = read_cstring2(f, &x->csline))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = read_cstring2(f, &x->model))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = read_cstring2(f, &x->mline))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = read_cstring2(f, &x->aseq))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = read_cstring2(f, &x->ntseq))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->model)))  defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->mline)))  defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->aseq)))   defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->ntseq)))  defer_return(H3RESULT_ENOMEM);
   if ((rc = read_cstring2(f, &x->ppline))) defer_return(H3RESULT_ENOMEM);
-  if (read_int(f, &x->N)) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->N))                  defer_return(H3RESULT_ENOMEM);
 
   if ((rc = read_cstring2(f, &x->hmmname))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = read_cstring2(f, &x->hmmacc))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->hmmacc)))  defer_return(H3RESULT_ENOMEM);
   if ((rc = read_cstring2(f, &x->hmmdesc))) defer_return(H3RESULT_ENOMEM);
-  if (read_int(f, &x->hmmfrom)) defer_return(H3RESULT_ENOMEM);
-  if (read_int(f, &x->hmmto)) defer_return(H3RESULT_ENOMEM);
-  if (read_int(f, &x->M)) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->hmmfrom))             defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->hmmto))               defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->M))                   defer_return(H3RESULT_ENOMEM);
 
   if ((rc = read_cstring2(f, &x->sqname))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = read_cstring2(f, &x->sqacc))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->sqacc)))  defer_return(H3RESULT_ENOMEM);
   if ((rc = read_cstring2(f, &x->sqdesc))) defer_return(H3RESULT_ENOMEM);
-  if (read_int(f, &x->sqfrom)) defer_return(H3RESULT_ENOMEM);
-  if (read_int(f, &x->sqto)) defer_return(H3RESULT_ENOMEM);
-  if (read_int(f, &x->L)) defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->sqfrom))             defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->sqto))               defer_return(H3RESULT_ENOMEM);
+  if (read_int(f, &x->L))                  defer_return(H3RESULT_ENOMEM);
 
   return 0;
 
 defer:
-  h3result_alidisplay_cleanup(x);
+  h3r_alidisplay_cleanup(x);
   return rc;
 }
 
@@ -185,7 +179,7 @@ static unsigned textwidth(unsigned n)
   return w;
 }
 
-void h3result_alidisplay_print(struct alidisplay const *x, FILE *f)
+int h3r_alidisplay_print(struct alidisplay const *x, FILE *f)
 {
   /* implement the --acc option for preferring accessions over names in output
    */
@@ -208,7 +202,10 @@ void h3result_alidisplay_print(struct alidisplay const *x, FILE *f)
   unsigned k1 = x->hmmfrom;
   for (unsigned pos = 0; pos < x->N; pos += aliwidth)
   {
-    if (pos > 0) echo(f, "%s", "");
+    if (pos > 0)
+    {
+      if (echo(f, "%s", "")) return H3RESULT_EPRINT;
+    }
 
     unsigned ni = 0;
     unsigned nk = 0;
@@ -228,42 +225,42 @@ void h3result_alidisplay_print(struct alidisplay const *x, FILE *f)
     if (x->presence & CSLINE_PRESENT)
     {
       strncpy(buf, x->csline + pos, aliwidth);
-      echo(f, "  %*s %s CS", namewidth + coordwidth + 1, "", buf);
+      if (echo(f, "  %*s %s CS", namewidth + coordwidth + 1, "", buf)) return H3RESULT_EPRINT;
     }
     if (x->presence & RFLINE_PRESENT)
     {
       strncpy(buf, x->rfline + pos, aliwidth);
-      echo(f, "  %*s %s RF", namewidth + coordwidth + 1, "", buf);
+      if (echo(f, "  %*s %s RF", namewidth + coordwidth + 1, "", buf)) return H3RESULT_EPRINT;
     }
     if (x->presence & MMLINE_PRESENT)
     {
       strncpy(buf, x->mmline + pos, aliwidth);
-      echo(f, "  %*s %s MM", namewidth + coordwidth + 1, "", buf);
+      if (echo(f, "  %*s %s MM", namewidth + coordwidth + 1, "", buf)) return H3RESULT_EPRINT;
     }
 
     strncpy(buf, x->model + pos, aliwidth);
-    echo(f, "  %*s %*d %s %-*d", namewidth, hmmname, coordwidth, k1, buf,
-         coordwidth, k2);
+    if (echo(f, "  %*s %*d %s %-*d", namewidth, hmmname, coordwidth, k1, buf,
+             coordwidth, k2)) return H3RESULT_EPRINT;
 
     strncpy(buf, x->mline + pos, aliwidth);
-    echo(f, "  %*s %s", namewidth + coordwidth + 1, " ", buf);
+    if (echo(f, "  %*s %s", namewidth + coordwidth + 1, " ", buf)) return H3RESULT_EPRINT;
 
     strncpy(buf, x->aseq + pos, aliwidth);
     if (ni > 0)
     {
-      echo(f, "  %*s %*u %s %-*u", namewidth, seqname, coordwidth, i1, buf,
-           coordwidth, i2);
+      if (echo(f, "  %*s %*u %s %-*u", namewidth, seqname, coordwidth, i1, buf,
+               coordwidth, i2)) return H3RESULT_EPRINT;
     }
     else
     {
-      echo(f, "  %*s %*s %s %*s", namewidth, seqname, coordwidth, "-", buf,
-           coordwidth, "-");
+      if (echo(f, "  %*s %*s %s %*s", namewidth, seqname, coordwidth, "-", buf,
+               coordwidth, "-")) return H3RESULT_EPRINT;
     }
 
     if (x->ppline != 0)
     {
       strncpy(buf, x->ppline + pos, aliwidth);
-      echo(f, "  %*s %s PP", namewidth + coordwidth + 1, "", buf);
+      if (echo(f, "  %*s %s PP", namewidth + coordwidth + 1, "", buf)) return H3RESULT_EPRINT;
     }
 
     k1 += nk;
@@ -272,4 +269,5 @@ void h3result_alidisplay_print(struct alidisplay const *x, FILE *f)
     else
       i1 -= ni; // revcomp hit for DNA
   }
+  return 0;
 }

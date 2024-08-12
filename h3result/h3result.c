@@ -112,5 +112,5 @@ char const *h3result_hit_acc(struct h3result const *r, unsigned idx)
 
 double h3result_hit_evalue_ln(struct h3result const *r, unsigned idx)
 {
-  return h3r_tophits_hit_evalue_ln(&r->tophits, idx, r->stats.Z);
+  return h3r_tophits_hit_logevalue(&r->tophits, idx, r->stats.Z);
 }

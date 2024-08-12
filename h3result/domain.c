@@ -30,7 +30,7 @@ static inline void unset(struct domain *x)
 int h3result_domain_init(struct domain *x)
 {
   unset(x);
-  return h3result_alidisplay_init(&x->ad);
+  return h3r_alidisplay_init(&x->ad);
 }
 
 static int grow_scores(struct domain *x, unsigned size)
@@ -60,7 +60,7 @@ void h3result_domain_cleanup(struct domain *x)
 {
   free(x->pos_score);
   unset(x);
-  h3result_alidisplay_cleanup(&x->ad);
+  h3r_alidisplay_cleanup(&x->ad);
 }
 
 int h3result_domain_pack(struct domain const *dom, struct lio_writer *f)
@@ -92,7 +92,7 @@ int h3result_domain_pack(struct domain const *dom, struct lio_writer *f)
   if (write_map(f, 1)) return H3RESULT_EPACK;
   if (write_cstring(f, "alidisplay")) return H3RESULT_EPACK;
 
-  return h3result_alidisplay_pack(&dom->ad, f);
+  return h3r_alidisplay_pack(&dom->ad, f);
 }
 
 int h3result_domain_unpack(struct domain *x, struct lio_reader *f)
@@ -129,7 +129,7 @@ int h3result_domain_unpack(struct domain *x, struct lio_reader *f)
   if (!expect_map(f, 1)) return H3RESULT_EUNPACK;
   if (!expect_key(f, "alidisplay")) return H3RESULT_EUNPACK;
 
-  if ((rc = h3result_alidisplay_unpack(&x->ad, f))) return H3RESULT_EUNPACK;
+  if ((rc = h3r_alidisplay_unpack(&x->ad, f))) return H3RESULT_EUNPACK;
 
   return rc;
 }

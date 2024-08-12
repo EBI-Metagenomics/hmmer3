@@ -1,5 +1,5 @@
-#ifndef H3RESULT_EXPECT_H
-#define H3RESULT_EXPECT_H
+#ifndef EXPECT_H
+#define EXPECT_H
 
 #include "read.h"
 #include <stdbool.h>
@@ -8,26 +8,26 @@
 
 struct lio_reader;
 
-static inline bool expect_key(struct lio_reader *f, char const *key)
+static inline int expect_key(struct lio_reader *x, char const *key)
 {
   char str[16] = {0};
   unsigned size = (unsigned)strlen(key) + 1;
-  if (read_cstring(f, size, str)) return false;
-  return strncmp(str, key, sizeof(str)) == 0;
+  if (read_cstring(x, size, str)) return 1;
+  return strncmp(str, key, sizeof(str)) != 0;
 }
 
-static inline bool expect_array(struct lio_reader *f, unsigned size)
+static inline int expect_array(struct lio_reader *x, unsigned size)
 {
   unsigned sz = 0;
-  if (read_array(f, &sz)) return false;
-  return size == sz;
+  if (read_array(x, &sz)) return 1;
+  return size != sz;
 }
 
-static inline bool expect_map(struct lio_reader *f, unsigned size)
+static inline int expect_map(struct lio_reader *x, unsigned size)
 {
   unsigned sz = 0;
-  if (read_map(f, &sz)) return false;
-  return size == sz;
+  if (read_map(x, &sz)) return 1;
+  return size != sz;
 }
 
 #endif

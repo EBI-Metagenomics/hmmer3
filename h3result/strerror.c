@@ -3,9 +3,9 @@
 #include <stdio.h>
 
 static char const *msg[] = {
-    [H3RESULT_EUNPACK] = "unpack failure",
-    [H3RESULT_EPACK] = "pack failure",
-    [H3RESULT_ENOMEM] = "insufficient free memory",
+    [H3R_EUNPACK] = "unpack failure",
+    [H3R_EPACK] = "pack failure",
+    [H3R_ENOMEM] = "insufficient free memory",
 };
 
 #define array_size(arr) (sizeof(arr) / sizeof((arr)[0]))

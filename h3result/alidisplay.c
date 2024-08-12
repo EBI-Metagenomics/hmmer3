@@ -240,7 +240,7 @@ int h3r_alidisplay_print(struct alidisplay const *x, FILE *f)
 
     strncpy(buf, x->model + pos, aliwidth);
     if (echon(f, "  %*s %*d %s %-*d", namewidth, hmmname, coordwidth, k1, buf,
-             coordwidth, k2)) return H3RESULT_EPRINT;
+              coordwidth, k2)) return H3RESULT_EPRINT;
 
     strncpy(buf, x->mline + pos, aliwidth);
     if (echon(f, "  %*s %s", namewidth + coordwidth + 1, " ", buf)) return H3RESULT_EPRINT;
@@ -249,12 +249,12 @@ int h3r_alidisplay_print(struct alidisplay const *x, FILE *f)
     if (ni > 0)
     {
       if (echon(f, "  %*s %*u %s %-*u", namewidth, seqname, coordwidth, i1, buf,
-               coordwidth, i2)) return H3RESULT_EPRINT;
+                coordwidth, i2)) return H3RESULT_EPRINT;
     }
     else
     {
       if (echon(f, "  %*s %*s %s %*s", namewidth, seqname, coordwidth, "-", buf,
-               coordwidth, "-")) return H3RESULT_EPRINT;
+                coordwidth, "-")) return H3RESULT_EPRINT;
     }
 
     if (x->ppline != 0)

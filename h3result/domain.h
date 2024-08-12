@@ -1,5 +1,5 @@
-#ifndef H3RESULT_DOMAIN_H
-#define H3RESULT_DOMAIN_H
+#ifndef DOMAIN_H
+#define DOMAIN_H
 
 #include "alidisplay.h"
 #include "static_assert2.h"
@@ -31,10 +31,10 @@ struct domain
 
 static_assert2(sizeof(long) >= 8);
 
-int h3result_domain_init(struct domain *);
-int h3result_domain_setup(struct domain *, unsigned scores_size);
-void h3result_domain_cleanup(struct domain *);
-int h3result_domain_pack(struct domain const *, struct lio_writer *);
-int h3result_domain_unpack(struct domain *, struct lio_reader *);
+int  h3r_domain_init(struct domain *);
+int  h3r_domain_setup(struct domain *, unsigned scores_size);
+void h3r_domain_cleanup(struct domain *);
+int  h3r_domain_pack(struct domain const *, struct lio_writer *);
+int  h3r_domain_unpack(struct domain *, struct lio_reader *);
 
 #endif

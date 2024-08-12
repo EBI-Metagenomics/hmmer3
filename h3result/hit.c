@@ -64,7 +64,7 @@ static int grow(struct hit *x, unsigned ndomains)
 
   for (unsigned i = x->ndomains; i < ndomains; ++i)
   {
-    if ((rc = h3result_domain_init(x->domains + i))) return rc;
+    if ((rc = h3r_domain_init(x->domains + i))) return rc;
     ++x->ndomains;
   }
 
@@ -77,7 +77,7 @@ defer:
 static void shrink(struct hit *x, unsigned ndomains)
 {
   for (unsigned i = ndomains; i < x->ndomains; ++i)
-    h3result_domain_cleanup(x->domains + i);
+    h3r_domain_cleanup(x->domains + i);
 
   x->ndomains = ndomains;
 }
@@ -96,7 +96,7 @@ void h3r_hit_cleanup(struct hit *x)
   free(x->desc);
 
   for (unsigned i = 0; i < x->ndomains; ++i)
-    h3result_domain_cleanup(x->domains + i);
+    h3r_domain_cleanup(x->domains + i);
 
   free(x->domains);
   unset(x);
@@ -136,7 +136,7 @@ int h3r_hit_pack(struct hit const *hit, struct lio_writer *f)
 
   for (unsigned i = 0; i < hit->ndomains; ++i)
   {
-    int rc = h3result_domain_pack(hit->domains + i, f);
+    int rc = h3r_domain_pack(hit->domains + i, f);
     if (rc) return rc;
   }
 
@@ -184,7 +184,7 @@ int h3r_hit_unpack(struct hit *x, struct lio_reader *f)
 
   for (unsigned i = 0; i < x->ndomains; ++i)
   {
-    if ((rc = h3result_domain_unpack(x->domains + i, f))) return rc;
+    if ((rc = h3r_domain_unpack(x->domains + i, f))) return rc;
   }
 
   return 0;

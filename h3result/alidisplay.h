@@ -42,6 +42,6 @@ int  h3r_alidisplay_init(struct alidisplay *);
 void h3r_alidisplay_cleanup(struct alidisplay *);
 int  h3r_alidisplay_pack(struct alidisplay const *, struct lio_writer *);
 int  h3r_alidisplay_unpack(struct alidisplay *, struct lio_reader *);
-int  h3r_alidisplay_print(struct alidisplay const *, FILE *file);
+int  h3r_alidisplay_print(struct alidisplay const *, FILE *);
 
 #endif

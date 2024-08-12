@@ -1,5 +1,5 @@
-#ifndef H3RESULT_TOPHITS_H
-#define H3RESULT_TOPHITS_H
+#ifndef TOPHITS_H
+#define TOPHITS_H
 
 #include "static_assert2.h"
 #include <stdbool.h>

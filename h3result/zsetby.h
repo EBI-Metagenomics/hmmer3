@@ -1,5 +1,5 @@
-#ifndef H3RESULT_ZSETBY_H
-#define H3RESULT_ZSETBY_H
+#ifndef ZSETBY_H
+#define ZSETBY_H
 
 enum zsetby
 {

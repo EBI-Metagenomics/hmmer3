@@ -1,5 +1,5 @@
-#ifndef H3RESULT_MAX_H
-#define H3RESULT_MAX_H
+#ifndef MAX_H
+#define MAX_H
 
 #include <stddef.h>
 

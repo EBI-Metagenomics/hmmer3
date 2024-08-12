@@ -14,20 +14,30 @@ defaults:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    name: Test on ${{matrix.os}}
+    runs-on: ${{matrix.os}}
+    env:
+      PREFIX:         ${{github.workspace}}/deps
+      C_INCLUDE_PATH: ${{github.workspace}}/deps/include
+      LIBRARY_PATH:   ${{github.workspace}}/deps/lib
     strategy:
       matrix:
-        build_type: [Release, Debug]
+        os: [ubuntu-22.04, macos-12]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DUSE_SANITIZER='Address;Undefined'
+      - name: clone lite-pack
+        run: git clone --depth 1 https://github.com/EBI-Metagenomics/lip.git lip
 
-      - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+      - name: build & install lite-pack
+        run: cd lip && make && make install
 
-      - name: Test
-        working-directory: ${{github.workspace}}/build
-        run: ASAN_OPTIONS=allocator_may_return_null=1 ctest -C ${{matrix.build_type}} --rerun-failed --output-on-failure
+      - name: build & install lite-pack-io
+        run: cd lip/ext && make && make install
+
+      - name: make
+        run: make
+
+      - name: make check
+        run: make check

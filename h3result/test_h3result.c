@@ -73,7 +73,7 @@ static void test_domains(void)
   aye(!close(fd));
   aye(hash("domains.txt") == 46469L);
   h3result_del(result);
-  remove("domains.txt");
+  // remove("domains.txt");
 }
 
 static void test_domains_table(void)

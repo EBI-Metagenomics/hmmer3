@@ -38,7 +38,7 @@ static int grow(struct tophits *x, unsigned nhits)
   for (unsigned i = x->nhits; i < nhits; ++i)
   {
     int rc = 0;
-    if ((rc = h3result_hit_init(x->hits + i))) return rc;
+    if ((rc = h3r_hit_init(x->hits + i))) return rc;
     ++x->nhits;
   }
 
@@ -48,7 +48,7 @@ static int grow(struct tophits *x, unsigned nhits)
 static void shrink(struct tophits *x, unsigned nhits)
 {
   for (unsigned i = nhits; i < x->nhits; ++i)
-    h3result_hit_cleanup(x->hits + i);
+    h3r_hit_cleanup(x->hits + i);
 
   x->nhits = nhits;
 }
@@ -63,7 +63,7 @@ int h3r_tophits_setup(struct tophits *x, unsigned nhits)
 void h3r_tophits_cleanup(struct tophits *x)
 {
   for (unsigned i = 0; i < x->nhits; ++i)
-    h3result_hit_cleanup(x->hits + i);
+    h3r_hit_cleanup(x->hits + i);
   free(x->hits);
   unset(x);
 }
@@ -78,7 +78,7 @@ int h3r_tophits_pack(struct tophits const *th, struct lio_writer *f)
 
   for (unsigned i = 0; i < th->nhits; ++i)
   {
-    int rc = h3result_hit_pack(th->hits + i, f);
+    int rc = h3r_hit_pack(th->hits + i, f);
     if (rc) return rc;
   }
 
@@ -106,7 +106,7 @@ int h3r_tophits_unpack(struct tophits *th, struct lio_reader *f)
 
   for (unsigned i = 0; i < th->nhits; ++i)
   {
-    if ((rc = h3result_hit_unpack(th->hits + i, f))) return H3RESULT_EUNPACK;
+    if ((rc = h3r_hit_unpack(th->hits + i, f))) return H3RESULT_EUNPACK;
   }
 
   if (read_int(f, &th->nreported)) return H3RESULT_EUNPACK;
@@ -235,8 +235,8 @@ int h3r_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
 static inline int echo_range(FILE *f, unsigned from, unsigned to,
                              unsigned length)
 {
-  return echo(f, " %7u %7u %c%c", from, to, from == 1 ? '[' : '.',
-              to == length ? ']' : '.');
+  return echo2(f, " %7u %7u %c%c", from, to, from == 1 ? '[' : '.',
+               to == length ? ']' : '.');
 }
 
 static double prob_ali_res(struct domain const *dom)
@@ -291,9 +291,9 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
       if (!dom->is_reported) continue;
 
       dnum++;
-      if (echo(f, " %3u %c %6.1f %5.1f %9.2g %9.2g", dnum, included_symbol(dom),
-               dom->bitscore, dombits(dom), evalue(dom->lnP, domZ),
-               evalue(dom->lnP, Z)))
+      if (echo2(f, " %3u %c %6.1f %5.1f %9.2g %9.2g", dnum,
+                included_symbol(dom), dom->bitscore, dombits(dom),
+                evalue(dom->lnP, domZ), evalue(dom->lnP, Z)))
         return H3RESULT_EPRINT;
 
       if (echo_range(f, dom->ad.hmmfrom, dom->ad.hmmto, dom->ad.M)) return H3RESULT_EUNPACK;
@@ -314,8 +314,8 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
       if (!dom->is_reported) continue;
 
       dnum++;
-      if (echo(f, "  == domain %d", dnum))                                 return H3RESULT_EPRINT;
-      if (echo(f, "  score: %.1f bits", dom->bitscore))                    return H3RESULT_EPRINT;
+      if (echo2(f, "  == domain %d", dnum))                                return H3RESULT_EPRINT;
+      if (echo2(f, "  score: %.1f bits", dom->bitscore))                   return H3RESULT_EPRINT;
       if (echo(f, ";  conditional E-value: %.2g", evalue(dom->lnP, domZ))) return H3RESULT_EPRINT;
 
       h3r_alidisplay_print(&dom->ad, f);
@@ -408,6 +408,7 @@ int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
          hit->nregions, hit->nclustered, hit->noverlaps, hit->nenvelopes,
          hit->ndomains, hit->nreported, hit->nincluded, hit->desc);
   }
+  return 0;
 }
 
 static void print_domains_table_header(struct header_width w, FILE *f)
@@ -480,6 +481,7 @@ int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *x,
            prob_ali_res(dom), strdash(hit->desc));
     }
   }
+  return 0;
 }
 
 char const *h3r_tophits_hit_name(struct tophits const *x, unsigned idx)

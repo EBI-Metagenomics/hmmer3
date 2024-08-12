@@ -39,33 +39,33 @@ static inline void unset(struct hit *x)
   x->domains = NULL;
 }
 
-int h3result_hit_init(struct hit *x)
+int h3r_hit_init(struct hit *x)
 {
   int rc = 0;
   unset(x);
   if (!(x->name = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
-  if (!(x->acc = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
+  if (!(x->acc = malloc(sizeof(char))))  defer_return(H3RESULT_ENOMEM);
   if (!(x->desc = malloc(sizeof(char)))) defer_return(H3RESULT_ENOMEM);
 
   return 0;
 
 defer:
-  h3result_hit_cleanup(x);
+  h3r_hit_cleanup(x);
   return rc;
 }
 
-static int grow(struct hit *hit, unsigned ndomains)
+static int grow(struct hit *x, unsigned ndomains)
 {
   int rc = 0;
 
-  size_t sz = ndomains * sizeof(*hit->domains);
-  hit->domains = realloc(hit->domains, sz);
-  if (!hit->domains) defer_return(H3RESULT_ENOMEM);
+  size_t sz = ndomains * sizeof(*x->domains);
+  x->domains = realloc(x->domains, sz);
+  if (!x->domains) defer_return(H3RESULT_ENOMEM);
 
-  for (unsigned i = hit->ndomains; i < ndomains; ++i)
+  for (unsigned i = x->ndomains; i < ndomains; ++i)
   {
-    if ((rc = h3result_domain_init(hit->domains + i))) return rc;
-    ++hit->ndomains;
+    if ((rc = h3result_domain_init(x->domains + i))) return rc;
+    ++x->ndomains;
   }
 
   return 0;
@@ -74,40 +74,35 @@ defer:
   return rc;
 }
 
-static void shrink(struct hit *hit, unsigned ndomains)
+static void shrink(struct hit *x, unsigned ndomains)
 {
-  for (unsigned i = ndomains; i < hit->ndomains; ++i)
-    h3result_domain_cleanup(hit->domains + i);
+  for (unsigned i = ndomains; i < x->ndomains; ++i)
+    h3result_domain_cleanup(x->domains + i);
 
-  hit->ndomains = ndomains;
+  x->ndomains = ndomains;
 }
 
-int h3result_hit_setup(struct hit *hit, unsigned ndomains)
+int h3r_hit_setup(struct hit *x, unsigned ndomains)
 {
-  if (hit->ndomains < ndomains) return grow(hit, ndomains);
-  shrink(hit, ndomains);
+  if (x->ndomains < ndomains) return grow(x, ndomains);
+  shrink(x, ndomains);
   return 0;
 }
 
-void h3result_hit_cleanup(struct hit *hit)
+void h3r_hit_cleanup(struct hit *x)
 {
-  free(hit->name);
-  free(hit->acc);
-  free(hit->desc);
+  free(x->name);
+  free(x->acc);
+  free(x->desc);
 
-  hit->name = NULL;
-  hit->acc = NULL;
-  hit->desc = NULL;
+  for (unsigned i = 0; i < x->ndomains; ++i)
+    h3result_domain_cleanup(x->domains + i);
 
-  for (unsigned i = 0; i < hit->ndomains; ++i)
-    h3result_domain_cleanup(hit->domains + i);
-
-  hit->ndomains = 0;
-  free(hit->domains);
-  hit->domains = NULL;
+  free(x->domains);
+  unset(x);
 }
 
-int h3result_hit_pack(struct hit const *hit, struct lio_writer *f)
+int h3r_hit_pack(struct hit const *hit, struct lio_writer *f)
 {
   if (write_array(f, 20)) return H3RESULT_EPACK;
 
@@ -148,36 +143,36 @@ int h3result_hit_pack(struct hit const *hit, struct lio_writer *f)
   return 0;
 }
 
-int h3result_hit_unpack(struct hit *hit, struct lio_reader *f)
+int h3r_hit_unpack(struct hit *x, struct lio_reader *f)
 {
   int rc = 0;
 
   if (!expect_array(f, 20)) return H3RESULT_EUNPACK;
 
-  if ((rc = read_cstring2(f, &hit->name))) return H3RESULT_EUNPACK;
-  if ((rc = read_cstring2(f, &hit->acc))) return H3RESULT_EUNPACK;
-  if ((rc = read_cstring2(f, &hit->desc))) return H3RESULT_EUNPACK;
+  if ((rc = read_cstring2(f, &x->name))) return H3RESULT_EUNPACK;
+  if ((rc = read_cstring2(f, &x->acc))) return H3RESULT_EUNPACK;
+  if ((rc = read_cstring2(f, &x->desc))) return H3RESULT_EUNPACK;
 
-  if (read_float(f, &hit->sortkey)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->sortkey)) return H3RESULT_EUNPACK;
 
-  if (read_float(f, &hit->score)) return H3RESULT_EUNPACK;
-  if (read_float(f, &hit->pre_score)) return H3RESULT_EUNPACK;
-  if (read_float(f, &hit->sum_score)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->score)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->pre_score)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->sum_score)) return H3RESULT_EUNPACK;
 
-  if (read_float(f, &hit->lnP)) return H3RESULT_EUNPACK;
-  if (read_float(f, &hit->pre_lnP)) return H3RESULT_EUNPACK;
-  if (read_float(f, &hit->sum_lnP)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->lnP)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->pre_lnP)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->sum_lnP)) return H3RESULT_EUNPACK;
 
-  if (read_float(f, &hit->nexpected)) return H3RESULT_EUNPACK;
-  if (read_int(f, &hit->nregions)) return H3RESULT_EUNPACK;
-  if (read_int(f, &hit->nclustered)) return H3RESULT_EUNPACK;
-  if (read_int(f, &hit->noverlaps)) return H3RESULT_EUNPACK;
-  if (read_int(f, &hit->nenvelopes)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->nexpected)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nregions)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nclustered)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->noverlaps)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nenvelopes)) return H3RESULT_EUNPACK;
 
-  if (read_int(f, &hit->flags)) return H3RESULT_EUNPACK;
-  if (read_int(f, &hit->nreported)) return H3RESULT_EUNPACK;
-  if (read_int(f, &hit->nincluded)) return H3RESULT_EUNPACK;
-  if (read_int(f, &hit->best_domain)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->flags)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nreported)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nincluded)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->best_domain)) return H3RESULT_EUNPACK;
 
   if (!expect_map(f, 1)) return H3RESULT_EUNPACK;
   if (!expect_key(f, "domains")) return H3RESULT_EUNPACK;
@@ -185,11 +180,11 @@ int h3result_hit_unpack(struct hit *hit, struct lio_reader *f)
   unsigned size = 0;
   if (read_array(f, &size)) return H3RESULT_EUNPACK;
 
-  if ((rc = h3result_hit_setup(hit, size))) return rc;
+  if ((rc = h3r_hit_setup(x, size))) return rc;
 
-  for (unsigned i = 0; i < hit->ndomains; ++i)
+  for (unsigned i = 0; i < x->ndomains; ++i)
   {
-    if ((rc = h3result_domain_unpack(hit->domains + i, f))) return rc;
+    if ((rc = h3result_domain_unpack(x->domains + i, f))) return rc;
   }
 
   return 0;

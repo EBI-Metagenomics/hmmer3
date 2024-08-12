@@ -4,57 +4,71 @@
 #include "read.h"
 #include "stats.h"
 #include "write.h"
-#include <string.h>
 
-void h3result_stats_init(struct stats *stats)
+void h3r_stats_init(struct stats *x)
 {
-  memset(stats, 0, sizeof(*stats));
+  x->Z = 0;
+  x->domZ = 0;
+
+  x->Z_setby = 0;
+  x->domZ_setby = 0;
+
+  x->nmodels = 0;
+  x->nseqs = 0;
+  x->n_past_msv = 0;
+  x->n_past_bias = 0;
+  x->n_past_vit = 0;
+  x->n_past_fwd = 0;
+
+  x->nhits = 0;
+  x->nreported = 0;
+  x->nincluded = 0;
 }
 
-int h3result_stats_pack(struct stats const *stats, struct lio_writer *f)
+int h3r_stats_pack(struct stats const *x, struct lio_writer *f)
 {
   if (write_array(f, 13)) return H3RESULT_EPACK;
 
-  if (write_float(f, stats->Z)) return H3RESULT_EPACK;
-  if (write_float(f, stats->domZ)) return H3RESULT_EPACK;
+  if (write_float(f, x->Z)) return H3RESULT_EPACK;
+  if (write_float(f, x->domZ)) return H3RESULT_EPACK;
 
-  if (write_int(f, stats->Z_setby)) return H3RESULT_EPACK;
-  if (write_int(f, stats->domZ_setby)) return H3RESULT_EPACK;
+  if (write_int(f, x->Z_setby)) return H3RESULT_EPACK;
+  if (write_int(f, x->domZ_setby)) return H3RESULT_EPACK;
 
-  if (write_int(f, stats->nmodels)) return H3RESULT_EPACK;
-  if (write_int(f, stats->nseqs)) return H3RESULT_EPACK;
-  if (write_int(f, stats->n_past_msv)) return H3RESULT_EPACK;
-  if (write_int(f, stats->n_past_bias)) return H3RESULT_EPACK;
-  if (write_int(f, stats->n_past_vit)) return H3RESULT_EPACK;
-  if (write_int(f, stats->n_past_fwd)) return H3RESULT_EPACK;
+  if (write_int(f, x->nmodels)) return H3RESULT_EPACK;
+  if (write_int(f, x->nseqs)) return H3RESULT_EPACK;
+  if (write_int(f, x->n_past_msv)) return H3RESULT_EPACK;
+  if (write_int(f, x->n_past_bias)) return H3RESULT_EPACK;
+  if (write_int(f, x->n_past_vit)) return H3RESULT_EPACK;
+  if (write_int(f, x->n_past_fwd)) return H3RESULT_EPACK;
 
-  if (write_int(f, stats->nhits)) return H3RESULT_EPACK;
-  if (write_int(f, stats->nreported)) return H3RESULT_EPACK;
-  if (write_int(f, stats->nincluded)) return H3RESULT_EPACK;
+  if (write_int(f, x->nhits)) return H3RESULT_EPACK;
+  if (write_int(f, x->nreported)) return H3RESULT_EPACK;
+  if (write_int(f, x->nincluded)) return H3RESULT_EPACK;
 
   return 0;
 }
 
-int h3result_stats_unpack(struct stats *stats, struct lio_reader *f)
+int h3r_stats_unpack(struct stats *x, struct lio_reader *f)
 {
   if (!expect_array(f, 13)) return H3RESULT_EUNPACK;
 
-  if (read_float(f, &stats->Z)) return H3RESULT_EUNPACK;
-  if (read_float(f, &stats->domZ)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->Z)) return H3RESULT_EUNPACK;
+  if (read_float(f, &x->domZ)) return H3RESULT_EUNPACK;
 
-  if (read_int(f, &stats->Z_setby)) return H3RESULT_EUNPACK;
-  if (read_int(f, &stats->domZ_setby)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->Z_setby)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->domZ_setby)) return H3RESULT_EUNPACK;
 
-  if (read_int(f, &stats->nmodels)) return H3RESULT_EUNPACK;
-  if (read_int(f, &stats->nseqs)) return H3RESULT_EUNPACK;
-  if (read_int(f, &stats->n_past_msv)) return H3RESULT_EUNPACK;
-  if (read_int(f, &stats->n_past_bias)) return H3RESULT_EUNPACK;
-  if (read_int(f, &stats->n_past_vit)) return H3RESULT_EUNPACK;
-  if (read_int(f, &stats->n_past_fwd)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nmodels)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nseqs)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->n_past_msv)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->n_past_bias)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->n_past_vit)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->n_past_fwd)) return H3RESULT_EUNPACK;
 
-  if (read_int(f, &stats->nhits)) return H3RESULT_EUNPACK;
-  if (read_int(f, &stats->nreported)) return H3RESULT_EUNPACK;
-  if (read_int(f, &stats->nincluded)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nhits)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nreported)) return H3RESULT_EUNPACK;
+  if (read_int(f, &x->nincluded)) return H3RESULT_EUNPACK;
 
   return 0;
 }

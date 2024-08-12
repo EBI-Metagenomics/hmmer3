@@ -14,7 +14,7 @@ struct h3result *h3result_new(void)
   if (!x) return 0;
   x->errnum = 0;
   x->errstr = NULL;
-  h3result_stats_init(&x->stats);
+  h3r_stats_init(&x->stats);
   h3r_tophits_init(&x->tophits);
   return x;
 }
@@ -36,7 +36,7 @@ int h3result_pack(struct h3result const *result, int fd)
 
   if (write_map(&f, 2)) return H3RESULT_EPACK;
   if (write_cstring(&f, "stats")) return H3RESULT_EPACK;
-  int rc = h3result_stats_pack(&result->stats, &f);
+  int rc = h3r_stats_pack(&result->stats, &f);
   if (rc) return rc;
 
   if (write_cstring(&f, "tophits")) return H3RESULT_EPACK;
@@ -54,7 +54,7 @@ int h3result_unpack(struct h3result *result, int fd)
 
   if (!expect_map(&f, 2)) return H3RESULT_EUNPACK;
   if (!expect_key(&f, "stats")) return H3RESULT_EUNPACK;
-  int rc = h3result_stats_unpack(&result->stats, &f);
+  int rc = h3r_stats_unpack(&result->stats, &f);
   if (rc) return rc;
 
   if (!expect_key(&f, "tophits")) return H3RESULT_EUNPACK;

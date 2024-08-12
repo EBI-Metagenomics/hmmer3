@@ -22,4 +22,20 @@ defer:
   return rc;
 }
 
+static inline int __attribute__((format(printf, 2, 3)))
+echo2(FILE *fp, char const *fmt, ...)
+
+{
+  int rc = 0;
+  va_list params = {0};
+  va_start(params, fmt);
+  if (vfprintf(fp, fmt, params) < 0) defer_return(1);
+  va_end(params);
+  return 0;
+
+defer:
+  va_end(params);
+  return rc;
+}
+
 #endif

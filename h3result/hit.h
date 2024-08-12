@@ -1,5 +1,5 @@
-#ifndef H3RESULT_HIT_H
-#define H3RESULT_HIT_H
+#ifndef HIT_H
+#define HIT_H
 
 #include "static_assert2.h"
 #include <stdint.h>
@@ -40,10 +40,10 @@ struct hit
 
 static_assert2(sizeof(unsigned) >= 4);
 
-int h3result_hit_init(struct hit *);
-int h3result_hit_setup(struct hit *, unsigned ndomains);
-void h3result_hit_cleanup(struct hit *);
-int h3result_hit_pack(struct hit const *, struct lio_writer *);
-int h3result_hit_unpack(struct hit *, struct lio_reader *);
+int  h3r_hit_init(struct hit *);
+int  h3r_hit_setup(struct hit *, unsigned ndomains);
+void h3r_hit_cleanup(struct hit *);
+int  h3r_hit_pack(struct hit const *, struct lio_writer *);
+int  h3r_hit_unpack(struct hit *, struct lio_reader *);
 
 #endif

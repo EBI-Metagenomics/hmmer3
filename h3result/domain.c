@@ -99,7 +99,7 @@ int h3result_domain_unpack(struct domain *x, struct lio_reader *f)
 {
   int rc = 0;
 
-  if (!h3result_expect_array_size(f, 14)) return H3RESULT_EUNPACK;
+  if (!expect_array(f, 14)) return H3RESULT_EUNPACK;
 
   if (read_int(f, &x->ienv)) return H3RESULT_EUNPACK;
   if (read_int(f, &x->jenv)) return H3RESULT_EUNPACK;
@@ -126,8 +126,8 @@ int h3result_domain_unpack(struct domain *x, struct lio_reader *f)
     if (read_float(f, x->pos_score + i)) return H3RESULT_EUNPACK;
   }
 
-  if (!h3result_expect_map_size(f, 1)) return H3RESULT_EUNPACK;
-  if (!h3result_expect_key(f, "alidisplay")) return H3RESULT_EUNPACK;
+  if (!expect_map(f, 1)) return H3RESULT_EUNPACK;
+  if (!expect_key(f, "alidisplay")) return H3RESULT_EUNPACK;
 
   if ((rc = h3result_alidisplay_unpack(&x->ad, f))) return H3RESULT_EUNPACK;
 

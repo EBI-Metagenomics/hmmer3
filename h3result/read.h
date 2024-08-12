@@ -1,6 +1,7 @@
 #ifndef READ_H
 #define READ_H
 
+#include "bsd.h"
 #include "lio.h"
 #include <stdint.h>
 
@@ -30,6 +31,16 @@ static inline int read_cstring(struct lio_reader *x, uint32_t size,
   if (length >= size) return 1;
   if (lio_readb(x, length, (unsigned char *)string)) return 1;
   string[length] = '\0';
+  return 0;
+}
+
+static inline int read_cstring2(struct lio_reader *f, char **str)
+{
+  unsigned size = 0;
+  if (read_string(f, &size)) return 0;
+  if (!(*str = bsd_reallocf(*str, size + 1))) return 0;
+  if (lio_readb(f, size, (unsigned char *)*str)) return 0;
+  (*str)[size] = '\0';
   return 0;
 }
 

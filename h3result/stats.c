@@ -37,7 +37,7 @@ int h3result_stats_pack(struct stats const *stats, struct lio_writer *f)
 
 int h3result_stats_unpack(struct stats *stats, struct lio_reader *f)
 {
-  if (!h3result_expect_array_size(f, 13)) return H3RESULT_EUNPACK;
+  if (!expect_array(f, 13)) return H3RESULT_EUNPACK;
 
   if (read_float(f, &stats->Z)) return H3RESULT_EUNPACK;
   if (read_float(f, &stats->domZ)) return H3RESULT_EUNPACK;

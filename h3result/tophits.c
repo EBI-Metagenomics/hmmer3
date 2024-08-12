@@ -94,10 +94,10 @@ int h3result_tophits_unpack(struct tophits *th, struct lio_reader *f)
 {
   int rc = H3RESULT_EUNPACK;
 
-  if (!h3result_expect_array_size(f, 5)) goto cleanup;
+  if (!expect_array(f, 5)) goto cleanup;
 
-  if (!h3result_expect_map_size(f, 1)) goto cleanup;
-  if (!h3result_expect_key(f, "hits")) goto cleanup;
+  if (!expect_map(f, 1)) goto cleanup;
+  if (!expect_key(f, "hits")) goto cleanup;
 
   unsigned size = 0;
   if (read_array(f, &size)) goto cleanup;

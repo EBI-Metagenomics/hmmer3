@@ -76,31 +76,26 @@ defer:
   return rc;
 }
 
-#define DEL(ptr)                                                               \
-  do                                                                           \
-  {                                                                            \
-    free((ptr));                                                               \
-    (ptr) = NULL;                                                              \
-  } while (0);
-
 void h3result_alidisplay_cleanup(struct alidisplay *x)
 {
-  DEL(x->rfline);
-  DEL(x->mmline);
-  DEL(x->csline);
-  DEL(x->model);
-  DEL(x->mline);
-  DEL(x->aseq);
-  DEL(x->ntseq);
-  DEL(x->ppline);
+  free(x->rfline);
+  free(x->mmline);
+  free(x->csline);
+  free(x->model);
+  free(x->mline);
+  free(x->aseq);
+  free(x->ntseq);
+  free(x->ppline);
 
-  DEL(x->hmmname);
-  DEL(x->hmmacc);
-  DEL(x->hmmdesc);
+  free(x->hmmname);
+  free(x->hmmacc);
+  free(x->hmmdesc);
 
-  DEL(x->sqname);
-  DEL(x->sqacc);
-  DEL(x->sqdesc);
+  free(x->sqname);
+  free(x->sqacc);
+  free(x->sqdesc);
+
+  unset(x);
 }
 
 int h3result_alidisplay_pack(struct alidisplay const *x, struct lio_writer *f)
@@ -145,31 +140,29 @@ int h3result_alidisplay_unpack(struct alidisplay *x, struct lio_reader *f)
 {
   int rc = H3RESULT_EUNPACK;
 
-  if (!h3result_expect_array_size(f, 22)) defer_return(H3RESULT_ENOMEM);
+  if (!expect_array(f, 22)) defer_return(H3RESULT_ENOMEM);
 
   if (read_int(f, &x->presence)) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->rfline))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->mmline))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->csline))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->model))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->mline))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->aseq))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->ntseq))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->ppline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->rfline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->mmline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->csline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->model))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->mline))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->aseq))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->ntseq))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->ppline))) defer_return(H3RESULT_ENOMEM);
   if (read_int(f, &x->N)) defer_return(H3RESULT_ENOMEM);
 
-  if ((rc = h3result_read_string(f, &x->hmmname)))
-    defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->hmmacc))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->hmmdesc)))
-    defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->hmmname))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->hmmacc))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->hmmdesc))) defer_return(H3RESULT_ENOMEM);
   if (read_int(f, &x->hmmfrom)) defer_return(H3RESULT_ENOMEM);
   if (read_int(f, &x->hmmto)) defer_return(H3RESULT_ENOMEM);
   if (read_int(f, &x->M)) defer_return(H3RESULT_ENOMEM);
 
-  if ((rc = h3result_read_string(f, &x->sqname))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->sqacc))) defer_return(H3RESULT_ENOMEM);
-  if ((rc = h3result_read_string(f, &x->sqdesc))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->sqname))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->sqacc))) defer_return(H3RESULT_ENOMEM);
+  if ((rc = read_cstring2(f, &x->sqdesc))) defer_return(H3RESULT_ENOMEM);
   if (read_int(f, &x->sqfrom)) defer_return(H3RESULT_ENOMEM);
   if (read_int(f, &x->sqto)) defer_return(H3RESULT_ENOMEM);
   if (read_int(f, &x->L)) defer_return(H3RESULT_ENOMEM);

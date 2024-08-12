@@ -48,16 +48,16 @@ int h3result_unpack(struct h3result *result, int fd)
   struct lio_reader f = {0};
   lio_rsetup(&f, fd);
 
-  if (!h3result_expect_map_size(&f, 1)) return H3RESULT_EUNPACK;
+  if (!expect_map(&f, 1)) return H3RESULT_EUNPACK;
 
-  if (!h3result_expect_key(&f, "h3result")) return H3RESULT_EUNPACK;
+  if (!expect_key(&f, "h3result")) return H3RESULT_EUNPACK;
 
-  if (!h3result_expect_map_size(&f, 2)) return H3RESULT_EUNPACK;
-  if (!h3result_expect_key(&f, "stats")) return H3RESULT_EUNPACK;
+  if (!expect_map(&f, 2)) return H3RESULT_EUNPACK;
+  if (!expect_key(&f, "stats")) return H3RESULT_EUNPACK;
   int rc = h3result_stats_unpack(&result->stats, &f);
   if (rc) return rc;
 
-  if (!h3result_expect_key(&f, "tophits")) return H3RESULT_EUNPACK;
+  if (!expect_key(&f, "tophits")) return H3RESULT_EUNPACK;
   return h3result_tophits_unpack(&result->tophits, &f);
 }
 

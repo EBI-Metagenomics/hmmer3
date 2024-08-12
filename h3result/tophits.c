@@ -318,7 +318,8 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
       if (echo(f, "  score: %.1f bits", dom->bitscore))                   return H3R_EPRINT;
       if (echon(f, ";  conditional E-value: %.2g", evalue(dom->lnP, domZ))) return H3R_EPRINT;
 
-      h3r_alidisplay_print(&dom->ad, f);
+      int rc = h3r_alidisplay_print(&dom->ad, f);
+      if (rc) return rc;
       if (echon(f, "%s", "")) return H3R_EPRINT;
     }
   }
@@ -362,25 +363,29 @@ struct header_width
   unsigned tacc;
 };
 
-static void print_targets_table_header(FILE *f, struct header_width w)
+static int print_targets_table_header(FILE *f, struct header_width w)
 {
-  echon(f, "#%*s %22s %22s %33s", w.tname + w.qname + w.tacc + w.qacc + 2, "",
-       "--- full sequence ----", "--- best 1 domain ----",
-       "--- domain number estimation ----");
-  echon(f,
-       "#%-*s %-*s %-*s %-*s %9s %6s %5s %9s %6s %5s %5s %3s %3s "
-       "%3s %3s %3s %3s %3s %s",
-       w.tname - 1, " target name", w.tacc, "accession", w.qname, "query name",
-       w.qacc, "accession", "  E-value", " score", " bias", "  E-value",
-       " score", " bias", "exp", "reg", "clu", " ov", "env", "dom", "rep",
-       "inc", "description of target");
-  echon(f,
-       "#%*s %*s %*s %*s %9s %6s %5s %9s %6s %5s %5s %3s %3s %3s "
-       "%3s %3s %3s %3s %s",
-       w.tname - 1, "-------------------", w.tacc, "----------", w.qname,
-       "--------------------", w.qacc, "----------", "---------", "------",
-       "-----", "---------", "------", "-----", "---", "---", "---", "---",
-       "---", "---", "---", "---", "---------------------");
+  if (echon(f, "#%*s %22s %22s %33s", w.tname + w.qname + w.tacc + w.qacc + 2,
+            "", "--- full sequence ----", "--- best 1 domain ----",
+            "--- domain number estimation ----"))
+    return H3R_EPRINT;
+  if (echon(f,
+            "#%-*s %-*s %-*s %-*s %9s %6s %5s %9s %6s %5s %5s %3s %3s "
+            "%3s %3s %3s %3s %3s %s",
+            w.tname - 1, " target name", w.tacc, "accession", w.qname,
+            "query name", w.qacc, "accession", "  E-value", " score", " bias",
+            "  E-value", " score", " bias", "exp", "reg", "clu", " ov", "env",
+            "dom", "rep", "inc", "description of target"))
+    return H3R_EPRINT;
+  if (echon(f,
+            "#%*s %*s %*s %*s %9s %6s %5s %9s %6s %5s %5s %3s %3s %3s "
+            "%3s %3s %3s %3s %s",
+            w.tname - 1, "-------------------", w.tacc, "----------", w.qname,
+            "--------------------", w.qacc, "----------", "---------", "------",
+            "-----", "---------", "------", "-----", "---", "---", "---", "---",
+            "---", "---", "---", "---", "---------------------"))
+    return H3R_EPRINT;
+  return 0;
 }
 
 int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
@@ -390,7 +395,11 @@ int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
                            max(20U, max_name_length(x)),
                            max(10U, max_acc_length(x))};
 
-  if (show_header) print_targets_table_header(f, w);
+  if (show_header)
+  {
+    int rc = print_targets_table_header(f, w);
+    return rc;
+  }
 
   for (unsigned i = 0; i < x->nhits; i++)
   {
@@ -399,39 +408,45 @@ int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
 
     struct domain const *dom = hit->domains + hit->best_domain;
     char const *qname = dom->ad.sqname;
-    echon(f,
-         "%-*s %-*s %-*s %-*s %9.2g %6.1f %5.1f %9.2g %6.1f "
-         "%5.1f %5.1f %3d %3d %3d %3d %3d %3d %3d %s",
-         w.tname, hit->name, w.tacc, strdash(hit->acc), w.qname, qname, w.qacc,
-         strdash(qacc), evalue(hit->lnP, Z), hit->score, unbiased_score(hit),
-         evalue(dom->lnP, Z), dom->bitscore, dombits(dom), hit->nexpected,
-         hit->nregions, hit->nclustered, hit->noverlaps, hit->nenvelopes,
-         hit->ndomains, hit->nreported, hit->nincluded, hit->desc);
+    if (echon(f,
+              "%-*s %-*s %-*s %-*s %9.2g %6.1f %5.1f %9.2g %6.1f "
+              "%5.1f %5.1f %3d %3d %3d %3d %3d %3d %3d %s",
+              w.tname, hit->name, w.tacc, strdash(hit->acc), w.qname, qname,
+              w.qacc, strdash(qacc), evalue(hit->lnP, Z), hit->score,
+              unbiased_score(hit), evalue(dom->lnP, Z), dom->bitscore,
+              dombits(dom), hit->nexpected, hit->nregions, hit->nclustered,
+              hit->noverlaps, hit->nenvelopes, hit->ndomains, hit->nreported,
+              hit->nincluded, hit->desc))
+      return H3R_EPRINT;
   }
   return 0;
 }
 
-static void print_domains_table_header(struct header_width w, FILE *f)
+static int print_domains_table_header(struct header_width w, FILE *f)
 {
-  echon(f, "#%*s %22s %40s %11s %11s %11s",
-       w.tname + w.qname - 1 + 15 + w.tacc + w.qacc, "",
-       "--- full sequence ---", "-------------- this domain -------------",
-       "hmm coord", "ali coord", "env coord");
-  echon(f,
-       "#%-*s %-*s %5s %-*s %-*s %5s %9s %6s %5s %3s %3s %9s %9s "
-       "%6s %5s %5s %5s %5s %5s %5s %5s %4s %s",
-       w.tname - 1, " target name", w.tacc, "accession", "tlen", w.qname,
-       "query name", w.qacc, "accession", "qlen", "E-value", "score", "bias",
-       "#", "of", "c-Evalue", "i-Evalue", "score", "bias", "from", "to", "from",
-       "to", "from", "to", "acc", "description of target");
-  echon(f,
-       "#%*s %*s %5s %*s %*s %5s %9s %6s %5s %3s %3s %9s %9s %6s "
-       "%5s %5s %5s %5s %5s %5s %5s %4s %s",
-       w.tname - 1, "-------------------", w.tacc, "----------", "-----",
-       w.qname, "--------------------", w.qacc, "----------", "-----",
-       "---------", "------", "-----", "---", "---", "---------", "---------",
-       "------", "-----", "-----", "-----", "-----", "-----", "-----", "-----",
-       "----", "---------------------");
+  if (echon(f, "#%*s %22s %40s %11s %11s %11s",
+            w.tname + w.qname - 1 + 15 + w.tacc + w.qacc, "",
+            "--- full sequence ---", "-------------- this domain -------------",
+            "hmm coord", "ali coord", "env coord"))
+    return H3R_EPRINT;
+  if (echon(f,
+            "#%-*s %-*s %5s %-*s %-*s %5s %9s %6s %5s %3s %3s %9s %9s "
+            "%6s %5s %5s %5s %5s %5s %5s %5s %4s %s",
+            w.tname - 1, " target name", w.tacc, "accession", "tlen", w.qname,
+            "query name", w.qacc, "accession", "qlen", "E-value", "score",
+            "bias", "#", "of", "c-Evalue", "i-Evalue", "score", "bias", "from",
+            "to", "from", "to", "from", "to", "acc", "description of target"))
+    return H3R_EPRINT;
+  if (echon(f,
+            "#%*s %*s %5s %*s %*s %5s %9s %6s %5s %3s %3s %9s %9s %6s "
+            "%5s %5s %5s %5s %5s %5s %5s %4s %s",
+            w.tname - 1, "-------------------", w.tacc, "----------", "-----",
+            w.qname, "--------------------", w.qacc, "----------", "-----",
+            "---------", "------", "-----", "---", "---", "---------",
+            "---------", "------", "-----", "-----", "-----", "-----", "-----",
+            "-----", "-----", "----", "---------------------"))
+    return H3R_EPRINT;
+  return 0;
 }
 
 int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *x,
@@ -450,7 +465,11 @@ int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *x,
   w.qacc = max(w.qacc, (unsigned)strlen(qacc));
   w.tacc = max(w.tacc, max_acc_length(x));
 
-  if (show_header) print_domains_table_header(w, f);
+  if (show_header)
+  {
+    int rc = print_domains_table_header(w, f);
+    if (rc) return rc;
+  }
 
   for (unsigned i = 0; i < x->nhits; i++)
   {
@@ -469,16 +488,18 @@ int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *x,
       unsigned qlen = dom->ad.L;
       unsigned tlen = dom->ad.M;
 
-      echon(f,
-           "%-*s %-*s %5d %-*s %-*s %5d %9.2g %6.1f %5.1f %3d "
-           "%3d %9.2g %9.2g %6.1f %5.1f %5u %5u %5u %5u %5lu %5lu %4.2f "
-           "%s",
-           w.tname, hit->name, w.tacc, strdash(hit->acc), tlen, w.qname, qname,
-           w.qacc, strdash(qacc), qlen, evalue(hit->lnP, Z), hit->score,
-           unbiased_score(hit), dnum, hit->nreported, evalue(dom->lnP, domZ),
-           evalue(dom->lnP, Z), dom->bitscore, dombits(dom), dom->ad.hmmfrom,
-           dom->ad.hmmto, dom->ad.sqfrom, dom->ad.sqto, dom->ienv, dom->jenv,
-           prob_ali_res(dom), strdash(hit->desc));
+      if (echon(f,
+                "%-*s %-*s %5d %-*s %-*s %5d %9.2g %6.1f %5.1f %3d "
+                "%3d %9.2g %9.2g %6.1f %5.1f %5u %5u %5u %5u %5lu %5lu %4.2f "
+                "%s",
+                w.tname, hit->name, w.tacc, strdash(hit->acc), tlen, w.qname,
+                qname, w.qacc, strdash(qacc), qlen, evalue(hit->lnP, Z),
+                hit->score, unbiased_score(hit), dnum, hit->nreported,
+                evalue(dom->lnP, domZ), evalue(dom->lnP, Z), dom->bitscore,
+                dombits(dom), dom->ad.hmmfrom, dom->ad.hmmto, dom->ad.sqfrom,
+                dom->ad.sqto, dom->ienv, dom->jenv, prob_ali_res(dom),
+                strdash(hit->desc)))
+        return H3R_EPRINT;
     }
   }
   return 0;

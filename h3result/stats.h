@@ -1,7 +1,7 @@
 #ifndef H3RESULT_STATS_H
 #define H3RESULT_STATS_H
 
-#include "static_assert.h"
+#include "static_assert2.h"
 #include "zsetby.h"
 #include <stdint.h>
 
@@ -29,7 +29,7 @@ struct stats
   unsigned nincluded;
 };
 
-h3result_static_assert(sizeof(unsigned) >= 4);
+static_assert2(sizeof(unsigned) >= 4);
 
 void h3result_stats_init(struct stats *);
 int h3result_stats_pack(struct stats const *, struct lio_writer *);

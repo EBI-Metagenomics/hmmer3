@@ -1,7 +1,7 @@
 #ifndef H3RESULT_TOPHITS_H
 #define H3RESULT_TOPHITS_H
 
-#include "static_assert.h"
+#include "static_assert2.h"
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -19,7 +19,7 @@ struct tophits
   bool is_sorted_by_seqidx;
 };
 
-h3result_static_assert(sizeof(unsigned) >= 4);
+static_assert2(sizeof(unsigned) >= 4);
 
 void h3r_tophits_init(struct tophits *);
 int h3r_tophits_setup(struct tophits *, unsigned nhits);

@@ -1,7 +1,7 @@
 #ifndef H3RESULT_HIT_H
 #define H3RESULT_HIT_H
 
-#include "static_assert.h"
+#include "static_assert2.h"
 #include <stdint.h>
 
 struct domain;
@@ -38,7 +38,7 @@ struct hit
   struct domain *domains;
 };
 
-h3result_static_assert(sizeof(unsigned) >= 4);
+static_assert2(sizeof(unsigned) >= 4);
 
 int h3result_hit_init(struct hit *);
 int h3result_hit_setup(struct hit *, unsigned ndomains);

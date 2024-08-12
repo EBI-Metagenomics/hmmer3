@@ -2,7 +2,7 @@
 #define H3RESULT_DOMAIN_H
 
 #include "alidisplay.h"
-#include "static_assert.h"
+#include "static_assert2.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -29,7 +29,7 @@ struct domain
   struct alidisplay ad;
 };
 
-h3result_static_assert(sizeof(long) >= 8);
+static_assert2(sizeof(long) >= 8);
 
 int h3result_domain_init(struct domain *);
 int h3result_domain_setup(struct domain *, unsigned scores_size);

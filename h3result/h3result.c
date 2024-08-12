@@ -8,9 +8,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-struct h3result *h3result_new(void)
+struct h3r *h3r_new(void)
 {
-  struct h3result *x = malloc(sizeof(*x));
+  struct h3r *x = malloc(sizeof(*x));
   if (!x) return 0;
   x->errnum = 0;
   x->errstr = NULL;
@@ -19,14 +19,14 @@ struct h3result *h3result_new(void)
   return x;
 }
 
-void h3result_del(struct h3result const *result)
+void h3r_del(struct h3r const *x)
 {
-  if (result->errstr) free((void *)result->errstr);
-  h3r_tophits_cleanup((struct tophits *)&result->tophits);
-  free((void *)result);
+  if (x->errstr) free((void *)x->errstr);
+  h3r_tophits_cleanup((struct tophits *)&x->tophits);
+  free((void *)x);
 }
 
-int h3result_pack(struct h3result const *x, int fd)
+int h3r_pack(struct h3r const *x, int fd)
 {
   struct lio_writer f = {0};
   lio_wsetup(&f, fd);
@@ -43,7 +43,7 @@ int h3result_pack(struct h3result const *x, int fd)
   return h3r_tophits_pack(&x->tophits, &f);
 }
 
-int h3result_unpack(struct h3result *x, int fd)
+int h3r_unpack(struct h3r *x, int fd)
 {
   struct lio_reader f = {0};
   lio_rsetup(&f, fd);
@@ -61,11 +61,11 @@ int h3result_unpack(struct h3result *x, int fd)
   return h3r_tophits_unpack(&x->tophits, &f);
 }
 
-int h3result_errnum(struct h3result const *x) { return x->errnum; }
+int h3r_errnum(struct h3r const *x) { return x->errnum; }
 
-char const *h3result_errstr(struct h3result const *x) { return x->errstr; }
+char const *h3r_errstr(struct h3r const *x) { return x->errstr; }
 
-int h3result_print_targets(struct h3result const *r, int fd)
+int h3r_print_targets(struct h3r const *r, int fd)
 {
   FILE *fp = fdup(fd, "w");
   if (!fp) return H3R_EPRINT;
@@ -73,7 +73,7 @@ int h3result_print_targets(struct h3result const *r, int fd)
   return fclose(fp) ? H3R_EPRINT : 0;
 }
 
-int h3result_print_domains(struct h3result const *x, int fd)
+int h3r_print_domains(struct h3r const *x, int fd)
 {
   FILE *fp = fdup(fd, "w");
   if (!fp) return H3R_EPRINT;
@@ -81,7 +81,7 @@ int h3result_print_domains(struct h3result const *x, int fd)
   return fclose(fp) ? H3R_EPRINT : 0;
 }
 
-int h3result_print_targets_table(struct h3result const *x, int fd)
+int h3r_print_targets_table(struct h3r const *x, int fd)
 {
   FILE *fp = fdup(fd, "w");
   if (!fp) return H3R_EPRINT;
@@ -89,7 +89,7 @@ int h3result_print_targets_table(struct h3result const *x, int fd)
   return fclose(fp) ? H3R_EPRINT : 0;
 }
 
-int h3result_print_domains_table(struct h3result const *r, int fd)
+int h3r_print_domains_table(struct h3r const *r, int fd)
 {
   FILE *fp = fdup(fd, "w");
   if (!fp) return H3R_EPRINT;
@@ -98,19 +98,19 @@ int h3result_print_domains_table(struct h3result const *r, int fd)
   return fclose(fp) ? H3R_EPRINT : 0;
 }
 
-unsigned h3result_nhits(struct h3result const *r) { return r->tophits.nhits; }
+unsigned h3r_nhits(struct h3r const *r) { return r->tophits.nhits; }
 
-char const *h3result_hit_name(struct h3result const *x, unsigned idx)
+char const *h3r_hit_name(struct h3r const *x, unsigned idx)
 {
   return h3r_tophits_hit_name(&x->tophits, idx);
 }
 
-char const *h3result_hit_acc(struct h3result const *x, unsigned idx)
+char const *h3r_hit_acc(struct h3r const *x, unsigned idx)
 {
   return h3r_tophits_hit_acc(&x->tophits, idx);
 }
 
-double h3result_hit_evalue_ln(struct h3result const *x, unsigned idx)
+double h3r_hit_logevalue(struct h3r const *x, unsigned idx)
 {
   return h3r_tophits_hit_logevalue(&x->tophits, idx, x->stats.Z);
 }

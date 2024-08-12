@@ -4,7 +4,7 @@
 #include "stats.h"
 #include "tophits.h"
 
-struct h3result
+struct h3r
 {
   int errnum;
   char const *errstr;

@@ -23,7 +23,7 @@ int main(void)
   return aye_end();
 }
 
-static struct h3result *unpack(void);
+static struct h3r *unpack(void);
 static long hash(char const *filepath);
 
 static void test_unpack(void)
@@ -31,79 +31,79 @@ static void test_unpack(void)
   int fd = open("h3result.mp", O_RDONLY);
   aye(fd);
 
-  struct h3result *result = h3result_new();
+  struct h3r *result = h3r_new();
   aye(result);
 
-  aye(h3result_unpack(result, fd) == 0);
+  aye(h3r_unpack(result, fd) == 0);
   aye(!close(fd));
 
-  h3result_del(result);
+  h3r_del(result);
 }
 
 static void test_targets(void)
 {
-  struct h3result *result = unpack();
+  struct h3r *result = unpack();
   int fd = open("targets.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
   aye(fd);
-  h3result_print_targets(result, fd);
+  h3r_print_targets(result, fd);
   aye(!close(fd));
   aye(hash("targets.txt") == 57543L);
-  h3result_del(result);
+  h3r_del(result);
   remove("targets.txt");
 }
 
 static void test_targets_table(void)
 {
-  struct h3result *result = unpack();
+  struct h3r *result = unpack();
   int fd = open("targets_table.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
   aye(fd);
-  h3result_print_targets_table(result, fd);
+  h3r_print_targets_table(result, fd);
   aye(!close(fd));
   aye(hash("targets_table.txt") == 34790L);
-  h3result_del(result);
+  h3r_del(result);
   remove("targets_table.txt");
 }
 
 static void test_domains(void)
 {
-  struct h3result *result = unpack();
+  struct h3r *result = unpack();
   int fd = open("domains.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
   aye(fd);
-  h3result_print_domains(result, fd);
+  h3r_print_domains(result, fd);
   aye(!close(fd));
   aye(hash("domains.txt") == 46469L);
-  h3result_del(result);
+  h3r_del(result);
   remove("domains.txt");
 }
 
 static void test_domains_table(void)
 {
-  struct h3result *result = unpack();
+  struct h3r *result = unpack();
   int fd = open("domains_table.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
   aye(fd);
-  h3result_print_domains_table(result, fd);
+  h3r_print_domains_table(result, fd);
   aye(!close(fd));
   aye(hash("domains_table.txt") == 3913L);
-  h3result_del(result);
+  h3r_del(result);
   remove("domains_table.txt");
 }
 
-static struct h3result *unpack(void)
+static struct h3r *unpack(void)
 {
   int fd = open("h3result.mp", O_RDONLY);
   if (!fd) return NULL;
 
-  struct h3result *result = h3result_new();
+  struct h3r *result = h3r_new();
   if (!result)
   {
     aye(!close(fd));
     return NULL;
   }
 
-  if (h3result_unpack(result, fd))
+  if (h3r_unpack(result, fd))
   {
     aye(!close(fd));
-    h3result_del(result);
+    h3r_del(result);
     return NULL;
   }
 

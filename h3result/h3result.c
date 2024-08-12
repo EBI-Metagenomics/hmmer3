@@ -1,12 +1,32 @@
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE < 200809L
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "h3result.h"
 #include "expect.h"
-#include "fdup.h"
 #include "lio.h"
 #include "rc.h"
 #include "struct.h"
 #include "write.h"
+#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+static FILE *fdup(int fd, char const *mode)
+{
+
+  int nfd = dup(fd);
+  if (nfd < 0) return NULL;
+  FILE *fp = fdopen(nfd, mode);
+  if (!fp)
+  {
+    close(nfd);
+    return NULL;
+  }
+  return fp;
+}
 
 struct h3r *h3r_new(void)
 {

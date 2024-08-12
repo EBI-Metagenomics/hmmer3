@@ -113,7 +113,7 @@ static struct h3r *unpack(void)
 
 static long fletcher16(int fd, uint8_t *buf, size_t bufsize)
 {
-  size_t n = 0;
+  ssize_t n = 0;
   uint16_t sum1 = 0;
   uint16_t sum2 = 0;
   while ((n = read(fd, buf, bufsize)) > 0)

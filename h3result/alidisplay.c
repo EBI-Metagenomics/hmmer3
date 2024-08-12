@@ -208,7 +208,7 @@ void h3result_alidisplay_print(struct alidisplay const *x, FILE *f)
   unsigned k1 = x->hmmfrom;
   for (unsigned pos = 0; pos < x->N; pos += aliwidth)
   {
-    if (pos > 0) h3result_echo(f, "%s", "");
+    if (pos > 0) echo(f, "%s", "");
 
     unsigned ni = 0;
     unsigned nk = 0;
@@ -228,42 +228,42 @@ void h3result_alidisplay_print(struct alidisplay const *x, FILE *f)
     if (x->presence & CSLINE_PRESENT)
     {
       strncpy(buf, x->csline + pos, aliwidth);
-      h3result_echo(f, "  %*s %s CS", namewidth + coordwidth + 1, "", buf);
+      echo(f, "  %*s %s CS", namewidth + coordwidth + 1, "", buf);
     }
     if (x->presence & RFLINE_PRESENT)
     {
       strncpy(buf, x->rfline + pos, aliwidth);
-      h3result_echo(f, "  %*s %s RF", namewidth + coordwidth + 1, "", buf);
+      echo(f, "  %*s %s RF", namewidth + coordwidth + 1, "", buf);
     }
     if (x->presence & MMLINE_PRESENT)
     {
       strncpy(buf, x->mmline + pos, aliwidth);
-      h3result_echo(f, "  %*s %s MM", namewidth + coordwidth + 1, "", buf);
+      echo(f, "  %*s %s MM", namewidth + coordwidth + 1, "", buf);
     }
 
     strncpy(buf, x->model + pos, aliwidth);
-    h3result_echo(f, "  %*s %*d %s %-*d", namewidth, hmmname, coordwidth, k1,
-                  buf, coordwidth, k2);
+    echo(f, "  %*s %*d %s %-*d", namewidth, hmmname, coordwidth, k1, buf,
+         coordwidth, k2);
 
     strncpy(buf, x->mline + pos, aliwidth);
-    h3result_echo(f, "  %*s %s", namewidth + coordwidth + 1, " ", buf);
+    echo(f, "  %*s %s", namewidth + coordwidth + 1, " ", buf);
 
     strncpy(buf, x->aseq + pos, aliwidth);
     if (ni > 0)
     {
-      h3result_echo(f, "  %*s %*u %s %-*u", namewidth, seqname, coordwidth, i1,
-                    buf, coordwidth, i2);
+      echo(f, "  %*s %*u %s %-*u", namewidth, seqname, coordwidth, i1, buf,
+           coordwidth, i2);
     }
     else
     {
-      h3result_echo(f, "  %*s %*s %s %*s", namewidth, seqname, coordwidth, "-",
-                    buf, coordwidth, "-");
+      echo(f, "  %*s %*s %s %*s", namewidth, seqname, coordwidth, "-", buf,
+           coordwidth, "-");
     }
 
     if (x->ppline != 0)
     {
       strncpy(buf, x->ppline + pos, aliwidth);
-      h3result_echo(f, "  %*s %s PP", namewidth + coordwidth + 1, "", buf);
+      echo(f, "  %*s %s PP", namewidth + coordwidth + 1, "", buf);
     }
 
     k1 += nk;

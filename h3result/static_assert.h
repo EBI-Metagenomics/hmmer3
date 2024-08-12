@@ -1,5 +1,5 @@
-#ifndef H3RESULT_STATIC_ASSERT_H
-#define H3RESULT_STATIC_ASSERT_H
+#ifndef STATIC_ASSERT2_H
+#define STATIC_ASSERT2_H
 
 #include <assert.h>
 

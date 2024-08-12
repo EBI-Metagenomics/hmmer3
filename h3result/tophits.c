@@ -16,50 +16,49 @@
 #include <stdlib.h>
 #include <string.h>
 
-void h3result_tophits_init(struct tophits *th) { memset(th, 0, sizeof(*th)); }
-
-static int grow(struct tophits *th, unsigned nhits)
+void h3r_tophits_init(struct tophits *x)
 {
-  int rc = 0;
+  x->nhits = 0;
+  x->hits = NULL;
+  x->nreported = 0;
+  x->nincluded = 0;
+  x->is_sorted_by_sortkey = false;
+  x->is_sorted_by_seqidx = false;
+}
 
-  size_t sz = nhits * sizeof(*th->hits);
-  struct hit *hits = realloc(th->hits, sz);
-  if (!hits)
-  {
-    rc = H3RESULT_ENOMEM;
-    goto cleanup;
-  }
-  th->hits = hits;
+static int grow(struct tophits *x, unsigned nhits)
+{
+  size_t sz = nhits * sizeof(*x->hits);
+  struct hit *hits = realloc(x->hits, sz);
+  if (!hits) return H3RESULT_ENOMEM;
+  x->hits = hits;
 
-  for (unsigned i = th->nhits; i < nhits; ++i)
+  for (unsigned i = x->nhits; i < nhits; ++i)
   {
-    if ((rc = h3result_hit_init(th->hits + i))) goto cleanup;
-    ++th->nhits;
+    int rc = 0;
+    if ((rc = h3result_hit_init(x->hits + i))) return rc;
+    ++x->nhits;
   }
 
   return 0;
-
-cleanup:
-  h3result_tophits_cleanup(th);
-  return rc;
 }
 
-static void shrink(struct tophits *th, unsigned nhits)
+static void shrink(struct tophits *x, unsigned nhits)
 {
-  for (unsigned i = nhits; i < th->nhits; ++i)
-    h3result_hit_cleanup(th->hits + i);
+  for (unsigned i = nhits; i < x->nhits; ++i)
+    h3result_hit_cleanup(x->hits + i);
 
-  th->nhits = nhits;
+  x->nhits = nhits;
 }
 
-int h3result_tophits_setup(struct tophits *th, unsigned nhits)
+int h3r_tophits_setup(struct tophits *th, unsigned nhits)
 {
   if (th->nhits < nhits) return grow(th, nhits);
   shrink(th, nhits);
   return 0;
 }
 
-void h3result_tophits_cleanup(struct tophits *th)
+void h3r_tophits_cleanup(struct tophits *th)
 {
   for (unsigned i = 0; i < th->nhits; ++i)
     h3result_hit_cleanup(th->hits + i);
@@ -68,7 +67,7 @@ void h3result_tophits_cleanup(struct tophits *th)
   th->nhits = 0;
 }
 
-int h3result_tophits_pack(struct tophits const *th, struct lio_writer *f)
+int h3r_tophits_pack(struct tophits const *th, struct lio_writer *f)
 {
   if (write_array(f, 5)) return H3RESULT_EPACK;
 
@@ -90,7 +89,7 @@ int h3result_tophits_pack(struct tophits const *th, struct lio_writer *f)
   return 0;
 }
 
-int h3result_tophits_unpack(struct tophits *th, struct lio_reader *f)
+int h3r_tophits_unpack(struct tophits *th, struct lio_reader *f)
 {
   int rc = H3RESULT_EUNPACK;
 
@@ -102,7 +101,7 @@ int h3result_tophits_unpack(struct tophits *th, struct lio_reader *f)
   unsigned size = 0;
   if (read_array(f, &size)) goto cleanup;
 
-  if ((rc = h3result_tophits_setup(th, size))) goto cleanup;
+  if ((rc = h3r_tophits_setup(th, size))) goto cleanup;
 
   for (unsigned i = 0; i < th->nhits; ++i)
   {
@@ -117,7 +116,7 @@ int h3result_tophits_unpack(struct tophits *th, struct lio_reader *f)
   return 0;
 
 cleanup:
-  h3result_tophits_cleanup(th);
+  h3r_tophits_cleanup(th);
   return rc;
 }
 
@@ -183,24 +182,23 @@ static inline float unbiased_score(struct hit const *hit)
 static inline double evalue(double lnP, double Z) { return exp(lnP) * Z; }
 static inline double evalue_ln(double lnP, double Z) { return lnP + log(Z); }
 
-void h3result_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
+void h3r_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
 {
   unsigned namew = max(8U, max_shown_length(x));
   unsigned descw = max(32U, h3result_zero_clip(120 - namew - 61));
 
-  h3result_echo(fp,
-                "Scores for complete sequence (score includes all domains):");
+  echo(fp, "Scores for complete sequence (score includes all domains):");
 
-  h3result_echo(fp, "  %22s  %22s  %8s", " --- full sequence ---",
-                " --- best 1 domain ---", "-#dom-");
+  echo(fp, "  %22s  %22s  %8s", " --- full sequence ---",
+       " --- best 1 domain ---", "-#dom-");
 
-  h3result_echo(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "E-value",
-                " score", " bias", "E-value", " score", " bias", "  exp", "N",
-                namew, "Model", "Description");
+  echo(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "E-value", " score",
+       " bias", "E-value", " score", " bias", "  exp", "N", namew, "Model",
+       "Description");
 
-  h3result_echo(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "-------",
-                "------", "-----", "-------", "------", "-----", " ----", "--",
-                namew, "--------", "-----------");
+  echo(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "-------", "------",
+       "-----", "-------", "------", "-----", " ----", "--", namew, "--------",
+       "-----------");
 
   bool printed_incthresh = false;
   for (unsigned i = 0; i < x->nhits; i++)
@@ -212,22 +210,20 @@ void h3result_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
 
     if (!(hit->flags & p7_IS_INCLUDED) && !printed_incthresh)
     {
-      h3result_echo(fp, "  ------ inclusion threshold ------");
+      echo(fp, "  ------ inclusion threshold ------");
       printed_incthresh = true;
     }
 
-    h3result_echo(fp,
-                  "%c %9.2g %6.1f %5.1f  %9.2g %6.1f %5.1f  %5.1f %2d  %-*s  "
-                  "%-.*s",
-                  newness(hit), evalue(hit->lnP, Z), hit->score,
-                  unbiased_score(hit), evalue(dom->lnP, Z), dom->bitscore,
-                  dombits(dom), hit->nexpected, hit->nreported, namew,
-                  show_name(hit), descw, hit->desc);
+    echo(fp,
+         "%c %9.2g %6.1f %5.1f  %9.2g %6.1f %5.1f  %5.1f %2d  %-*s  "
+         "%-.*s",
+         newness(hit), evalue(hit->lnP, Z), hit->score, unbiased_score(hit),
+         evalue(dom->lnP, Z), dom->bitscore, dombits(dom), hit->nexpected,
+         hit->nreported, namew, show_name(hit), descw, hit->desc);
   }
 
   if (x->nreported == 0)
-    h3result_echo(fp,
-                  "\n   [No hits detected that satisfy reporting thresholds]");
+    echo(fp, "\n   [No hits detected that satisfy reporting thresholds]");
 }
 
 #define p7_HITFLAGS_DEFAULT 0
@@ -253,10 +249,10 @@ static char included_symbol(struct domain const *dom)
   return dom->is_included ? '!' : '?';
 }
 
-void h3result_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
+void h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
                                     double domZ)
 {
-  h3result_echo(f, "Domain annotation for each model (and alignments):");
+  echo(f, "Domain annotation for each model (and alignments):");
 
   for (unsigned i = 0; i < x->nhits; i++)
   {
@@ -267,28 +263,27 @@ void h3result_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
     unsigned namew = (unsigned)strlen(name);
     unsigned descw = max(32U, h3result_zero_clip(120 - namew - 5));
 
-    h3result_echo(f, ">> %s  %-.*s", name, descw, hit->desc);
+    echo(f, ">> %s  %-.*s", name, descw, hit->desc);
 
     if (hit->nreported == 0)
     {
-      h3result_echo(f, "   [No individual domains that satisfy reporting "
-                       "thresholds (although complete target did)]\n");
+      echo(f, "   [No individual domains that satisfy reporting "
+              "thresholds (although complete target did)]\n");
       continue;
     }
 
     /* The domain table is 101 char wide. */
-    h3result_echo(f,
-                  " %3s   %6s %5s %9s %9s %7s %7s %2s %7s %7s %2s %7s %7s "
-                  "%2s %4s",
-                  "#", "score", "bias", "c-Evalue", "i-Evalue", "hmmfrom",
-                  "hmm to", "  ", "alifrom", "ali to", "  ", "envfrom",
-                  "env to", "  ", "acc");
-    h3result_echo(f,
-                  " %3s   %6s %5s %9s %9s %7s %7s %2s %7s %7s %2s %7s %7s "
-                  "%2s %4s",
-                  "---", "------", "-----", "---------", "---------", "-------",
-                  "-------", "  ", "-------", "-------", "  ", "-------",
-                  "-------", "  ", "----");
+    echo(f,
+         " %3s   %6s %5s %9s %9s %7s %7s %2s %7s %7s %2s %7s %7s "
+         "%2s %4s",
+         "#", "score", "bias", "c-Evalue", "i-Evalue", "hmmfrom", "hmm to",
+         "  ", "alifrom", "ali to", "  ", "envfrom", "env to", "  ", "acc");
+    echo(f,
+         " %3s   %6s %5s %9s %9s %7s %7s %2s %7s %7s %2s %7s %7s "
+         "%2s %4s",
+         "---", "------", "-----", "---------", "---------", "-------",
+         "-------", "  ", "-------", "-------", "  ", "-------", "-------",
+         "  ", "----");
 
     unsigned dnum = 0;
     for (unsigned j = 0; j < hit->ndomains; j++)
@@ -305,12 +300,12 @@ void h3result_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
       print_range(f, dom->ad.sqfrom, dom->ad.sqto, dom->ad.L);
       print_range(f, dom->ienv, dom->jenv, dom->ad.L);
 
-      h3result_echo(f, " %4.2f", prob_ali_res(dom));
+      echo(f, " %4.2f", prob_ali_res(dom));
     }
 
     /* Alignment data for each reported domain in this reported
      * sequence. */
-    h3result_echo(f, "\n  Alignments for each domain:");
+    echo(f, "\n  Alignments for each domain:");
     dnum = 0;
 
     for (unsigned j = 0; j < hit->ndomains; j++)
@@ -321,16 +316,16 @@ void h3result_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
       dnum++;
       fprintf(f, "  == domain %d", dnum);
       fprintf(f, "  score: %.1f bits", dom->bitscore);
-      h3result_echo(f, ";  conditional E-value: %.2g", evalue(dom->lnP, domZ));
+      echo(f, ";  conditional E-value: %.2g", evalue(dom->lnP, domZ));
 
       h3result_alidisplay_print(&dom->ad, f);
-      h3result_echo(f, "%s", "");
+      echo(f, "%s", "");
     }
   }
 
   if (x->nreported == 0)
-    h3result_echo(f, "\n   [No targets detected that satisfy reporting "
-                     "thresholds]");
+    echo(f, "\n   [No targets detected that satisfy reporting "
+            "thresholds]");
 }
 
 static unsigned max_acc_length(struct tophits const *th)
@@ -367,28 +362,26 @@ struct header_width
 
 static void print_targets_table_header(FILE *f, struct header_width w)
 {
-  h3result_echo(f, "#%*s %22s %22s %33s",
-                w.tname + w.qname + w.tacc + w.qacc + 2, "",
-                "--- full sequence ----", "--- best 1 domain ----",
-                "--- domain number estimation ----");
-  h3result_echo(f,
-                "#%-*s %-*s %-*s %-*s %9s %6s %5s %9s %6s %5s %5s %3s %3s "
-                "%3s %3s %3s %3s %3s %s",
-                w.tname - 1, " target name", w.tacc, "accession", w.qname,
-                "query name", w.qacc, "accession", "  E-value", " score",
-                " bias", "  E-value", " score", " bias", "exp", "reg", "clu",
-                " ov", "env", "dom", "rep", "inc", "description of target");
-  h3result_echo(f,
-                "#%*s %*s %*s %*s %9s %6s %5s %9s %6s %5s %5s %3s %3s %3s "
-                "%3s %3s %3s %3s %s",
-                w.tname - 1, "-------------------", w.tacc, "----------",
-                w.qname, "--------------------", w.qacc, "----------",
-                "---------", "------", "-----", "---------", "------", "-----",
-                "---", "---", "---", "---", "---", "---", "---", "---",
-                "---------------------");
+  echo(f, "#%*s %22s %22s %33s", w.tname + w.qname + w.tacc + w.qacc + 2, "",
+       "--- full sequence ----", "--- best 1 domain ----",
+       "--- domain number estimation ----");
+  echo(f,
+       "#%-*s %-*s %-*s %-*s %9s %6s %5s %9s %6s %5s %5s %3s %3s "
+       "%3s %3s %3s %3s %3s %s",
+       w.tname - 1, " target name", w.tacc, "accession", w.qname, "query name",
+       w.qacc, "accession", "  E-value", " score", " bias", "  E-value",
+       " score", " bias", "exp", "reg", "clu", " ov", "env", "dom", "rep",
+       "inc", "description of target");
+  echo(f,
+       "#%*s %*s %*s %*s %9s %6s %5s %9s %6s %5s %5s %3s %3s %3s "
+       "%3s %3s %3s %3s %s",
+       w.tname - 1, "-------------------", w.tacc, "----------", w.qname,
+       "--------------------", w.qacc, "----------", "---------", "------",
+       "-----", "---------", "------", "-----", "---", "---", "---", "---",
+       "---", "---", "---", "---", "---------------------");
 }
 
-void h3result_tophits_print_targets_table(char const *qacc,
+void h3r_tophits_print_targets_table(char const *qacc,
                                           struct tophits const *th, FILE *f,
                                           bool show_header, double Z)
 {
@@ -405,45 +398,41 @@ void h3result_tophits_print_targets_table(char const *qacc,
 
     struct domain const *dom = hit->domains + hit->best_domain;
     char const *qname = dom->ad.sqname;
-    h3result_echo(f,
-                  "%-*s %-*s %-*s %-*s %9.2g %6.1f %5.1f %9.2g %6.1f "
-                  "%5.1f %5.1f %3d %3d %3d %3d %3d %3d %3d %s",
-                  w.tname, hit->name, w.tacc, strdash(hit->acc), w.qname, qname,
-                  w.qacc, strdash(qacc), evalue(hit->lnP, Z), hit->score,
-                  unbiased_score(hit), evalue(dom->lnP, Z), dom->bitscore,
-                  dombits(dom), hit->nexpected, hit->nregions, hit->nclustered,
-                  hit->noverlaps, hit->nenvelopes, hit->ndomains,
-                  hit->nreported, hit->nincluded, hit->desc);
+    echo(f,
+         "%-*s %-*s %-*s %-*s %9.2g %6.1f %5.1f %9.2g %6.1f "
+         "%5.1f %5.1f %3d %3d %3d %3d %3d %3d %3d %s",
+         w.tname, hit->name, w.tacc, strdash(hit->acc), w.qname, qname, w.qacc,
+         strdash(qacc), evalue(hit->lnP, Z), hit->score, unbiased_score(hit),
+         evalue(dom->lnP, Z), dom->bitscore, dombits(dom), hit->nexpected,
+         hit->nregions, hit->nclustered, hit->noverlaps, hit->nenvelopes,
+         hit->ndomains, hit->nreported, hit->nincluded, hit->desc);
   }
 }
 
 static void print_domains_table_header(struct header_width w, FILE *f)
 {
-  h3result_echo(f, "#%*s %22s %40s %11s %11s %11s",
-                w.tname + w.qname - 1 + 15 + w.tacc + w.qacc, "",
-                "--- full sequence ---",
-                "-------------- this domain -------------", "hmm coord",
-                "ali coord", "env coord");
-  h3result_echo(f,
-                "#%-*s %-*s %5s %-*s %-*s %5s %9s %6s %5s %3s %3s %9s %9s "
-                "%6s %5s %5s %5s %5s %5s %5s %5s %4s %s",
-                w.tname - 1, " target name", w.tacc, "accession", "tlen",
-                w.qname, "query name", w.qacc, "accession", "qlen", "E-value",
-                "score", "bias", "#", "of", "c-Evalue", "i-Evalue", "score",
-                "bias", "from", "to", "from", "to", "from", "to", "acc",
-                "description of target");
-  h3result_echo(f,
-                "#%*s %*s %5s %*s %*s %5s %9s %6s %5s %3s %3s %9s %9s %6s "
-                "%5s %5s %5s %5s %5s %5s %5s %4s %s",
-                w.tname - 1, "-------------------", w.tacc, "----------",
-                "-----", w.qname, "--------------------", w.qacc, "----------",
-                "-----", "---------", "------", "-----", "---", "---",
-                "---------", "---------", "------", "-----", "-----", "-----",
-                "-----", "-----", "-----", "-----", "----",
-                "---------------------");
+  echo(f, "#%*s %22s %40s %11s %11s %11s",
+       w.tname + w.qname - 1 + 15 + w.tacc + w.qacc, "",
+       "--- full sequence ---", "-------------- this domain -------------",
+       "hmm coord", "ali coord", "env coord");
+  echo(f,
+       "#%-*s %-*s %5s %-*s %-*s %5s %9s %6s %5s %3s %3s %9s %9s "
+       "%6s %5s %5s %5s %5s %5s %5s %5s %4s %s",
+       w.tname - 1, " target name", w.tacc, "accession", "tlen", w.qname,
+       "query name", w.qacc, "accession", "qlen", "E-value", "score", "bias",
+       "#", "of", "c-Evalue", "i-Evalue", "score", "bias", "from", "to", "from",
+       "to", "from", "to", "acc", "description of target");
+  echo(f,
+       "#%*s %*s %5s %*s %*s %5s %9s %6s %5s %3s %3s %9s %9s %6s "
+       "%5s %5s %5s %5s %5s %5s %5s %4s %s",
+       w.tname - 1, "-------------------", w.tacc, "----------", "-----",
+       w.qname, "--------------------", w.qacc, "----------", "-----",
+       "---------", "------", "-----", "---", "---", "---------", "---------",
+       "------", "-----", "-----", "-----", "-----", "-----", "-----", "-----",
+       "----", "---------------------");
 }
 
-void h3result_tophits_print_domains_table(char const *qacc,
+void h3r_tophits_print_domains_table(char const *qacc,
                                           struct tophits const *th, FILE *f,
                                           bool show_header, double Z,
                                           double domZ)
@@ -479,32 +468,31 @@ void h3result_tophits_print_domains_table(char const *qacc,
       unsigned qlen = dom->ad.L;
       unsigned tlen = dom->ad.M;
 
-      h3result_echo(
-          f,
-          "%-*s %-*s %5d %-*s %-*s %5d %9.2g %6.1f %5.1f %3d "
-          "%3d %9.2g %9.2g %6.1f %5.1f %5u %5u %5u %5u %5lu %5lu %4.2f "
-          "%s",
-          w.tname, hit->name, w.tacc, strdash(hit->acc), tlen, w.qname, qname,
-          w.qacc, strdash(qacc), qlen, evalue(hit->lnP, Z), hit->score,
-          unbiased_score(hit), dnum, hit->nreported, evalue(dom->lnP, domZ),
-          evalue(dom->lnP, Z), dom->bitscore, dombits(dom), dom->ad.hmmfrom,
-          dom->ad.hmmto, dom->ad.sqfrom, dom->ad.sqto, dom->ienv, dom->jenv,
-          prob_ali_res(dom), strdash(hit->desc));
+      echo(f,
+           "%-*s %-*s %5d %-*s %-*s %5d %9.2g %6.1f %5.1f %3d "
+           "%3d %9.2g %9.2g %6.1f %5.1f %5u %5u %5u %5u %5lu %5lu %4.2f "
+           "%s",
+           w.tname, hit->name, w.tacc, strdash(hit->acc), tlen, w.qname, qname,
+           w.qacc, strdash(qacc), qlen, evalue(hit->lnP, Z), hit->score,
+           unbiased_score(hit), dnum, hit->nreported, evalue(dom->lnP, domZ),
+           evalue(dom->lnP, Z), dom->bitscore, dombits(dom), dom->ad.hmmfrom,
+           dom->ad.hmmto, dom->ad.sqfrom, dom->ad.sqto, dom->ienv, dom->jenv,
+           prob_ali_res(dom), strdash(hit->desc));
     }
   }
 }
 
-char const *h3result_tophits_hit_name(struct tophits const *th, unsigned idx)
+char const *h3r_tophits_hit_name(struct tophits const *th, unsigned idx)
 {
   return th->hits[idx].name;
 }
 
-char const *h3result_tophits_hit_acc(struct tophits const *th, unsigned idx)
+char const *h3r_tophits_hit_acc(struct tophits const *th, unsigned idx)
 {
   return th->hits[idx].acc;
 }
 
-double h3result_tophits_hit_evalue_ln(struct tophits const *th, unsigned idx,
+double h3r_tophits_hit_evalue_ln(struct tophits const *th, unsigned idx,
                                       double Z)
 {
   return evalue_ln(th->hits[idx].lnP, Z);

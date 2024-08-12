@@ -184,14 +184,14 @@ int h3r_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
   unsigned namew = max(8U, max_shown_length(x));
   unsigned descw = max(32U, h3result_zero_clip(120 - namew - 61));
 
-  if (echo(fp, "Scores for complete sequence (score includes all domains):"))                       return H3RESULT_EPRINT;
-  if (echo(fp, "  %22s  %22s  %8s", " --- full sequence ---",  " --- best 1 domain ---", "-#dom-")) return H3RESULT_EPRINT;
+  if (echon(fp, "Scores for complete sequence (score includes all domains):"))                       return H3RESULT_EPRINT;
+  if (echon(fp, "  %22s  %22s  %8s", " --- full sequence ---",  " --- best 1 domain ---", "-#dom-")) return H3RESULT_EPRINT;
 
-  if (echo(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "E-value",
+  if (echon(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "E-value",
            " score", " bias", "E-value", " score", " bias", "  exp", "N", namew,
            "Model", "Description")) return H3RESULT_EPRINT;
 
-  if (echo(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "-------",
+  if (echon(fp, "  %9s %6s %5s  %9s %6s %5s  %5s %2s  %-*s %s", "-------",
            "------", "-----", "-------", "------", "-----", " ----", "--",
            namew, "--------", "-----------")) return H3RESULT_EPRINT;
 
@@ -205,11 +205,11 @@ int h3r_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
 
     if (!(hit->flags & p7_IS_INCLUDED) && !printed_incthresh)
     {
-      if (echo(fp, "  ------ inclusion threshold ------")) return H3RESULT_EPRINT;
+      if (echon(fp, "  ------ inclusion threshold ------")) return H3RESULT_EPRINT;
       printed_incthresh = true;
     }
 
-    if (echo(fp,
+    if (echon(fp,
              "%c %9.2g %6.1f %5.1f  %9.2g %6.1f %5.1f  %5.1f %2d  %-*s  "
              "%-.*s",
              newness(hit), evalue(hit->lnP, Z), hit->score, unbiased_score(hit),
@@ -219,7 +219,7 @@ int h3r_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
 
   if (x->nreported == 0)
   {
-    if (echo(fp, "\n   [No hits detected that satisfy reporting thresholds]")) return H3RESULT_EPRINT;
+    if (echon(fp, "\n   [No hits detected that satisfy reporting thresholds]")) return H3RESULT_EPRINT;
   }
 
   return 0;
@@ -235,7 +235,7 @@ int h3r_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
 static inline int echo_range(FILE *f, unsigned from, unsigned to,
                              unsigned length)
 {
-  return echo2(f, " %7u %7u %c%c", from, to, from == 1 ? '[' : '.',
+  return echo(f, " %7u %7u %c%c", from, to, from == 1 ? '[' : '.',
                to == length ? ']' : '.');
 }
 
@@ -252,7 +252,7 @@ static char included_symbol(struct domain const *dom)
 int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
                                double domZ)
 {
-  if (echo(f, "Domain annotation for each model (and alignments):")) return H3RESULT_EPRINT;
+  if (echon(f, "Domain annotation for each model (and alignments):")) return H3RESULT_EPRINT;
 
   for (unsigned i = 0; i < x->nhits; i++)
   {
@@ -263,21 +263,21 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
     unsigned namew = (unsigned)strlen(name);
     unsigned descw = max(32U, h3result_zero_clip(120 - namew - 5));
 
-    if (echo(f, ">> %s  %-.*s", name, descw, hit->desc)) return H3RESULT_EPRINT;
+    if (echon(f, ">> %s  %-.*s", name, descw, hit->desc)) return H3RESULT_EPRINT;
 
     if (hit->nreported == 0)
     {
-      echo(f, "   [No individual domains that satisfy reporting thresholds (although complete target did)]\n");
+      echon(f, "   [No individual domains that satisfy reporting thresholds (although complete target did)]\n");
       continue;
     }
 
     /* The domain table is 101 char wide. */
-    if (echo(f,
+    if (echon(f,
              " %3s   %6s %5s %9s %9s %7s %7s %2s %7s %7s %2s %7s %7s "
              "%2s %4s",
              "#", "score", "bias", "c-Evalue", "i-Evalue", "hmmfrom", "hmm to",
              "  ", "alifrom", "ali to", "  ", "envfrom", "env to", "  ", "acc")) return H3RESULT_EPRINT;
-    if (echo(f,
+    if (echon(f,
              " %3s   %6s %5s %9s %9s %7s %7s %2s %7s %7s %2s %7s %7s "
              "%2s %4s",
              "---", "------", "-----", "---------", "---------", "-------",
@@ -291,7 +291,7 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
       if (!dom->is_reported) continue;
 
       dnum++;
-      if (echo2(f, " %3u %c %6.1f %5.1f %9.2g %9.2g", dnum,
+      if (echo(f, " %3u %c %6.1f %5.1f %9.2g %9.2g", dnum,
                 included_symbol(dom), dom->bitscore, dombits(dom),
                 evalue(dom->lnP, domZ), evalue(dom->lnP, Z)))
         return H3RESULT_EPRINT;
@@ -300,12 +300,12 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
       if (echo_range(f, dom->ad.sqfrom, dom->ad.sqto, dom->ad.L)) return H3RESULT_EUNPACK;
       if (echo_range(f, dom->ienv, dom->jenv, dom->ad.L)) return H3RESULT_EUNPACK;
 
-      if (echo(f, " %4.2f", prob_ali_res(dom))) return H3RESULT_EPRINT;
+      if (echon(f, " %4.2f", prob_ali_res(dom))) return H3RESULT_EPRINT;
     }
 
     /* Alignment data for each reported domain in this reported
      * sequence. */
-    if (echo(f, "\n  Alignments for each domain:")) return H3RESULT_EPRINT;
+    if (echon(f, "\n  Alignments for each domain:")) return H3RESULT_EPRINT;
     dnum = 0;
 
     for (unsigned j = 0; j < hit->ndomains; j++)
@@ -314,18 +314,18 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
       if (!dom->is_reported) continue;
 
       dnum++;
-      if (echo2(f, "  == domain %d", dnum))                                return H3RESULT_EPRINT;
-      if (echo2(f, "  score: %.1f bits", dom->bitscore))                   return H3RESULT_EPRINT;
-      if (echo(f, ";  conditional E-value: %.2g", evalue(dom->lnP, domZ))) return H3RESULT_EPRINT;
+      if (echo(f, "  == domain %d", dnum))                                return H3RESULT_EPRINT;
+      if (echo(f, "  score: %.1f bits", dom->bitscore))                   return H3RESULT_EPRINT;
+      if (echon(f, ";  conditional E-value: %.2g", evalue(dom->lnP, domZ))) return H3RESULT_EPRINT;
 
       h3r_alidisplay_print(&dom->ad, f);
-      if (echo(f, "%s", "")) return H3RESULT_EPRINT;
+      if (echon(f, "%s", "")) return H3RESULT_EPRINT;
     }
   }
 
   if (x->nreported == 0)
   {
-    if (echo(f, "\n   [No targets detected that satisfy reporting thresholds]")) return H3RESULT_EPRINT;
+    if (echon(f, "\n   [No targets detected that satisfy reporting thresholds]")) return H3RESULT_EPRINT;
   }
   return 0;
 }
@@ -364,17 +364,17 @@ struct header_width
 
 static void print_targets_table_header(FILE *f, struct header_width w)
 {
-  echo(f, "#%*s %22s %22s %33s", w.tname + w.qname + w.tacc + w.qacc + 2, "",
+  echon(f, "#%*s %22s %22s %33s", w.tname + w.qname + w.tacc + w.qacc + 2, "",
        "--- full sequence ----", "--- best 1 domain ----",
        "--- domain number estimation ----");
-  echo(f,
+  echon(f,
        "#%-*s %-*s %-*s %-*s %9s %6s %5s %9s %6s %5s %5s %3s %3s "
        "%3s %3s %3s %3s %3s %s",
        w.tname - 1, " target name", w.tacc, "accession", w.qname, "query name",
        w.qacc, "accession", "  E-value", " score", " bias", "  E-value",
        " score", " bias", "exp", "reg", "clu", " ov", "env", "dom", "rep",
        "inc", "description of target");
-  echo(f,
+  echon(f,
        "#%*s %*s %*s %*s %9s %6s %5s %9s %6s %5s %5s %3s %3s %3s "
        "%3s %3s %3s %3s %s",
        w.tname - 1, "-------------------", w.tacc, "----------", w.qname,
@@ -399,7 +399,7 @@ int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
 
     struct domain const *dom = hit->domains + hit->best_domain;
     char const *qname = dom->ad.sqname;
-    echo(f,
+    echon(f,
          "%-*s %-*s %-*s %-*s %9.2g %6.1f %5.1f %9.2g %6.1f "
          "%5.1f %5.1f %3d %3d %3d %3d %3d %3d %3d %s",
          w.tname, hit->name, w.tacc, strdash(hit->acc), w.qname, qname, w.qacc,
@@ -413,18 +413,18 @@ int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
 
 static void print_domains_table_header(struct header_width w, FILE *f)
 {
-  echo(f, "#%*s %22s %40s %11s %11s %11s",
+  echon(f, "#%*s %22s %40s %11s %11s %11s",
        w.tname + w.qname - 1 + 15 + w.tacc + w.qacc, "",
        "--- full sequence ---", "-------------- this domain -------------",
        "hmm coord", "ali coord", "env coord");
-  echo(f,
+  echon(f,
        "#%-*s %-*s %5s %-*s %-*s %5s %9s %6s %5s %3s %3s %9s %9s "
        "%6s %5s %5s %5s %5s %5s %5s %5s %4s %s",
        w.tname - 1, " target name", w.tacc, "accession", "tlen", w.qname,
        "query name", w.qacc, "accession", "qlen", "E-value", "score", "bias",
        "#", "of", "c-Evalue", "i-Evalue", "score", "bias", "from", "to", "from",
        "to", "from", "to", "acc", "description of target");
-  echo(f,
+  echon(f,
        "#%*s %*s %5s %*s %*s %5s %9s %6s %5s %3s %3s %9s %9s %6s "
        "%5s %5s %5s %5s %5s %5s %5s %4s %s",
        w.tname - 1, "-------------------", w.tacc, "----------", "-----",
@@ -469,7 +469,7 @@ int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *x,
       unsigned qlen = dom->ad.L;
       unsigned tlen = dom->ad.M;
 
-      echo(f,
+      echon(f,
            "%-*s %-*s %5d %-*s %-*s %5d %9.2g %6.1f %5.1f %3d "
            "%3d %9.2g %9.2g %6.1f %5.1f %5u %5u %5u %5u %5lu %5lu %4.2f "
            "%s",

@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 static inline int __attribute__((format(printf, 2, 3)))
-echo(FILE *fp, char const *fmt, ...)
+echon(FILE *fp, char const *fmt, ...)
 
 {
   int rc = 0;
@@ -23,7 +23,7 @@ defer:
 }
 
 static inline int __attribute__((format(printf, 2, 3)))
-echo2(FILE *fp, char const *fmt, ...)
+echo(FILE *fp, char const *fmt, ...)
 
 {
   int rc = 0;

@@ -398,7 +398,7 @@ int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
   if (show_header)
   {
     int rc = print_targets_table_header(f, w);
-    return rc;
+    if (rc) return rc;
   }
 
   for (unsigned i = 0; i < x->nhits; i++)

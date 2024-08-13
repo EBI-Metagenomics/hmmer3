@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -pedantic -O3 -MMD -MP
 SRC = $(filter-out $(wildcard test_*.c),$(wildcard *.c))
 OBJ = $(SRC:.c=.o)
-HDR = h3result.h
+HDR = $(wildcard h3r_*.h)
 LIB = libh3result.a
 PREFIX ?= /usr/local
 

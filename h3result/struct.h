@@ -1,8 +1,8 @@
 #ifndef STRUCT_H
 #define STRUCT_H
 
-#include "stats.h"
-#include "tophits.h"
+#include "h3r_stats.h"
+#include "h3r_tophits.h"
 
 struct h3r
 {

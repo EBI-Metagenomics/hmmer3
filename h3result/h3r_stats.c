@@ -2,7 +2,10 @@
 #include "expect.h"
 #include "rc.h"
 #include "read.h"
+#include "static_assert2.h"
 #include "write.h"
+
+static_assert2(sizeof(unsigned) >= 4);
 
 void h3r_stats_init(struct h3r_stats *x)
 {

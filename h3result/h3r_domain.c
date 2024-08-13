@@ -5,9 +5,12 @@
 #include "lio.h"
 #include "rc.h"
 #include "read.h"
+#include "static_assert2.h"
 #include "write.h"
 #include <stdlib.h>
 #include <string.h>
+
+static_assert2(sizeof(long) >= 8);
 
 static inline void unset(struct h3r_domain *x)
 {

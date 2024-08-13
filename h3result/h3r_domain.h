@@ -2,7 +2,6 @@
 #define H3R_DOMAIN_H
 
 #include "h3r_alidisplay.h"
-#include "static_assert2.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -28,8 +27,6 @@ struct h3r_domain
   float *pos_score;
   struct h3r_alidisplay ad;
 };
-
-static_assert2(sizeof(long) >= 8);
 
 int  h3r_domain_init(struct h3r_domain *);
 int  h3r_domain_setup(struct h3r_domain *, unsigned scores_size);

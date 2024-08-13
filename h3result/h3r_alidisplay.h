@@ -1,7 +1,6 @@
 #ifndef H3R_ALIDISPLAY_H
 #define H3R_ALIDISPLAY_H
 
-#include "static_assert2.h"
 #include <stdio.h>
 
 struct lio_writer;
@@ -35,8 +34,6 @@ struct h3r_alidisplay
   unsigned sqto;
   unsigned L;
 };
-
-static_assert2(sizeof(unsigned) >= 4);
 
 int  h3r_alidisplay_init(struct h3r_alidisplay *);
 void h3r_alidisplay_cleanup(struct h3r_alidisplay *);

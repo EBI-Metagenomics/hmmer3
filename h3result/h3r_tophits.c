@@ -8,6 +8,7 @@
 #include "max.h"
 #include "rc.h"
 #include "read.h"
+#include "static_assert2.h"
 #include "write.h"
 #include "zero_clip.h"
 #include <inttypes.h>
@@ -15,6 +16,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
+static_assert2(sizeof(unsigned) >= 4);
 
 static void unset(struct h3r_tophits *x)
 {

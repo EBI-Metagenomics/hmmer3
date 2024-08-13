@@ -1,15 +1,18 @@
+#include "h3r_alidisplay.h"
 #include "defer_return.h"
 #include "echo.h"
 #include "expect.h"
-#include "h3r_alidisplay.h"
 #include "lio.h"
 #include "max.h"
 #include "rc.h"
 #include "read.h"
+#include "static_assert2.h"
 #include "write.h"
 #include "zero_clip.h"
 #include <stdlib.h>
 #include <string.h>
+
+static_assert2(sizeof(unsigned) >= 4);
 
 #define RFLINE_PRESENT (1 << 0)
 #define MMLINE_PRESENT (1 << 1)

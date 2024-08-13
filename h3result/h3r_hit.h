@@ -4,11 +4,11 @@
 #include "static_assert2.h"
 #include <stdint.h>
 
-struct domain;
+struct h3r_domain;
 struct lio_writer;
 struct lio_reader;
 
-struct hit
+struct h3r_hit
 {
   char *name;
   char *acc;
@@ -35,15 +35,15 @@ struct hit
   unsigned best_domain;
 
   unsigned ndomains;
-  struct domain *domains;
+  struct h3r_domain *domains;
 };
 
 static_assert2(sizeof(unsigned) >= 4);
 
-int  h3r_hit_init(struct hit *);
-int  h3r_hit_setup(struct hit *, unsigned ndomains);
-void h3r_hit_cleanup(struct hit *);
-int  h3r_hit_pack(struct hit const *, struct lio_writer *);
-int  h3r_hit_unpack(struct hit *, struct lio_reader *);
+int  h3r_hit_init(struct h3r_hit *);
+int  h3r_hit_setup(struct h3r_hit *, unsigned ndomains);
+void h3r_hit_cleanup(struct h3r_hit *);
+int  h3r_hit_pack(struct h3r_hit const *, struct lio_writer *);
+int  h3r_hit_unpack(struct h3r_hit *, struct lio_reader *);
 
 #endif

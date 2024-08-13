@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline void unset(struct hit *x)
+static inline void unset(struct h3r_hit *x)
 {
   x->name        = NULL;
   x->acc         = NULL;
@@ -39,7 +39,7 @@ static inline void unset(struct hit *x)
   x->domains     = NULL;
 }
 
-int h3r_hit_init(struct hit *x)
+int h3r_hit_init(struct h3r_hit *x)
 {
   int rc = 0;
   unset(x);
@@ -54,7 +54,7 @@ defer:
   return rc;
 }
 
-static int grow(struct hit *x, unsigned ndomains)
+static int grow(struct h3r_hit *x, unsigned ndomains)
 {
   int rc = 0;
 
@@ -74,7 +74,7 @@ defer:
   return rc;
 }
 
-static void shrink(struct hit *x, unsigned ndomains)
+static void shrink(struct h3r_hit *x, unsigned ndomains)
 {
   for (unsigned i = ndomains; i < x->ndomains; ++i)
     h3r_domain_cleanup(x->domains + i);
@@ -82,14 +82,14 @@ static void shrink(struct hit *x, unsigned ndomains)
   x->ndomains = ndomains;
 }
 
-int h3r_hit_setup(struct hit *x, unsigned ndomains)
+int h3r_hit_setup(struct h3r_hit *x, unsigned ndomains)
 {
   if (x->ndomains < ndomains) return grow(x, ndomains);
   shrink(x, ndomains);
   return 0;
 }
 
-void h3r_hit_cleanup(struct hit *x)
+void h3r_hit_cleanup(struct h3r_hit *x)
 {
   free(x->name);
   free(x->acc);
@@ -102,7 +102,7 @@ void h3r_hit_cleanup(struct hit *x)
   unset(x);
 }
 
-int h3r_hit_pack(struct hit const *x, struct lio_writer *f)
+int h3r_hit_pack(struct h3r_hit const *x, struct lio_writer *f)
 {
   if (write_array(f, 20))           return H3R_EPACK;
 
@@ -143,7 +143,7 @@ int h3r_hit_pack(struct hit const *x, struct lio_writer *f)
   return 0;
 }
 
-int h3r_hit_unpack(struct hit *x, struct lio_reader *f)
+int h3r_hit_unpack(struct h3r_hit *x, struct lio_reader *f)
 {
   int rc = 0;
 

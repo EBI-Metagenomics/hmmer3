@@ -18,7 +18,7 @@
 #define ASEQ_PRESENT (1 << 4)
 #define NTSEQ_PRESENT (1 << 5)
 
-static inline void unset(struct alidisplay *x)
+static inline void unset(struct h3r_alidisplay *x)
 {
   x->presence = 0;
 
@@ -47,7 +47,7 @@ static inline void unset(struct alidisplay *x)
   x->L        = 0;
 }
 
-int h3r_alidisplay_init(struct alidisplay *x)
+int h3r_alidisplay_init(struct h3r_alidisplay *x)
 {
   int rc = 0;
   unset(x);
@@ -76,7 +76,7 @@ defer:
   return rc;
 }
 
-void h3r_alidisplay_cleanup(struct alidisplay *x)
+void h3r_alidisplay_cleanup(struct h3r_alidisplay *x)
 {
   free(x->rfline);
   free(x->mmline);
@@ -98,7 +98,7 @@ void h3r_alidisplay_cleanup(struct alidisplay *x)
   unset(x);
 }
 
-int h3r_alidisplay_pack(struct alidisplay const *x, struct lio_writer *f)
+int h3r_alidisplay_pack(struct h3r_alidisplay const *x, struct lio_writer *f)
 {
   if (write_array(f, 22))                                              return H3R_EPACK;
 
@@ -130,7 +130,7 @@ int h3r_alidisplay_pack(struct alidisplay const *x, struct lio_writer *f)
   return 0;
 }
 
-int h3r_alidisplay_unpack(struct alidisplay *x, struct lio_reader *f)
+int h3r_alidisplay_unpack(struct h3r_alidisplay *x, struct lio_reader *f)
 {
   int rc = 0;
 
@@ -179,7 +179,7 @@ static unsigned textwidth(unsigned n)
   return w;
 }
 
-int h3r_alidisplay_print(struct alidisplay const *x, FILE *f)
+int h3r_alidisplay_print(struct h3r_alidisplay const *x, FILE *f)
 {
   /* implement the --acc option for preferring accessions over names in output
    */

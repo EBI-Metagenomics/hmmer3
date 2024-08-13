@@ -5,11 +5,11 @@
 #include "zsetby.h"
 #include <stdint.h>
 
-struct stats;
+struct h3r_stats;
 struct lio_writer;
 struct lio_reader;
 
-struct stats
+struct h3r_stats
 {
   double Z;
   double domZ;
@@ -31,8 +31,8 @@ struct stats
 
 static_assert2(sizeof(unsigned) >= 4);
 
-void h3r_stats_init(struct stats *);
-int  h3r_stats_pack(struct stats const *, struct lio_writer *);
-int  h3r_stats_unpack(struct stats *, struct lio_reader *);
+void h3r_stats_init(struct h3r_stats *);
+int  h3r_stats_pack(struct h3r_stats const *, struct lio_writer *);
+int  h3r_stats_unpack(struct h3r_stats *, struct lio_reader *);
 
 #endif

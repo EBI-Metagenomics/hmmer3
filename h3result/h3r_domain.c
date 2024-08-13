@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline void unset(struct domain *x)
+static inline void unset(struct h3r_domain *x)
 {
   x->ienv           = 0;
   x->jenv           = 0;
@@ -27,13 +27,13 @@ static inline void unset(struct domain *x)
   x->pos_score      = NULL;
 }
 
-int h3r_domain_init(struct domain *x)
+int h3r_domain_init(struct h3r_domain *x)
 {
   unset(x);
   return h3r_alidisplay_init(&x->ad);
 }
 
-static int grow_scores(struct domain *x, unsigned size)
+static int grow_scores(struct h3r_domain *x, unsigned size)
 {
   size_t sz = size * sizeof(*x->pos_score);
   if (!(x->pos_score = bsd_reallocf(x->pos_score, sz)))
@@ -44,26 +44,26 @@ static int grow_scores(struct domain *x, unsigned size)
   return 0;
 }
 
-static void shrink_scores(struct domain *x, unsigned size)
+static void shrink_scores(struct h3r_domain *x, unsigned size)
 {
   x->pos_score_size = size;
 }
 
-int h3r_domain_setup(struct domain *x, unsigned scores_size)
+int h3r_domain_setup(struct h3r_domain *x, unsigned scores_size)
 {
   if (x->pos_score_size < scores_size) return grow_scores(x, scores_size);
   shrink_scores(x, scores_size);
   return 0;
 }
 
-void h3r_domain_cleanup(struct domain *x)
+void h3r_domain_cleanup(struct h3r_domain *x)
 {
   free(x->pos_score);
   unset(x);
   h3r_alidisplay_cleanup(&x->ad);
 }
 
-int h3r_domain_pack(struct domain const *x, struct lio_writer *f)
+int h3r_domain_pack(struct h3r_domain const *x, struct lio_writer *f)
 {
   if (write_array(f, 14))                return H3R_EPACK;
 
@@ -95,7 +95,7 @@ int h3r_domain_pack(struct domain const *x, struct lio_writer *f)
   return h3r_alidisplay_pack(&x->ad, f);
 }
 
-int h3r_domain_unpack(struct domain *x, struct lio_reader *f)
+int h3r_domain_unpack(struct h3r_domain *x, struct lio_reader *f)
 {
   int rc = 0;
 

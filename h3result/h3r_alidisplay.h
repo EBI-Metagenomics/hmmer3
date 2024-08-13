@@ -7,7 +7,7 @@
 struct lio_writer;
 struct lio_reader;
 
-struct alidisplay
+struct h3r_alidisplay
 {
   unsigned presence;
 
@@ -38,10 +38,10 @@ struct alidisplay
 
 static_assert2(sizeof(unsigned) >= 4);
 
-int  h3r_alidisplay_init(struct alidisplay *);
-void h3r_alidisplay_cleanup(struct alidisplay *);
-int  h3r_alidisplay_pack(struct alidisplay const *, struct lio_writer *);
-int  h3r_alidisplay_unpack(struct alidisplay *, struct lio_reader *);
-int  h3r_alidisplay_print(struct alidisplay const *, FILE *);
+int  h3r_alidisplay_init(struct h3r_alidisplay *);
+void h3r_alidisplay_cleanup(struct h3r_alidisplay *);
+int  h3r_alidisplay_pack(struct h3r_alidisplay const *, struct lio_writer *);
+int  h3r_alidisplay_unpack(struct h3r_alidisplay *, struct lio_reader *);
+int  h3r_alidisplay_print(struct h3r_alidisplay const *, FILE *);
 
 #endif

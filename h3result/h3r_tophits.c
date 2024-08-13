@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void unset(struct tophits *x)
+static void unset(struct h3r_tophits *x)
 {
   x->nhits                = 0;
   x->hits                 = NULL;
@@ -26,12 +26,12 @@ static void unset(struct tophits *x)
   x->is_sorted_by_seqidx  = false;
 }
 
-void h3r_tophits_init(struct tophits *x) { unset(x); }
+void h3r_tophits_init(struct h3r_tophits *x) { unset(x); }
 
-static int grow(struct tophits *x, unsigned nhits)
+static int grow(struct h3r_tophits *x, unsigned nhits)
 {
   size_t sz = nhits * sizeof(*x->hits);
-  struct hit *hits = realloc(x->hits, sz);
+  struct h3r_hit *hits = realloc(x->hits, sz);
   if (!hits) return H3R_ENOMEM;
   x->hits = hits;
 
@@ -45,7 +45,7 @@ static int grow(struct tophits *x, unsigned nhits)
   return 0;
 }
 
-static void shrink(struct tophits *x, unsigned nhits)
+static void shrink(struct h3r_tophits *x, unsigned nhits)
 {
   for (unsigned i = nhits; i < x->nhits; ++i)
     h3r_hit_cleanup(x->hits + i);
@@ -53,14 +53,14 @@ static void shrink(struct tophits *x, unsigned nhits)
   x->nhits = nhits;
 }
 
-int h3r_tophits_setup(struct tophits *x, unsigned nhits)
+int h3r_tophits_setup(struct h3r_tophits *x, unsigned nhits)
 {
   if (x->nhits < nhits) return grow(x, nhits);
   shrink(x, nhits);
   return 0;
 }
 
-void h3r_tophits_cleanup(struct tophits *x)
+void h3r_tophits_cleanup(struct h3r_tophits *x)
 {
   for (unsigned i = 0; i < x->nhits; ++i)
     h3r_hit_cleanup(x->hits + i);
@@ -68,7 +68,7 @@ void h3r_tophits_cleanup(struct tophits *x)
   unset(x);
 }
 
-int h3r_tophits_pack(struct tophits const *th, struct lio_writer *f)
+int h3r_tophits_pack(struct h3r_tophits const *th, struct lio_writer *f)
 {
   if (write_array(f, 5))         return H3R_EPACK;
 
@@ -90,7 +90,7 @@ int h3r_tophits_pack(struct tophits const *th, struct lio_writer *f)
   return 0;
 }
 
-int h3r_tophits_unpack(struct tophits *th, struct lio_reader *f)
+int h3r_tophits_unpack(struct h3r_tophits *th, struct lio_reader *f)
 {
 
   if (expect_array(f, 5))                       return H3R_EUNPACK;
@@ -117,7 +117,7 @@ int h3r_tophits_unpack(struct tophits *th, struct lio_reader *f)
   return 0;
 }
 
-static unsigned max_shown_length(struct tophits const *h)
+static unsigned max_shown_length(struct h3r_tophits const *h)
 {
   unsigned max = 0;
   for (unsigned i = 0; i < h->nhits; i++)
@@ -128,7 +128,7 @@ static unsigned max_shown_length(struct tophits const *h)
   return max;
 }
 
-static unsigned max_name_length(struct tophits const *h)
+static unsigned max_name_length(struct h3r_tophits const *h)
 {
   unsigned max = 0;
   for (unsigned i = 0; i < h->nhits; i++)
@@ -143,7 +143,7 @@ static unsigned max_name_length(struct tophits const *h)
 #define p7_IS_DROPPED (1 << 3)
 #define p7_IS_DUPLICATE (1 << 4)
 
-static inline char const *show_name(struct hit const *x)
+static inline char const *show_name(struct h3r_hit const *x)
 {
   return (x->acc != 0 && x->acc[0] != '\0') ? x->acc : x->name;
 }
@@ -154,7 +154,7 @@ static inline char const *strdash(char const *str)
   return strlen(str) == 0 ? dash : str;
 }
 
-static inline char newness(struct hit const *x)
+static inline char newness(struct h3r_hit const *x)
 {
   char symbol = ' ';
   if (x->flags & p7_IS_NEW)
@@ -166,12 +166,12 @@ static inline char newness(struct hit const *x)
 
 #define CONST_LOG2R 1.44269504088896341
 
-static inline double dombits(struct domain const *dom)
+static inline double dombits(struct h3r_domain const *dom)
 {
   return CONST_LOG2R * dom->dombias;
 }
 
-static inline float unbiased_score(struct hit const *x)
+static inline float unbiased_score(struct h3r_hit const *x)
 {
   return x->pre_score - x->score;
 }
@@ -179,7 +179,7 @@ static inline float unbiased_score(struct hit const *x)
 static inline double evalue(double lnP, double Z) { return exp(lnP) * Z; }
 static inline double logevalue(double lnP, double Z) { return lnP + log(Z); }
 
-int h3r_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
+int h3r_tophits_print_targets(struct h3r_tophits const *x, FILE *fp, double Z)
 {
   unsigned namew = max(8U, max_shown_length(x));
   unsigned descw = max(32U, zero_clip(120 - namew - 61));
@@ -198,10 +198,10 @@ int h3r_tophits_print_targets(struct tophits const *x, FILE *fp, double Z)
   bool printed_incthresh = false;
   for (unsigned i = 0; i < x->nhits; i++)
   {
-    struct hit *const hit = x->hits + i;
+    struct h3r_hit *const hit = x->hits + i;
     if (!(hit->flags & p7_IS_REPORTED)) continue;
 
-    struct domain const *dom = hit->domains + hit->best_domain;
+    struct h3r_domain const *dom = hit->domains + hit->best_domain;
 
     if (!(hit->flags & p7_IS_INCLUDED) && !printed_incthresh)
     {
@@ -239,24 +239,24 @@ static inline int echo_range(FILE *f, unsigned from, unsigned to,
                to == length ? ']' : '.');
 }
 
-static double prob_ali_res(struct domain const *dom)
+static double prob_ali_res(struct h3r_domain const *dom)
 {
   return dom->oasc / (1.0 + fabs((float)(dom->jenv - dom->ienv)));
 }
 
-static char included_symbol(struct domain const *dom)
+static char included_symbol(struct h3r_domain const *dom)
 {
   return dom->is_included ? '!' : '?';
 }
 
-int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
+int h3r_tophits_print_domains(struct h3r_tophits const *x, FILE *f, double Z,
                                double domZ)
 {
   if (echon(f, "Domain annotation for each model (and alignments):")) return H3R_EPRINT;
 
   for (unsigned i = 0; i < x->nhits; i++)
   {
-    struct hit *const hit = x->hits + i;
+    struct h3r_hit *const hit = x->hits + i;
     if (!(hit->flags & p7_IS_REPORTED)) continue;
 
     char const *name = show_name(hit);
@@ -287,7 +287,7 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
     unsigned dnum = 0;
     for (unsigned j = 0; j < hit->ndomains; j++)
     {
-      struct domain const *dom = hit->domains + j;
+      struct h3r_domain const *dom = hit->domains + j;
       if (!dom->is_reported) continue;
 
       dnum++;
@@ -310,7 +310,7 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
 
     for (unsigned j = 0; j < hit->ndomains; j++)
     {
-      struct domain const *dom = hit->domains + j;
+      struct h3r_domain const *dom = hit->domains + j;
       if (!dom->is_reported) continue;
 
       dnum++;
@@ -331,7 +331,7 @@ int h3r_tophits_print_domains(struct tophits const *x, FILE *f, double Z,
   return 0;
 }
 
-static unsigned max_acc_length(struct tophits const *th)
+static unsigned max_acc_length(struct h3r_tophits const *th)
 {
   unsigned max = 0;
   for (unsigned i = 0; i < th->nhits; i++)
@@ -339,16 +339,16 @@ static unsigned max_acc_length(struct tophits const *th)
   return max;
 }
 
-static unsigned qname_width(struct tophits const *th)
+static unsigned qname_width(struct h3r_tophits const *th)
 {
   unsigned width = 20;
 
   for (unsigned i = 0; i < th->nhits; i++)
   {
-    struct hit *const hit = th->hits + i;
+    struct h3r_hit *const hit = th->hits + i;
     for (unsigned j = 0; j < hit->ndomains; j++)
     {
-      struct domain const *dom = hit->domains + j;
+      struct h3r_domain const *dom = hit->domains + j;
       width = max(width, (unsigned)strlen(dom->ad.sqname));
     }
   }
@@ -388,7 +388,7 @@ static int print_targets_table_header(FILE *f, struct header_width w)
   return 0;
 }
 
-int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
+int h3r_tophits_print_targets_table(char const *qacc, struct h3r_tophits const *x,
                                      FILE *f, bool show_header, double Z)
 {
   struct header_width w = {qname_width(x), max(10U, (unsigned)strlen(qacc)),
@@ -403,10 +403,10 @@ int h3r_tophits_print_targets_table(char const *qacc, struct tophits const *x,
 
   for (unsigned i = 0; i < x->nhits; i++)
   {
-    struct hit *const hit = x->hits + i;
+    struct h3r_hit *const hit = x->hits + i;
     if (!(hit->flags & p7_IS_REPORTED)) continue;
 
-    struct domain const *dom = hit->domains + hit->best_domain;
+    struct h3r_domain const *dom = hit->domains + hit->best_domain;
     char const *qname = dom->ad.sqname;
     if (echon(f,
               "%-*s %-*s %-*s %-*s %9.2g %6.1f %5.1f %9.2g %6.1f "
@@ -449,15 +449,15 @@ static int print_domains_table_header(struct header_width w, FILE *f)
   return 0;
 }
 
-int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *x,
+int h3r_tophits_print_domains_table(char const *qacc, struct h3r_tophits const *x,
                                      FILE *f, bool show_header, double Z,
                                      double domZ)
 {
   struct header_width w = {20, 10, 20, 10};
   for (unsigned i = 0; i < x->nhits; i++)
   {
-    struct hit *const hit = x->hits + i;
-    struct domain const *dom = hit->domains + hit->best_domain;
+    struct h3r_hit *const hit = x->hits + i;
+    struct h3r_domain const *dom = hit->domains + hit->best_domain;
     w.qname = max(w.qname, (unsigned)strlen(dom->ad.sqname));
   }
 
@@ -473,14 +473,14 @@ int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *x,
 
   for (unsigned i = 0; i < x->nhits; i++)
   {
-    struct hit *const hit = x->hits + i;
+    struct h3r_hit *const hit = x->hits + i;
 
     if (!(hit->flags & p7_IS_REPORTED)) continue;
 
     unsigned dnum = 0;
     for (unsigned j = 0; j < hit->ndomains; j++)
     {
-      struct domain const *dom = hit->domains + j;
+      struct h3r_domain const *dom = hit->domains + j;
       if (!dom->is_reported) continue;
       dnum++;
 
@@ -505,17 +505,17 @@ int h3r_tophits_print_domains_table(char const *qacc, struct tophits const *x,
   return 0;
 }
 
-char const *h3r_tophits_hit_name(struct tophits const *x, unsigned idx)
+char const *h3r_tophits_hit_name(struct h3r_tophits const *x, unsigned idx)
 {
   return x->hits[idx].name;
 }
 
-char const *h3r_tophits_hit_accession(struct tophits const *x, unsigned idx)
+char const *h3r_tophits_hit_accession(struct h3r_tophits const *x, unsigned idx)
 {
   return x->hits[idx].acc;
 }
 
-double h3r_tophits_hit_logevalue(struct tophits const *x, unsigned idx,
+double h3r_tophits_hit_logevalue(struct h3r_tophits const *x, unsigned idx,
                                  double Z)
 {
   return logevalue(x->hits[idx].lnP, Z);

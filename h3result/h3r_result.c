@@ -7,7 +7,6 @@
 #include "expect.h"
 #include "lio.h"
 #include "rc.h"
-#include "struct.h"
 #include "write.h"
 #include <stddef.h>
 #include <stdio.h>
@@ -41,7 +40,7 @@ void h3r_del(struct h3r const *x)
 {
   if (x)
   {
-    h3r_tophits_cleanup((struct tophits *)&x->tophits);
+    h3r_tophits_cleanup((struct h3r_tophits *)&x->tophits);
     free((void *)x);
   }
 }

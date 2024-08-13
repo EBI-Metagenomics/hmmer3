@@ -4,7 +4,7 @@
 #include "read.h"
 #include "write.h"
 
-void h3r_stats_init(struct stats *x)
+void h3r_stats_init(struct h3r_stats *x)
 {
   x->Z           = 0;
   x->domZ        = 0;
@@ -24,7 +24,7 @@ void h3r_stats_init(struct stats *x)
   x->nincluded   = 0;
 }
 
-int h3r_stats_pack(struct stats const *x, struct lio_writer *f)
+int h3r_stats_pack(struct h3r_stats const *x, struct lio_writer *f)
 {
   if (write_array(f, 13))           return H3R_EPACK;
 
@@ -48,7 +48,7 @@ int h3r_stats_pack(struct stats const *x, struct lio_writer *f)
   return 0;
 }
 
-int h3r_stats_unpack(struct stats *x, struct lio_reader *f)
+int h3r_stats_unpack(struct h3r_stats *x, struct lio_reader *f)
 {
   if (expect_array(f, 13))          return H3R_EUNPACK;
 

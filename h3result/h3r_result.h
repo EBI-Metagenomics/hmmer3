@@ -1,7 +1,14 @@
 #ifndef H3R_RESULT_H
 #define H3R_RESULT_H
 
-struct h3r;
+#include "h3r_stats.h"
+#include "h3r_tophits.h"
+
+struct h3r
+{
+  struct h3r_stats stats;
+  struct h3r_tophits tophits;
+};
 
 struct h3r *h3r_new(void);
 void        h3r_del(struct h3r const *);

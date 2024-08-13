@@ -1,7 +1,7 @@
 #ifndef H3R_STATS_H
 #define H3R_STATS_H
 
-#include "zsetby.h"
+#include "h3r_zsetby.h"
 #include <stdint.h>
 
 struct h3r_stats;
@@ -13,8 +13,8 @@ struct h3r_stats
   double Z;
   double domZ;
 
-  enum zsetby Z_setby;
-  enum zsetby domZ_setby;
+  enum h3r_zsetby Z_setby;
+  enum h3r_zsetby domZ_setby;
 
   unsigned nmodels;
   unsigned nseqs;

@@ -128,6 +128,7 @@ static void test_pack_result(void)
   aye(!h3r_pack(result->content, file));
   aye(!close(file));
 
+  printf("_%d: %ld\n", __LINE__, hash("h3result.mp"));
   aye(hash("h3result.mp") == 8392L);
 
   h3c_result_del(result);
@@ -143,6 +144,7 @@ static void test_unpack_result(void)
   aye(!h3r_pack(result->content, file));
   aye(!close(file));
 
+  printf("_%d: %ld\n", __LINE__, hash("h3result.mp"));
   aye(hash("h3result.mp") == 8392L);
 
   file = open("h3result.mp", O_RDONLY);
@@ -155,6 +157,7 @@ static void test_unpack_result(void)
   aye(!h3r_unpack(result->content, file));
   aye(!close(file));
 
+  printf("_%d: %ld\n", __LINE__, hash("h3result.mp"));
   aye(hash("h3result.mp") == 8392L);
 
   h3c_result_del(result);

@@ -12,7 +12,13 @@ static inline int write_cstring(struct lio_writer *x, char const *string)
   return 0;
 }
 
-static inline int write_float(struct lio_writer *x, float data)
+static inline int write_f32(struct lio_writer *x, float data)
+{
+  if (lio_write(x, lip_pack_float(lio_alloc(x), data))) return 1;
+  return 0;
+}
+
+static inline int write_f64(struct lio_writer *x, double data)
 {
   if (lio_write(x, lip_pack_float(lio_alloc(x), data))) return 1;
   return 0;
@@ -41,5 +47,8 @@ static inline int write_map(struct lio_writer *x, uint32_t size)
   if (lio_write(x, lip_pack_map(lio_alloc(x), size))) return 1;
   return 0;
 }
+
+#define write_float(stream, data)                                              \
+  _Generic((data), float: write_f32, double: write_f64)(stream, data)
 
 #endif

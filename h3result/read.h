@@ -74,11 +74,11 @@ static inline int read_bool(struct lio_reader *x, bool *data)
   return 0;
 }
 
-#define read_int(buffer, data)                                                 \
+#define read_int(stream, data)                                                 \
   _Generic((data), unsigned *: read_unsigned, unsigned long *: read_ulong)(    \
-      buffer, data)
+      stream, data)
 
-#define read_float(buffer, data)                                               \
-  _Generic((data), float *: read_f32, double *: read_f64)(buffer, data)
+#define read_float(stream, data)                                               \
+  _Generic((data), float *: read_f32, double *: read_f64)(stream, data)
 
 #endif

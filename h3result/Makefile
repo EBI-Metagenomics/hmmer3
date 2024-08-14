@@ -2,7 +2,8 @@ CC = gcc
 CFLAGS = -std=c11 -Wall -Wextra -pedantic -O3 -MMD -MP
 SRC = $(filter-out $(wildcard test_*.c),$(wildcard *.c))
 OBJ = $(SRC:.c=.o)
-HDR = $(wildcard h3r_*.h)
+HDR = $(wildcard *.h)
+LIBHDR = $(wildcard h3r_*.h)
 LIB = libh3result.a
 PREFIX ?= /usr/local
 
@@ -22,10 +23,10 @@ test_h3result: %: %.o $(LIB) $(HDR)
 check: test_h3result
 	./test_h3result
 
-install: $(LIB) $(HDR)
+install: $(LIB) $(LIBHDR)
 	@mkdir -p $(PREFIX)/lib $(PREFIX)/include
 	install -m 0755 $(LIB) $(PREFIX)/lib/
-	install -m 0644 $(HDR) $(PREFIX)/include/
+	install -m 0644 $(LIBHDR) $(PREFIX)/include/
 
 uninstall:
 	rm -f $(PREFIX)/lib/$(LIB) $(HDR:%=$(PREFIX)/include/%)

@@ -59,7 +59,9 @@ int h3r_pack(struct h3r const *x, int fd)
   if (rc) return rc;
 
   if (write_cstring(&f, "tophits"))  return H3R_EPACK;
-  return h3r_tophits_pack(&x->tophits, &f);
+  if ((rc = h3r_tophits_pack(&x->tophits, &f))) return rc;
+  lio_flush(&f);
+  return 0;
 }
 
 int h3r_unpack(struct h3r *x, int fd)

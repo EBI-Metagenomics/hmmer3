@@ -128,6 +128,7 @@ static void test_pack_result(void)
   aye(!h3r_pack(result->content, file));
   aye(!close(file));
 
+  printf("_%d: %ld\n", __LINE__, hash("h3result.mp"));
   aye(hash("h3result.mp") == 8392L || hash("h3result.mp") == 38307);
 
   h3c_result_del(result);

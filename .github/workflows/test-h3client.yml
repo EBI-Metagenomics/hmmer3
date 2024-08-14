@@ -31,7 +31,7 @@ jobs:
         run: wget https://github.com/nanomsg/nng/archive/refs/tags/v1.5.2.tar.gz && tar xzf v1.5.2.tar.gz
 
       - name: build & install nng
-        run: mkdir nng-1.5.2/build && cd nng-1.5.2/build && cmake -G Ninja .. && ninja && ninja install
+        run: mkdir nng-1.5.2/build && cd nng-1.5.2/build && cmake .. && make && make install
 
       - name: clone lite-pack
         run: git clone --depth 1 https://github.com/EBI-Metagenomics/lip.git lip

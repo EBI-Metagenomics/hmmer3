@@ -1,10 +1,10 @@
-#include "h3client/stream.h"
+#include "h3c_stream.h"
 #include "answer.h"
 #include "cco.h"
-#include "h3client/errno.h"
+#include "h3c_errno.h"
+#include "h3c_result.h"
 #include "msg.h"
 #include "nng/nng.h"
-#include "stream.h"
 #include <stdlib.h>
 
 struct h3client_stream
@@ -52,7 +52,7 @@ void h3client_stream_wait(struct h3client_stream *t)
   cco_queue_put_first(&t->queue, &msg->node);
 }
 
-int h3client_stream_pop(struct h3client_stream *t, struct h3client_result *r)
+int h3client_stream_pop(struct h3client_stream *t, struct h3c_result *r)
 {
   struct msg *msg = cco_of(cco_queue_pop(&t->queue), struct msg, node);
   int rc = h3client_msg_result(msg);

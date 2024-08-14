@@ -1,11 +1,13 @@
 #include "answer.h"
+#include "copy_string.h"
+#include "array_size.h"
 #include "buff.h"
 #include "defer_return.h"
 #include "h3c_errno.h"
+#include "h3c_result.h"
 #include "h3r_alidisplay.h"
 #include "h3r_domain.h"
 #include "h3r_hit.h"
-#include "h3r_result.h"
 #include "h3r_stats.h"
 #include "h3r_tophits.h"
 #include "hmmd_hmmd.h"
@@ -25,7 +27,7 @@ struct answer
 
   struct buff *buff;
   int errnum;
-  char *errstr;
+  char errstr[1024];
   struct hmmd_stats stats;
   struct hmmd_tophits tophits;
 };
@@ -45,7 +47,7 @@ struct answer *h3client_answer_new(void)
   }
 
   ans->errnum = 0;
-  ans->errstr = NULL;
+  memset(ans->errstr, '\0', array_size(ans->errstr));
   h3client_hmmd_stats_init(&ans->stats);
   h3client_hmmd_tophits_init(&ans->tophits);
   return ans;
@@ -54,7 +56,6 @@ struct answer *h3client_answer_new(void)
 void h3client_answer_del(struct answer const *ans)
 {
   h3client_buff_del(ans->buff);
-  if (ans->errstr) free((void *)ans->errstr);
   h3client_hmmd_stats_cleanup((struct hmmd_stats *)&ans->stats);
   h3client_hmmd_tophits_cleanup((struct hmmd_tophits *)&ans->tophits);
   free((void *)ans);
@@ -111,14 +112,9 @@ cleanup:
 int h3client_answer_parse_error(struct answer *x)
 {
   x->errnum = x->status.value.status;
-
-  size_t msg_size = x->status.value.msg_size;
-  char *errstr = realloc(x->errstr, msg_size + 1);
-  if (!errstr) return H3C_ENOMEM;
-  memcpy(errstr, x->buff->data, msg_size);
-  errstr[msg_size] = '\0';
-  x->errstr = errstr;
-
+  if (x->status.value.msglen >= array_size(x->errstr)) return H3C_ENOMEM;
+  memcpy(x->errstr, x->buff->data, x->status.value.msglen);
+  x->errstr[x->status.value.msglen] = '\0';
   return 0;
 }
 
@@ -296,8 +292,11 @@ defer:
   return rc;
 }
 
-int h3client_answer_copy(struct answer *x, struct h3r *y)
+int h3client_answer_copy(struct answer *x, struct h3c_result *y)
 {
-  copy_stats(&y->stats, &x->stats);
-  return copy_tophits(&y->tophits, &x->tophits);
+  y->errnum = x->errnum;
+  if (copy_string(array_size(y->errstr), y->errstr, x->errstr)) return H3C_ENOMEM;
+  int rc = 0;
+  if ((rc = copy_stats(&y->content->stats, &x->stats))) return rc;
+  return copy_tophits(&y->content->tophits, &x->tophits);
 }

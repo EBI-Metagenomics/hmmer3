@@ -1,11 +1,8 @@
 #include "hmmd_tophits.h"
-#include "h3client/errno.h"
-#include "hmmd_domain.h"
+#include "h3c_errno.h"
 #include "hmmd_hit.h"
 #include "zc.h"
 #include <inttypes.h>
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

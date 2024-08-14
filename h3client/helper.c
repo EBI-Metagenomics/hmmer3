@@ -1,5 +1,4 @@
 #include "helper.h"
-#include <stdlib.h>
 
 struct query const ross[2] = {
     [GOOD] = {.name = "tr|Q949S7|Q949S7_ARATH",

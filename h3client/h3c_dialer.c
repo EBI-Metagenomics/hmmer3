@@ -1,10 +1,9 @@
-#include "dialer.h"
-#include "h3client/errno.h"
-#include "h3client/stream.h"
+#include "h3c_dialer.h"
+#include "h3c_errno.h"
+#include "h3c_stream.h"
 #include "itoa.h"
 #include "nng/nng.h"
 #include "nnge.h"
-#include "stream.h"
 #include "timeout.h"
 #include <stdlib.h>
 #include <string.h>

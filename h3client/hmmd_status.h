@@ -7,7 +7,7 @@
 struct hmmd_status
 {
   uint32_t status;
-  uint64_t msg_size;
+  uint64_t msglen;
 };
 
 void h3client_hmmd_status_init(struct hmmd_status *);

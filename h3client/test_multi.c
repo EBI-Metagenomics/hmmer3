@@ -1,10 +1,6 @@
 #include "fs.h"
-#include "h3client/h3client.h"
 #include "helper.h"
-#include "hope.h"
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define PORT 51371
 static char const cmd[] = "--hmmdb 1 --acc --cut_ga --hmmdb_ranges 0..4";
@@ -26,7 +22,7 @@ static void test_multi(void)
 
   struct h3client_stream *s = h3client_dialer_stream(d);
 
-  struct h3client_result *result = h3client_result_new();
+  struct h3r *result = h3client_result_new();
   notnull(result);
 
   long deadline = h3client_deadline(1000 * 5);

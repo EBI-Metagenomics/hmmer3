@@ -51,7 +51,7 @@ static struct h3client_dialer *conn_new(void);
 static struct h3client_stream *conn_dial(struct h3client_dialer *d,
                                          long deadline);
 static void conn_del(struct h3client_dialer *d);
-static struct h3client_result *request(struct h3client_stream *s,
+static struct h3r *request(struct h3client_stream *s,
                                        char const *name, char const *seq,
                                        long deadline);
 
@@ -77,7 +77,7 @@ static void test_request_timedout(void)
   eq(h3client_stream_put(s, cmd, ross[GOOD].name, ross[GOOD].seq, earlier()),
      0);
   h3client_stream_wait(s);
-  struct h3client_result *result = h3client_result_new();
+  struct h3r *result = h3client_result_new();
   notnull(result);
   eq(h3client_stream_pop(s, result), H3CLIENT_ETIMEDOUT);
 
@@ -86,11 +86,11 @@ static void test_request_timedout(void)
   conn_del(d);
 }
 
-static struct h3client_result *request_ross(void)
+static struct h3r *request_ross(void)
 {
   struct h3client_dialer *d = conn_new();
   struct h3client_stream *s = conn_dial(d, later());
-  struct h3client_result *r =
+  struct h3r *r =
       request(s, ross[GOOD].name, ross[GOOD].seq, later());
 
   h3client_stream_del(s);
@@ -100,7 +100,7 @@ static struct h3client_result *request_ross(void)
 
 static void test_pack_result(void)
 {
-  struct h3client_result *result = request_ross();
+  struct h3r *result = request_ross();
   notnull(result);
 
   FILE *file = fopen(TMPDIR "/h3result.mp", "wb");
@@ -115,7 +115,7 @@ static void test_pack_result(void)
 
 static void test_unpack_result(void)
 {
-  struct h3client_result *result = request_ross();
+  struct h3r *result = request_ross();
   notnull(result);
 
   FILE *file = fopen(TMPDIR "/h3result.mp", "wb");
@@ -142,7 +142,7 @@ static void test_unpack_result(void)
 
 static void test_print_targets(void)
 {
-  struct h3client_result *result = request_ross();
+  struct h3r *result = request_ross();
   notnull(result);
 
   FILE *file = fopen(TMPDIR "/targets.txt", "wb");
@@ -157,7 +157,7 @@ static void test_print_targets(void)
 
 static void test_print_domains(void)
 {
-  struct h3client_result *result = request_ross();
+  struct h3r *result = request_ross();
   notnull(result);
 
   FILE *file = fopen(TMPDIR "/domains.txt", "wb");
@@ -172,7 +172,7 @@ static void test_print_domains(void)
 
 static void test_print_targets_table(void)
 {
-  struct h3client_result *result = request_ross();
+  struct h3r *result = request_ross();
   notnull(result);
 
   FILE *file = fopen(TMPDIR "/targets.tbl", "wb");
@@ -187,7 +187,7 @@ static void test_print_targets_table(void)
 
 static void test_print_domains_table(void)
 {
-  struct h3client_result *result = request_ross();
+  struct h3r *result = request_ross();
   notnull(result);
 
   FILE *file = fopen(TMPDIR "/domains.tbl", "wb");
@@ -202,7 +202,7 @@ static void test_print_domains_table(void)
 
 static void test_reuse_results(void)
 {
-  struct h3client_result *result = h3client_result_new();
+  struct h3r *result = h3client_result_new();
   notnull(result);
 
   struct h3client_dialer *d = conn_new();
@@ -225,7 +225,7 @@ static void test_reuse_results_print(void)
   int64_t target = 57543L;
   int64_t domain = 46469L;
 
-  struct h3client_result *result = h3client_result_new();
+  struct h3r *result = h3client_result_new();
   notnull(result);
 
   struct h3client_dialer *d = conn_new();
@@ -257,7 +257,7 @@ static void test_reuse_results_print(void)
 
 static void test_reuse_connection(void)
 {
-  struct h3client_result *result = h3client_result_new();
+  struct h3r *result = h3client_result_new();
   notnull(result);
 
   struct h3client_dialer *d = conn_new();
@@ -281,7 +281,7 @@ static void test_reuse_connection(void)
 
 static void test_result_api(void)
 {
-  struct h3client_result *result = request_ross();
+  struct h3r *result = request_ross();
   notnull(result);
 
   char const *name[] = {"000000005", "000000003", "000000002", "000000004"};
@@ -325,13 +325,13 @@ static struct h3client_stream *conn_dial(struct h3client_dialer *d,
 
 static void conn_del(struct h3client_dialer *d) { h3client_dialer_del(d); }
 
-static struct h3client_result *request(struct h3client_stream *s,
+static struct h3r *request(struct h3client_stream *s,
                                        char const *name, char const *seq,
                                        long deadline)
 {
   eq(h3client_stream_put(s, cmd, name, seq, deadline), 0);
   h3client_stream_wait(s);
-  struct h3client_result *result = h3client_result_new();
+  struct h3r *result = h3client_result_new();
   notnull(result);
   eq(h3client_stream_pop(s, result), 0);
   return result;

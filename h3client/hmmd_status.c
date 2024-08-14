@@ -14,6 +14,6 @@ void h3client_hmmd_status_parse(struct hmmd_status *status, size_t *read_size,
 {
   unsigned char const *ptr = data;
   status->status = h3client_eatu32(&ptr);
-  status->msg_size = h3client_eatu64(&ptr);
+  status->msglen = h3client_eatu64(&ptr);
   *read_size = (size_t)(ptr - data);
 }

@@ -46,7 +46,7 @@ static void callback(void *arg)
       return;
     }
     struct hmmd_status const *status = h3client_answer_status_parse(x->ans);
-    size_t size = status->msg_size;
+    size_t size = status->msglen;
 
     if ((rc = h3client_answer_setup_size(x->ans, size)))
     {

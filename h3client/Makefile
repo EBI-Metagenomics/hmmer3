@@ -23,8 +23,9 @@ $(TEST_TARGET): %: %.o $(LIB) $(HDR)
 	$(CC) $(CFLAGS) $< -L. -lh3client -lh3result -lnng -llio -llite_pack -lm -o $@
 
 check: $(TEST_TARGET)
-	pwd
-	# for test in $(TEST_TARGET); do ./$$test || exit 1; done
+	./start_daemon.sh data/ross.5.hmm
+	for test in $(TEST_TARGET); do ./$$test || exit 1; done
+	./stop_daemon.sh data/ross.5.hmm
 
 install: $(LIB) $(HDR)
 	@mkdir -p $(PREFIX)/lib $(PREFIX)/include

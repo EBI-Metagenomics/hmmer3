@@ -12,8 +12,11 @@
 
 static char const cmd[] = "--hmmdb 1 --acc --cut_ga --hmmdb_ranges 0..4";
 
-static void test_corrupt(void)
+int main(void)
 {
+  aye_begin();
+  atexit(h3client_fini);
+
   struct h3client_dialer *d = h3client_dialer_new("127.0.0.1", PORT);
   aye(d);
   aye(!h3client_dialer_dial(d, h3client_deadline(1000)));
@@ -34,12 +37,6 @@ static void test_corrupt(void)
   h3c_result_del(result);
   h3client_stream_del(s);
   h3client_dialer_del(d);
-}
 
-int main(void)
-{
-  aye_begin();
-  atexit(h3client_fini);
-  test_corrupt();
   return aye_end();
 }

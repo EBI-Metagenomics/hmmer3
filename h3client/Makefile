@@ -38,3 +38,8 @@ uninstall:
 .PHONY: all clean check uninstall
 clean:
 	rm -f $(OBJ) $(LIB) $(TEST_OBJ) $(TEST_TARGET) *.d
+	rm -f data/ross.5.hmm.h3f
+	rm -f data/ross.5.hmm.h3i
+	rm -f data/ross.5.hmm.h3m
+	rm -f data/ross.5.hmm.h3p
+	rm -f data/ross.5.hmm.pid

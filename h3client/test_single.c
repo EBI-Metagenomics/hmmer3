@@ -55,6 +55,11 @@ int main(void)
   test_reuse_results_print();
   test_reuse_connection();
   test_result_api();
+  remove("h3result.mp");
+  remove("targets.tbl");
+  remove("targets.txt");
+  remove("domains.tbl");
+  remove("domains.txt");
   return aye_end();
 }
 

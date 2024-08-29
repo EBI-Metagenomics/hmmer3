@@ -1,3 +1,8 @@
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE < 200809L
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "h3c_socket.h"
 #include "body.h"
 #include "discard.h"
@@ -10,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 #define MIN_BUFFSIZE 0xFFFF

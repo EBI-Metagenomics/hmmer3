@@ -46,7 +46,7 @@ int h3c_socket_dial(struct h3c_socket *x, char const *ip, int port,
 {
   if ((x->fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) return 1;
 
-  struct timeval t = {0};
+  struct timeval t;
   t.tv_sec = timeout;
   t.tv_usec = 0;
 

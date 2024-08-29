@@ -17,7 +17,7 @@ $(LIB): $(OBJ)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 test_h3client: %: %.o $(LIB) $(HDR)
-	$(CC) $(CFLAGS) $< -L. -lh3client -lh3result -lnng -llio -llite_pack -lm -o $@
+	$(CC) $(CFLAGS) $< -L. -lh3client -lh3result -llio -llite_pack -lm -o $@
 
 check: test_h3client
 	./start_daemon.sh data/ross.5.hmm

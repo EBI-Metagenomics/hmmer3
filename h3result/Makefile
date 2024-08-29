@@ -1,11 +1,11 @@
-CC = gcc
-CFLAGS = -std=c11 -Wall -Wextra -pedantic -O3 -MMD -MP
+CC     ?= gcc
+CFLAGS ?= -std=c11 -Wall -Wextra -pedantic -O3 -MMD -MP
+PREFIX ?= /usr/local
 SRC = $(filter-out $(wildcard test_*.c),$(wildcard *.c))
 OBJ = $(SRC:.c=.o)
 HDR = $(wildcard *.h)
 LIBHDR = $(wildcard h3r_*.h)
 LIB = libh3result.a
-PREFIX ?= /usr/local
 
 all: $(LIB)
 

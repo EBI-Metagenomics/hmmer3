@@ -74,5 +74,6 @@ int main(void)
   aye(!h3c_socket_hangup(x));
   h3c_socket_del(x);
   remove("h3result.mp");
+  h3r_del(result);
   return aye_end();
 }

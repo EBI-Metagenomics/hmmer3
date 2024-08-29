@@ -1,4 +1,4 @@
 #!/bin/sh
-set -e
 
-pipx run h3daemon stop "$1"
+test -f data/ross.5.hmm.pid && pipx run h3daemon stop data/ross.5.hmm
+rm -f data/ross.5.hmm.*

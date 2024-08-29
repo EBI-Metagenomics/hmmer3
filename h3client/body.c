@@ -478,6 +478,10 @@ static void hit_cleanup(struct hit *x)
 {
   for (uint32_t i = 0; i < x->ndom; i++)
     domain_cleanup(x->dcl + i);
+  free(x->dcl);
+  free(x->name);
+  free(x->acc);
+  free(x->desc);
   hit_init(x);
 }
 
@@ -672,6 +676,7 @@ struct body *body_new(void)
 {
   struct body *x = malloc(sizeof(struct body));
   if (!x) return NULL;
+  stats_init(&x->stats);
   tophits_init(&x->tophits);
   return x;
 }
@@ -884,6 +889,7 @@ void body_del(struct body const *x)
 {
   if (x)
   {
+    stats_cleanup((struct stats *)&x->stats);
     tophits_cleanup((struct tophits *)&x->tophits);
   }
   free((void *)x);

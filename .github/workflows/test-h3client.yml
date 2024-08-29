@@ -27,12 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: download & extract nng
-        run: wget https://github.com/nanomsg/nng/archive/refs/tags/v1.5.2.tar.gz && tar xzf v1.5.2.tar.gz
-
-      - name: build & install nng
-        run: mkdir nng-1.5.2/build && cd nng-1.5.2/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=${{github.workspace}}/deps .. && make && make install
-
       - name: clone lite-pack
         run: git clone --depth 1 https://github.com/EBI-Metagenomics/lip.git lip
 

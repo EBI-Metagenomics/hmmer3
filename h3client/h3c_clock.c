@@ -1,3 +1,8 @@
+#if !defined(_POSIX_C_SOURCE) || _POSIX_C_SOURCE < 200809L
+#undef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "h3c_clock.h"
 #include <errno.h>
 #include <stdio.h>
@@ -22,7 +27,7 @@
 
 long h3c_clock(void)
 {
-  struct timespec ts = {0};
+  struct timespec ts;
 
   if (clock_gettime(USE_CLOCKID, &ts) != 0)
   {

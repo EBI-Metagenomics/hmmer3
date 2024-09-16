@@ -9,10 +9,10 @@ import typer
 from typer import echo
 
 from h3daemon.connect import find_free_port
+from h3daemon.errors import CouldNotPossessError
 from h3daemon.hmmfile import HMMFile
 from h3daemon.pidfile import create_pidfile
 from h3daemon.sched import Sched
-from h3daemon.errors import CouldNotPossessError
 
 __all__ = ["app"]
 

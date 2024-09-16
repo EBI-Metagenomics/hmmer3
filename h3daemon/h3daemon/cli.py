@@ -63,7 +63,8 @@ def start(
             Sched.possess(file, pidfile).kill_children()
             file = HMMFile(hmmfile)
         else:
-            raise RuntimeError(f"Daemon for {hmmfile} is running.")
+            typer.echo(f"Daemon for {hmmfile} is already running.")
+            raise typer.Exit(1)
     cport = find_free_port() if port == 0 else port
     wport = find_free_port()
     fin = open(stdin, "r") if stdin else stdin
@@ -77,7 +78,11 @@ def stop(hmmfile: Path, force: bool = O_FORCE):
     """
     Stop daemon.
     """
-    sched = Sched.possess(HMMFile(hmmfile))
+    try:
+        sched = Sched.possess(HMMFile(hmmfile))
+    except CouldNotPossessError as x:
+        typer.echo(str(x))
+        raise typer.Exit(1)
     if force:
         sched.kill_children()
     else:
@@ -92,10 +97,10 @@ def ready(hmmfile: Path, wait: bool = O_WAIT):
     try:
         is_ready = partial(Sched.possess(HMMFile(hmmfile)).is_ready, wait)
         if is_ready():
-            typer.echo("h3daemon is ready!")
+            typer.echo("Daemon is ready!")
             raise typer.Exit(0)
         else:
-            typer.echo("h3daemon is NOT ready...")
+            typer.echo("Daemon is NOT ready...")
             raise typer.Exit(1)
     except CouldNotPossessError as x:
         typer.echo(str(x))

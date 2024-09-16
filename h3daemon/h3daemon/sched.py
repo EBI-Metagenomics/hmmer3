@@ -92,7 +92,7 @@ class Sched:
         if pid:
             return cls(psutil.Process(pid))
         raise CouldNotPossessError(
-            f"Failed to possess {hmmfile}. Have you started h3daemon?"
+            f"Failed to possess {hmmfile}. Have you started the daemon?"
         )
 
     @staticmethod

@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: clone lite-pack
-        run: git clone --depth 1 https://github.com/EBI-Metagenomics/lip.git lip
+        run: git clone --depth 1 https://github.com/EBI-Metagenomics/lite-pack.git lite-pack
 
       - name: build & install lite-pack
         run: cd lip && make && make install

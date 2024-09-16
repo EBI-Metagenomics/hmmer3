@@ -84,9 +84,9 @@ def stop(hmmfile: Path, force: bool = O_FORCE):
 
 
 @app.command()
-def isready(hmmfile: Path, wait: bool = O_WAIT):
+def ready(hmmfile: Path, wait: bool = O_WAIT):
     """
-    Is it ready?
+    Check if h3daemon is running and ready.
     """
     is_ready = partial(Sched.possess(HMMFile(hmmfile)).is_ready, wait)
     raise typer.Exit(0 if is_ready() else 1)

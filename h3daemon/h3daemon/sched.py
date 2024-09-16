@@ -91,7 +91,7 @@ class Sched:
         pid = pidfile.is_locked()
         if pid:
             return cls(psutil.Process(pid))
-        raise RuntimeError(f"Failed to possess {hmmfile}. Is it running?")
+        raise RuntimeError(f"Failed to possess {hmmfile}. Have you started h3daemon?")
 
     @staticmethod
     def daemonize(

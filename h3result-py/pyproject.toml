@@ -16,6 +16,7 @@ include = [
 [tool.poetry.dependencies]
 cffi = "^1.16"
 python = "^3.9"
+gitpython = "^3.1.43"
 
 [tool.poetry.build]
 script = "build_ext.py"
@@ -28,8 +29,7 @@ pytest = "^8.2"
 requires = [
   "poetry-core",
   "cffi",
-  "cmake",
-  "patchelf;sys_platform=='linux'",
+  "GitPython",
   "setuptools;python_version>='3.12'",
 ]
 build-backend = "poetry.core.masonry.api"

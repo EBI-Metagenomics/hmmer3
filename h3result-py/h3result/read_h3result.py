@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from h3result.cffi import ffi, lib
+from h3result.cffi import ffi
 from h3result.h3result import H3Result
 from h3result.path_like import PathLike
 
@@ -15,16 +15,17 @@ def read_h3result(filename: PathLike | None = None, fileno: int | None = None):
         assert filename is None
 
     if filename:
-        fp = lib.fopen(bytes(Path(filename)), b"rb")
+        fd = os.open(bytes(Path(str(filename))), os.O_RDONLY)
     else:
-        fp = lib.fdopen(os.dup(fileno), b"rb")
+        assert fileno is not None
+        fd = os.dup(fileno)
 
-    if fp == ffi.NULL:
+    if fd == ffi.NULL:
         raise RuntimeError()
 
     try:
-        x = H3Result(fp)
+        x = H3Result(fd)
     finally:
-        lib.fclose(fp)
+        os.close(fd)
 
     return x

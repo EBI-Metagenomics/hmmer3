@@ -37,7 +37,7 @@ O_DETACH = typer.Option(
 @app.callback(invoke_without_command=True)
 def cli(version: Optional[bool] = O_VERSION):
     if version:
-        echo(importlib.metadata.version(__package__))
+        echo(importlib.metadata.version(str(__package__)))
         raise typer.Exit()
 
 

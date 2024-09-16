@@ -1,6 +1,6 @@
 #include "fsm.h"
 #include "error.h"
-#include "hmr.h"
+#include "hmmer_reader.h"
 #include "position.h"
 #include "posix.h"
 #include "to.h"

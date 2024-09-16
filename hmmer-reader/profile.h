@@ -1,7 +1,7 @@
 #ifndef PROFILE_H
 #define PROFILE_H
 
-#include "hmr.h"
+#include "hmmer_reader.h"
 #include <stdio.h>
 
 struct hmr_position;

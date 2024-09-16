@@ -1,4 +1,4 @@
-#include "hmr.h"
+#include "hmmer_reader.h"
 #include "fsm.h"
 #include "profile.h"
 #include "token.h"

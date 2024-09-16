@@ -1,7 +1,7 @@
 #ifndef POSITION_H
 #define POSITION_H
 
-#include "hmr.h"
+#include "hmmer_reader.h"
 #include <stddef.h>
 
 static void hmr_position_init(struct hmr_position *pos)

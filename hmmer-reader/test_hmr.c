@@ -1,5 +1,5 @@
 #include "aye.h"
-#include "hmr.h"
+#include "hmmer_reader.h"
 #include <math.h>
 #include <string.h>
 

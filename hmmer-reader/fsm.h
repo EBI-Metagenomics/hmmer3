@@ -1,7 +1,7 @@
 #ifndef FSM_H
 #define FSM_H
 
-#include "hmr.h"
+#include "hmmer_reader.h"
 
 struct hmr_position;
 struct hmr_profile;

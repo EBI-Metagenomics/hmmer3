@@ -1,5 +1,5 @@
-#ifndef HMR_H
-#define HMR_H
+#ifndef HMMER_READER_H
+#define HMMER_READER_H
 
 #include <stdbool.h>
 #include <stddef.h>

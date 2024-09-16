@@ -1,6 +1,6 @@
 #include "token.h"
 #include "error.h"
-#include "hmr.h"
+#include "hmmer_reader.h"
 #include "posix.h"
 #include <string.h>
 

@@ -1,5 +1,5 @@
 #include "error.h"
-#include "hmr.h"
+#include "hmmer_reader.h"
 #include <assert.h>
 #include <errno.h>
 #include <string.h>

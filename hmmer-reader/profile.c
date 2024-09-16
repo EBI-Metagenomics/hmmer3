@@ -1,7 +1,7 @@
 #include "profile.h"
 #include "error.h"
 #include "fsm.h"
-#include "hmr.h"
+#include "hmmer_reader.h"
 #include "node.h"
 #include "position.h"
 #include "token.h"

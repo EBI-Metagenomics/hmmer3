@@ -11,7 +11,7 @@ from daemon import DaemonContext
 from pidlockfile import PIDLockFile
 
 from h3daemon.connect import find_free_port
-from h3daemon.errors import ChildNotFoundError
+from h3daemon.errors import ChildNotFoundError, CouldNotPossessError
 from h3daemon.hmmfile import HMMFile
 from h3daemon.master import Master
 from h3daemon.pidfile import create_pidfile
@@ -91,7 +91,9 @@ class Sched:
         pid = pidfile.is_locked()
         if pid:
             return cls(psutil.Process(pid))
-        raise RuntimeError(f"Failed to possess {hmmfile}. Have you started h3daemon?")
+        raise CouldNotPossessError(
+            f"Failed to possess {hmmfile}. Have you started h3daemon?"
+        )
 
     @staticmethod
     def daemonize(

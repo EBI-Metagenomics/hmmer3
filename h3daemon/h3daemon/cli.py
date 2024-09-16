@@ -12,6 +12,7 @@ from h3daemon.connect import find_free_port
 from h3daemon.hmmfile import HMMFile
 from h3daemon.pidfile import create_pidfile
 from h3daemon.sched import Sched
+from h3daemon.errors import CouldNotPossessError
 
 __all__ = ["app"]
 
@@ -88,5 +89,14 @@ def ready(hmmfile: Path, wait: bool = O_WAIT):
     """
     Check if h3daemon is running and ready.
     """
-    is_ready = partial(Sched.possess(HMMFile(hmmfile)).is_ready, wait)
-    raise typer.Exit(0 if is_ready() else 1)
+    try:
+        is_ready = partial(Sched.possess(HMMFile(hmmfile)).is_ready, wait)
+        if is_ready():
+            typer.echo("h3daemon is ready!")
+            raise typer.Exit(0)
+        else:
+            typer.echo("h3daemon is NOT ready...")
+            raise typer.Exit(1)
+    except CouldNotPossessError as x:
+        typer.echo(str(x))
+        raise typer.Exit(1)

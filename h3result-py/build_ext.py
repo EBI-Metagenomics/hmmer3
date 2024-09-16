@@ -9,14 +9,12 @@ from git import Repo
 CWD = Path(".").resolve()
 TMP = CWD / ".build_ext"
 PKG = CWD / "h3result"
-INTERFACE = PKG / "interface.h"
-LIB = PKG / "lib"
-INC = PKG / "include"
-
-SHARE = PKG / "share"
 
 
-def make(args: list[str] = [], cwd: Path = CWD):
+def make(
+    cwd: Path,
+    args: list[str] = [],
+):
     check_call(["make"] + args, cwd=cwd)
 
 
@@ -24,8 +22,9 @@ def build_and_install(root: Path, prefix: str, prj_dir: str, git_url: str):
     git_dir = git_url.split("/")[-1].split(".")[-1][:-4]
     if not (root / git_dir).exists():
         Repo.clone_from(git_url, root / git_dir, depth=1)
-    make(cwd=root / prj_dir)
-    make(["install", f"PREFIX={prefix}"], cwd=root / prj_dir)
+    bld_dir = root / prj_dir
+    make(bld_dir, [f"C_INCLUDE_PATH={prefix}/include", f"LIBRARY_PATH={prefix}/lib"])
+    make(bld_dir, ["install", f"PREFIX={prefix}"])
 
 
 if __name__ == "__main__":
@@ -43,7 +42,7 @@ if __name__ == "__main__":
 
     ffibuilder = FFI()
 
-    ffibuilder.cdef(open(INTERFACE, "r").read())
+    ffibuilder.cdef(open(PKG / "interface.h", "r").read())
     ffibuilder.set_source(
         "h3result.cffi",
         """
@@ -51,7 +50,7 @@ if __name__ == "__main__":
         """,
         language="c",
         libraries=["h3result", "lio", "lite_pack"],
-        library_dirs=[str(LIB)],
-        include_dirs=[str(INC)],
+        library_dirs=[str(PKG / "lib")],
+        include_dirs=[str(PKG / "include")],
     )
     ffibuilder.compile(verbose=True)

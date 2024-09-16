@@ -23,7 +23,12 @@ def build_and_install(root: Path, prefix: str, prj_dir: str, git_url: str):
     if not (root / git_dir).exists():
         Repo.clone_from(git_url, root / git_dir, depth=1)
     bld_dir = root / prj_dir
-    make(bld_dir, [f"C_INCLUDE_PATH={prefix}/include", f"LIBRARY_PATH={prefix}/lib"])
+    args = [
+        f"C_INCLUDE_PATH={prefix}/include",
+        f"LIBRARY_PATH={prefix}/lib",
+        "CFLAGS='-fPIC'",
+    ]
+    make(bld_dir, args)
     make(bld_dir, ["install", f"PREFIX={prefix}"])
 
 

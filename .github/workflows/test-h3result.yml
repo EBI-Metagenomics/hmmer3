@@ -31,10 +31,10 @@ jobs:
         run: git clone --depth 1 https://github.com/EBI-Metagenomics/lite-pack.git lite-pack
 
       - name: build & install lite-pack
-        run: cd lip && make && make install
+        run: cd lite-pack && make && make install
 
       - name: build & install lite-pack-io
-        run: cd lip/ext && make && make install
+        run: cd lite-pack/ext && make && make install
 
       - name: make
         run: make

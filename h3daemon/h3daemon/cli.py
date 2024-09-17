@@ -9,7 +9,7 @@ import typer
 from typer import echo
 
 from h3daemon.connect import find_free_port
-from h3daemon.errors import CouldNotPossessError
+from h3daemon.errors import CouldNotPossessError, ParentNotAliveError
 from h3daemon.hmmfile import HMMFile
 from h3daemon.pidfile import create_pidfile
 from h3daemon.sched import Sched
@@ -116,12 +116,17 @@ def ready(hmmfile: Path, wait: bool = O_WAIT):
         if wait:
             wait_until(sched.is_ready)
 
-        if sched.is_ready():
-            typer.echo("Daemon is ready!")
-            raise typer.Exit(0)
-        else:
+        try:
+            if sched.is_ready():
+                typer.echo("Daemon is ready!")
+                raise typer.Exit(0)
+            else:
+                typer.echo("Daemon is NOT ready...")
+                raise typer.Exit(1)
+        except ParentNotAliveError:
             typer.echo("Daemon is NOT ready...")
             raise typer.Exit(1)
+
     except CouldNotPossessError as x:
         typer.echo(str(x))
         raise typer.Exit(1)

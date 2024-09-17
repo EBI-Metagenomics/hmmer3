@@ -1,4 +1,7 @@
-__all__ = ["ChildNotFoundError", "CouldNotPossessError"]
+__all__ = ["ParentNotAliveError", "ChildNotFoundError", "CouldNotPossessError"]
+
+
+class ParentNotAliveError(RuntimeError): ...
 
 
 class ChildNotFoundError(RuntimeError): ...

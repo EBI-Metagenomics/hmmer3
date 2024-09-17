@@ -10,7 +10,11 @@ from daemon import DaemonContext
 from pidlockfile import PIDLockFile
 
 from h3daemon.connect import find_free_port
-from h3daemon.errors import ChildNotFoundError, CouldNotPossessError
+from h3daemon.errors import (
+    ChildNotFoundError,
+    CouldNotPossessError,
+    ParentNotAliveError,
+)
 from h3daemon.hmmfile import HMMFile
 from h3daemon.master import Master
 from h3daemon.pidfile import create_pidfile
@@ -122,11 +126,13 @@ class Sched:
         try:
             master = spawn_master(hmmfile, cport, wport)
             worker = spawn_worker(wport)
+
             def shutdown(_):
                 try:
                     self.terminate_children(15)
                 except psutil.TimeoutExpired:
                     self.kill_children()
+
             psutil.wait_procs([master.process, worker.process], callback=shutdown)
         finally:
             try:
@@ -145,14 +151,27 @@ class Sched:
 
     def terminate_children(self, timeout: Union[float, None] = None):
         for x in self._proc.children():
-            x.terminate()
-            x.wait(timeout)
+            try:
+                x.terminate()
+                x.wait(timeout)
+            except psutil.NoSuchProcess:
+                pass
 
     def terminate_parent(self, timeout: Union[float, None] = None):
-        self._proc.terminate()
-        self._proc.wait(timeout)
+        try:
+            self._proc.terminate()
+            self._proc.wait(timeout)
+        except psutil.NoSuchProcess:
+            pass
+
+    def is_alive(self):
+        if not psutil.pid_exists(self._proc.pid):
+            return False
+        return self._proc.status() not in (psutil.STATUS_DEAD, psutil.STATUS_ZOMBIE)
 
     def is_ready(self):
+        if not self.is_alive():
+            raise ParentNotAliveError()
         try:
             master = self.master
             worker = self.worker

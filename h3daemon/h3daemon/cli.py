@@ -13,6 +13,7 @@ from h3daemon.errors import CouldNotPossessError
 from h3daemon.hmmfile import HMMFile
 from h3daemon.pidfile import create_pidfile
 from h3daemon.sched import Sched
+from h3daemon.polling import wait_until
 
 __all__ = ["app"]
 
@@ -60,7 +61,9 @@ def start(
     pidfile = create_pidfile(file.path)
     if pidfile.is_locked():
         if force:
-            Sched.possess(file, pidfile).kill_children()
+            sched = Sched.possess(file, pidfile)
+            sched.kill_children()
+            sched.kill_parent()
             file = HMMFile(hmmfile)
         else:
             typer.echo(f"Daemon for {hmmfile} is already running.")
@@ -85,8 +88,18 @@ def stop(hmmfile: Path, force: bool = O_FORCE):
         raise typer.Exit(1)
     if force:
         sched.kill_children()
+        sched.kill_parent()
     else:
         sched.terminate_children()
+        sched.terminate_parent()
+
+
+def try_possess_sched(hmmfile: HMMFile):
+    try:
+        Sched.possess(hmmfile)
+    except CouldNotPossessError:
+        return False
+    return True
 
 
 @app.command()
@@ -95,8 +108,15 @@ def ready(hmmfile: Path, wait: bool = O_WAIT):
     Check if h3daemon is running and ready.
     """
     try:
-        is_ready = partial(Sched.possess(HMMFile(hmmfile)).is_ready, wait)
-        if is_ready():
+        file = HMMFile(hmmfile)
+        if wait:
+            wait_until(partial(try_possess_sched, file))
+
+        sched = Sched.possess(file)
+        if wait:
+            wait_until(sched.is_ready)
+
+        if sched.is_ready():
             typer.echo("Daemon is ready!")
             raise typer.Exit(0)
         else:

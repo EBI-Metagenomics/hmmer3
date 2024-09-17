@@ -3,8 +3,7 @@ from __future__ import annotations
 import atexit
 import os
 import sys
-from functools import partial
-from typing import Optional
+from typing import Optional, Union
 
 import psutil
 from daemon import DaemonContext
@@ -24,14 +23,14 @@ __all__ = ["Sched", "SchedContext"]
 def spawn_master(hmmfile: str, cport: int, wport: int):
     cmd = Master.cmd(cport, wport, hmmfile)
     master = Master(psutil.Popen(cmd))
-    wait_until(partial(master.is_ready))
+    wait_until(master.is_ready)
     return master
 
 
 def spawn_worker(wport: int):
     cmd = Worker.cmd(wport)
     worker = Worker(psutil.Popen(cmd))
-    wait_until(partial(worker.is_ready))
+    wait_until(worker.is_ready)
     return worker
 
 
@@ -64,6 +63,7 @@ class SchedContext:
         if not self._sched:
             return
         self._sched.kill_children()
+        self._sched.kill_parent()
         self._sched = None
 
     @property
@@ -122,38 +122,43 @@ class Sched:
         try:
             master = spawn_master(hmmfile, cport, wport)
             worker = spawn_worker(wport)
-            cb = self.terminate_children
-            psutil.wait_procs([master.process, worker.process], callback=lambda _: cb())
+            def shutdown(_):
+                try:
+                    self.terminate_children(15)
+                except psutil.TimeoutExpired:
+                    self.kill_children()
+            psutil.wait_procs([master.process, worker.process], callback=shutdown)
         finally:
-            self.kill_children()
+            try:
+                self.terminate_children(15)
+            except psutil.TimeoutExpired:
+                self.kill_children()
 
     def kill_children(self):
         for x in self._proc.children():
             x.kill()
+            x.wait()
+
+    def kill_parent(self):
         self._proc.kill()
         self._proc.wait()
 
-    def terminate_children(self):
+    def terminate_children(self, timeout: Union[float, None] = None):
         for x in self._proc.children():
             x.terminate()
+            x.wait(timeout)
+
+    def terminate_parent(self, timeout: Union[float, None] = None):
         self._proc.terminate()
-        self._proc.wait()
+        self._proc.wait(timeout)
 
-    def wait(self):
-        self._proc.wait()
-
-    def _is_ready(self):
+    def is_ready(self):
         try:
             master = self.master
             worker = self.worker
         except ChildNotFoundError:
             return False
         return master.is_ready() and worker.is_ready() and self._is_healthy()
-
-    def is_ready(self, wait=False):
-        if wait:
-            wait_until(self._is_ready)
-        return self._is_ready()
 
     @property
     def master(self) -> Master:
@@ -170,7 +175,7 @@ class Sched:
         raise ChildNotFoundError("Worker not found.")
 
     def get_cport(self) -> int:
-        self.is_ready(True)
+        wait_until(self.is_ready)
         return self._get_cport()
 
     def _is_healthy(self):

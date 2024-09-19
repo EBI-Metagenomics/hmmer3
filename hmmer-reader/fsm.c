@@ -4,7 +4,6 @@
 #include "position.h"
 #include "posix.h"
 #include "to.h"
-#include "trans.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>

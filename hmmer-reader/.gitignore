@@ -1,3 +1,7 @@
+*.d
+*.o
+test_[^\.]*
+
 compile_commands.json
 .cache/
 *-build-*/

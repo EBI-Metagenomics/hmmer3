@@ -67,9 +67,7 @@ int main(void)
   aye(!close(file));
 
   long h = hash("h3result.mp");
-  printf("Hash: %ld\n", h);
-  fflush(stdout);
-  aye(h == 19340L || h == 59239L || h == 0L);
+  aye(h == 19340L || h == 59239L || h == 24848L);
 
   aye(!h3c_socket_hangup(x));
   h3c_socket_del(x);

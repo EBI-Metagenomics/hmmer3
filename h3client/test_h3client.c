@@ -69,7 +69,7 @@ int main(void)
   long h = hash("h3result.mp");
   printf("Hash: %ld\n", h);
   fflush(stdout);
-  // aye(h == 19340L || h == 0L || h == 0L);
+  aye(h == 19340L || h == 0L || h == 0L);
 
   aye(!h3c_socket_hangup(x));
   h3c_socket_del(x);

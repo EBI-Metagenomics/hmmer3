@@ -20,8 +20,7 @@ test_h3client: %: %.o $(LIB) $(HDR)
 	$(CC) $(CFLAGS) $< -L. -lh3client -lh3result -llio -llite_pack -lm -o $@
 
 check: test_h3client
-	./start_daemon.sh
-	./test_h3client && ./stop_daemon.sh || { ./stop_daemon.sh; exit 1; }
+	./start_daemon.sh; ./test_h3client && ./stop_daemon.sh || { ./stop_daemon.sh; exit 1; }
 
 install: $(LIB) $(HDR)
 	@mkdir -p $(PREFIX)/lib $(PREFIX)/include

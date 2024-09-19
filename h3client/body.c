@@ -104,9 +104,9 @@ static int stats_parse(struct stats *x, unsigned char const *head,
   if (hit_offset_size == UINT64_MAX && x->nhits > 0) return H3C_EPARSE;
 
   x->hit_offsets = bsd_reallocf(x->hit_offsets, hit_offset_size);
-  if (!x->hit_offsets) return H3C_ENOMEM;
+  if (!x->hit_offsets && hit_offset_size > 0) return H3C_ENOMEM;
 
-  x->hit_offsets[0] = hit_offset0;
+  if (x->nhits > 0) x->hit_offsets[0] = hit_offset0;
   for (uint64_t i = 1; i < x->nhits; i++)
   {
     x->hit_offsets[i] = parse_uint64(head);
@@ -215,7 +215,7 @@ static int alidisplay_parse(struct alidisplay *x, unsigned char const *head,
   if (obj_size <= SER_BASE_SIZE) defer_return(H3C_EPARSE);
   size_t memsize = (size_t)(obj_size - SER_BASE_SIZE);
 
-  if (!(x->mem = bsd_reallocf(x->mem, memsize))) defer_return(H3C_ENOMEM);
+  if (!(x->mem = bsd_reallocf(x->mem, memsize)) && memsize > 0) defer_return(H3C_ENOMEM);
   x->memsize = memsize;
 
   x->N       = parse_uint32(head); head += 4;
@@ -377,7 +377,7 @@ static int domain_parse(struct domain *x, unsigned char const *head,
   if (scores_size > x->scores_size)
   {
     size_t size = scores_size * sizeof(float);
-    if (!(x->pos_score = bsd_reallocf(x->pos_score, size)))
+    if (!(x->pos_score = bsd_reallocf(x->pos_score, size)) && size > 0)
       defer_return(H3C_EPARSE);
     x->scores_size = scores_size;
   }
@@ -489,7 +489,7 @@ static int copy_string(char **dst, char const *src)
 {
   if (!src) return 0;
   size_t size = strlen(src) + 1;
-  if (!(*dst = bsd_reallocf(*dst, size))) return H3C_ENOMEM;
+  if (!(*dst = bsd_reallocf(*dst, size)) && size > 0) return H3C_ENOMEM;
   memcpy(*dst, src, size);
   return 0;
 }
@@ -562,7 +562,7 @@ static int hit_parse(struct hit *x, unsigned char const *head,
 
   if (ndom > x->ndom)
   {
-    if (!(x->dcl = bsd_reallocf(x->dcl, ndom * sizeof(*x->dcl)))) defer_return(H3C_ENOMEM);
+    if (!(x->dcl = bsd_reallocf(x->dcl, ndom * sizeof(*x->dcl))) && ndom > 0) defer_return(H3C_ENOMEM);
     for (uint32_t i = x->ndom; i < ndom; i++)
     {
       domain_init(x->dcl + i);
@@ -631,10 +631,10 @@ static int tophits_parse(struct tophits *x, unsigned char const *head,
 
   if (nhits > x->nhits)
   {
-    if (!(x->hit = bsd_reallocf(x->hit, sizeof(struct hit *) * nhits)))
+    if (!(x->hit = bsd_reallocf(x->hit, sizeof(struct hit *) * nhits)) && nhits > 0)
       defer_return(H3C_ENOMEM);
 
-    if (!(x->unsrt = bsd_reallocf(x->unsrt, sizeof(struct hit) * nhits)))
+    if (!(x->unsrt = bsd_reallocf(x->unsrt, sizeof(struct hit) * nhits)) && nhits > 0)
       defer_return(H3C_ENOMEM);
 
     for (uint64_t i = x->nhits; i < nhits; ++i)

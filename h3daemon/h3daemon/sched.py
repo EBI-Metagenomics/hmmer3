@@ -60,14 +60,21 @@ class SchedContext:
     def open(self):
         cmd = [self._exe, self._scr, str(self._hmmfile)]
         cmd += [str(self._cport), str(self._wport)]
-        self._sched = Sched(psutil.Popen(cmd, stdout=self._stdout, stderr=self._stderr))
+        self._sched = Sched(
+            psutil.Popen(
+                cmd, stdout=self._stdout, stderr=self._stderr, start_new_session=True
+            )
+        )
         atexit.register(self.close)
 
     def close(self):
         if not self._sched:
             return
-        self._sched.kill_children()
-        self._sched.kill_parent()
+        try:
+            self._sched.kill_children()
+            self._sched.kill_parent()
+        except psutil.NoSuchProcess:
+            pass
         self._sched = None
 
     @property

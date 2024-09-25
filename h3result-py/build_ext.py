@@ -26,7 +26,7 @@ def build_and_install(root: Path, prefix: str, prj_dir: str, git_url: str):
     args = [
         f"C_INCLUDE_PATH={prefix}/include",
         f"LIBRARY_PATH={prefix}/lib",
-        "CFLAGS='-std=c11 -O3 -fPIC'",
+        "CFLAGS=-std=c11 -O3 -fPIC",
     ]
     make(bld_dir, args)
     make(bld_dir, ["install", f"PREFIX={prefix}"])

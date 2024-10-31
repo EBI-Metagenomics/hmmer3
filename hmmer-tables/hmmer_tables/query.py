@@ -1,7 +1,7 @@
 from functools import reduce
 from io import TextIOBase
 from itertools import dropwhile
-from typing import Iterable, List
+from typing import Iterable, List, Optional
 
 from deciphon_intervals import RInterval
 from more_itertools import split_at, split_before
@@ -31,8 +31,8 @@ class Align(BaseModel):
     query_interval: RInterval
     profile: str
     query_name: str
-    hmm_cs: str
-    hmm_rf: str
+    hmm_cs: Optional[str]
+    hmm_rf: Optional[str]
     query_cs: str
     match: str
     query: str
@@ -156,8 +156,8 @@ def _parse_target(row: str, line_slice: slice, last_pos: int):
 
 def _parse_align_chunk(stream: Iterable[str], last_pos: int):
     it = iter(stream)
-    hmm_cs = ""
-    hmm_rf = ""
+    hmm_cs: Optional[str] = None
+    hmm_rf: Optional[str] = None
 
     while True:
         row = next(it)
@@ -176,10 +176,6 @@ def _parse_align_chunk(stream: Iterable[str], last_pos: int):
     assert row.endswith(" PP")
     score = row[line_slice]
 
-    hmm_cs = "?" * len(tgt_cs) if len(hmm_cs) == 0 else hmm_cs
-    hmm_rf = "?" * len(tgt_cs) if len(hmm_rf) == 0 else hmm_rf
-
-    assert len(hmm_cs) == len(hmm_rf) == len(tgt_cs)
     assert len(tgt_cs) == len(match) == len(tgt) == len(score)
 
     return Align(
@@ -208,8 +204,8 @@ def _merge_aligns_pair(x: Align, y: Align):
         query_interval=query_interval,
         profile=x.profile,
         query_name=x.query_name,
-        hmm_cs=x.hmm_cs + y.hmm_cs,
-        hmm_rf=x.hmm_rf + y.hmm_rf,
+        hmm_cs=x.hmm_cs + y.hmm_cs if x.hmm_cs and y.hmm_cs else None,
+        hmm_rf=x.hmm_rf + y.hmm_rf if x.hmm_rf and y.hmm_rf else None,
         query_cs=x.query_cs + y.query_cs,
         match=x.match + y.match,
         query=x.query + y.query,

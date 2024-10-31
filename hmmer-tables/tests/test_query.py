@@ -21,7 +21,7 @@ def test_query(files_path: Path):
     assert x.domains[0].aligns[1].align.query_interval.start == 113
     assert x.domains[0].aligns[1].align.query_interval.stop == 145
 
-    desired = "?????????????????????????????????"
+    desired = None
     assert x.domains[0].aligns[1].align.hmm_cs == desired
     assert x.domains[0].aligns[1].align.hmm_rf == desired
 

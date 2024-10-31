@@ -11,7 +11,7 @@ __all__ = ["Worker"]
 
 def has_connected(pid: int):
     try:
-        for x in psutil.Process(pid).connections(kind="tcp"):
+        for x in psutil.Process(pid).net_connections(kind="tcp"):
             if x.status == "ESTABLISHED":
                 return True
     except RuntimeError:
@@ -52,11 +52,11 @@ class Worker:
         return self._proc.is_running()
 
     def local_established_ports(self):
-        connections = self._proc.connections(kind="tcp")
+        connections = self._proc.net_connections(kind="tcp")
         connections = [x for x in connections if x.status == "ESTABLISHED"]
         return [x.laddr.port for x in connections if x.laddr.ip == "127.0.0.1"]
 
     def remote_established_ports(self):
-        connections = self._proc.connections(kind="tcp")
+        connections = self._proc.net_connections(kind="tcp")
         connections = [x for x in connections if x.status == "ESTABLISHED"]
         return [x.raddr.port for x in connections if x.raddr.ip == "127.0.0.1"]

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h3result"
-version = "1.0.1"
+version = "1.0.2"
 description = "Python wrapper for h3result library."
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"
@@ -14,7 +14,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-cffi = "^1.16"
+cffi = "^1.17"
 python = "^3.9"
 
 [tool.poetry.build]

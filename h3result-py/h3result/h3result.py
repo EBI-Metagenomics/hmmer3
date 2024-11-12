@@ -1,6 +1,6 @@
 import os
 
-from h3result.cffi import ffi, lib
+from h3result._cffi import ffi, lib
 from h3result.error import H3ResultError
 
 __all__ = ["H3Result"]

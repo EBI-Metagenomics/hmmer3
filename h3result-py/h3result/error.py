@@ -1,4 +1,4 @@
-from h3result.cffi import ffi, lib
+from h3result._cffi import ffi, lib
 
 __all__ = ["H3ResultError"]
 

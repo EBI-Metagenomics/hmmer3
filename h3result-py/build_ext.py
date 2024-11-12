@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     ffibuilder.cdef(open(PKG / "interface.h", "r").read())
     ffibuilder.set_source(
-        "h3result.cffi",
+        "h3result._cffi",
         """
         #include "h3r_result.h"
         """,

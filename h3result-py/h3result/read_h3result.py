@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from h3result.cffi import ffi
+from h3result._cffi import ffi
 from h3result.h3result import H3Result
 from h3result.path_like import PathLike
 

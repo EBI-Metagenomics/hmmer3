@@ -6,14 +6,15 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+from deciphon_schema import HMMFile
 from typer import echo
 
 from h3daemon.connect import find_free_port
+from h3daemon.ensure_pressed import ensure_pressed
 from h3daemon.errors import CouldNotPossessError, ParentNotAliveError
-from h3daemon.hmmfile import HMMFile
 from h3daemon.pidfile import create_pidfile
-from h3daemon.sched import Sched
 from h3daemon.polling import wait_until
+from h3daemon.sched import Sched
 
 __all__ = ["app"]
 
@@ -56,15 +57,15 @@ def start(
     """
     Start daemon.
     """
-    file = HMMFile(hmmfile)
-    file.ensure_pressed()
+    file = HMMFile(path=hmmfile)
+    ensure_pressed(file)
     pidfile = create_pidfile(file.path)
     if pidfile.is_locked():
         if force:
             sched = Sched.possess(file, pidfile)
             sched.kill_children()
             sched.kill_parent()
-            file = HMMFile(hmmfile)
+            file = HMMFile(path=hmmfile)
         else:
             typer.echo(f"Daemon for {hmmfile} is already running.")
             raise typer.Exit(1)
@@ -82,7 +83,7 @@ def stop(hmmfile: Path, force: bool = O_FORCE):
     Stop daemon.
     """
     try:
-        sched = Sched.possess(HMMFile(hmmfile))
+        sched = Sched.possess(HMMFile(path=hmmfile))
     except CouldNotPossessError as x:
         typer.echo(str(x))
         raise typer.Exit(1)
@@ -108,7 +109,7 @@ def ready(hmmfile: Path, wait: bool = O_WAIT):
     Check if h3daemon is running and ready.
     """
     try:
-        file = HMMFile(hmmfile)
+        file = HMMFile(path=hmmfile)
         if wait:
             wait_until(partial(try_possess_sched, file))
 

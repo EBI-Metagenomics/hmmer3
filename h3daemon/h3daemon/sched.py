@@ -7,15 +7,16 @@ from typing import Optional, Union
 
 import psutil
 from daemon import DaemonContext
+from deciphon_schema import HMMFile
 from pidlockfile import PIDLockFile
 
 from h3daemon.connect import find_free_port
+from h3daemon.ensure_pressed import ensure_pressed
 from h3daemon.errors import (
     ChildNotFoundError,
     CouldNotPossessError,
     ParentNotAliveError,
 )
-from h3daemon.hmmfile import HMMFile
 from h3daemon.master import Master
 from h3daemon.pidfile import create_pidfile
 from h3daemon.polling import wait_until
@@ -47,7 +48,7 @@ class SchedContext:
     def __init__(
         self, hmmfile: HMMFile, cport: int = 0, wport: int = 0, stdout=None, stderr=None
     ):
-        hmmfile.ensure_pressed()
+        ensure_pressed(hmmfile)
         self._hmmfile = hmmfile
         self._cport = find_free_port() if cport == 0 else cport
         self._wport = find_free_port() if wport == 0 else wport

@@ -59,7 +59,7 @@ class SchedContext:
         self._stderr = stderr
 
     def open(self):
-        cmd = [self._exe, self._scr, str(self._hmmfile)]
+        cmd = [self._exe, self._scr, str(self._hmmfile.path)]
         cmd += [str(self._cport), str(self._wport)]
         self._sched = Sched(
             psutil.Popen(

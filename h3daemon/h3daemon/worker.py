@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import time
-from pathlib import Path
 
 import hmmer
 import psutil
@@ -31,7 +30,7 @@ class Worker:
 
     @staticmethod
     def cmd(wport: int):
-        hmmpgmd = str(Path(hmmer.BIN_DIR) / "hmmpgmd")
+        hmmpgmd = hmmer.path(hmmer.hmmpgmd)
         return [hmmpgmd, "--worker", "127.0.0.1", "--cpu", "1", "--wport", str(wport)]
 
     def is_ready(self):

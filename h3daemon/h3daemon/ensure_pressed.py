@@ -15,4 +15,4 @@ def ensure_pressed(hmmfile: HMMFile):
         if not filename.exists():
             for x in pressed_extensions:
                 Path(f"{hmmfile.path}.{x}").unlink(True)
-            check_call([str(Path(hmmer.BIN_DIR) / "hmmpress"), str(hmmfile.path)])
+            check_call([hmmer.path(hmmer.hmmpress), str(hmmfile.path)])

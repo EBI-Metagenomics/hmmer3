@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import time
-from pathlib import Path
 
 import hmmer
 import psutil
@@ -19,8 +18,7 @@ class Master:
 
     @staticmethod
     def cmd(cport: int, wport: int, hmmfile: str):
-        hmmpgmd = str(Path(hmmer.BIN_DIR) / "hmmpgmd")
-        cmd = [hmmpgmd, "--master", "--hmmdb", hmmfile]
+        cmd = [hmmer.path(hmmer.hmmpgmd), "--master", "--hmmdb", hmmfile]
         cmd += ["--cport", str(cport), "--wport", str(wport)]
         return cmd
 

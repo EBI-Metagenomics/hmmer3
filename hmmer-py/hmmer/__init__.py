@@ -67,16 +67,15 @@ def _fetch_content(program: Program):
 
 
 _program_path: dict[Program, str] = {}
-_program_file = {}
 
 
 def path(program: Program):
     if program not in _program_path:
-        file = tempfile.NamedTemporaryFile(suffix=f"_{program.value}")
+        file = tempfile.NamedTemporaryFile(suffix=f"_{program.value}", delete=False)
         file.write(_fetch_content(program))
+        file.close()
         st = os.stat(file.name)
         os.chmod(file.name, st.st_mode | stat.S_IEXEC)
-        _program_file[program] = file
         _program_path[program] = file.name
     return _program_path[program]
 

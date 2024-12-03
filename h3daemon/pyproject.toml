@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h3daemon"
-version = "0.14.9"
+version = "0.14.10"
 description = "HMMER server"
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"
@@ -10,7 +10,7 @@ readme = "README.md"
 python = "^3.9"
 psutil = "^6.1.0"
 typer = { version = "^0.13.0", optional = true }
-hmmer = "^3.4.0.0"
+hmmer = "^3.4.0.2"
 python-daemon = "^3.1.0"
 pidlockfile = "^0.3"
 deciphon-schema = "^0.1.0"

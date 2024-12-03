@@ -1,94 +1,192 @@
 import os
+import pkgutil
+import stat
+import tempfile
+from enum import Enum
 import subprocess
 import sys
+
+__all__ = [
+    "path",
+    "Program",
+    "alimask",
+    "hmmalign",
+    "hmmbuild",
+    "hmmc2",
+    "hmmconvert",
+    "hmmemit",
+    "hmmerfm_exactmatch",
+    "hmmfetch",
+    "hmmlogo",
+    "hmmpgmd",
+    "hmmpgmd_shard",
+    "hmmpress",
+    "hmmscan",
+    "hmmsearch",
+    "hmmsim",
+    "hmmstat",
+    "jackhmmer",
+    "makehmmerdb",
+    "nhmmer",
+    "nhmmscan",
+    "phmmer",
+]
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 BIN_DIR = os.path.join(DATA_DIR, "bin")
 
 
-def _program(name, args):
-    return subprocess.call([os.path.join(BIN_DIR, name)] + args, close_fds=False)
+class Program(Enum):
+    alimask = "alimask"
+    hmmalign = "hmmalign"
+    hmmbuild = "hmmbuild"
+    hmmc2 = "hmmc2"
+    hmmconvert = "hmmconvert"
+    hmmemit = "hmmemit"
+    hmmerfm_exactmatch = "hmmerfm-exactmatch"
+    hmmfetch = "hmmfetch"
+    hmmlogo = "hmmlogo"
+    hmmpgmd = "hmmpgmd"
+    hmmpgmd_shard = "hmmpgmd_shard"
+    hmmpress = "hmmpress"
+    hmmscan = "hmmscan"
+    hmmsearch = "hmmsearch"
+    hmmsim = "hmmsim"
+    hmmstat = "hmmstat"
+    jackhmmer = "jackhmmer"
+    makehmmerdb = "makehmmerdb"
+    nhmmer = "nhmmer"
+    nhmmscan = "nhmmscan"
+    phmmer = "phmmer"
 
 
-def alimask():
-    raise SystemExit(_program("alimask", sys.argv[1:]))
+def _fetch_content(program: Program):
+    data = pkgutil.get_data("hmmer", f"data/bin/{program.value}")
+    assert data is not None
+    return data
 
 
-def hmmalign():
-    raise SystemExit(_program("hmmalign", sys.argv[1:]))
+_program_path: dict[Program, str] = {}
+_program_file = {}
 
 
-def hmmbuild():
-    raise SystemExit(_program("hmmbuild", sys.argv[1:]))
+def path(program: Program):
+    if program not in _program_path:
+        file = tempfile.NamedTemporaryFile(suffix=f"_{program.value}")
+        file.write(_fetch_content(program))
+        st = os.stat(file.name)
+        os.chmod(file.name, st.st_mode | stat.S_IEXEC)
+        _program_file[program] = file
+        _program_path[program] = file.name
+    return _program_path[program]
 
 
-def hmmc2():
-    raise SystemExit(_program("hmmc2", sys.argv[1:]))
+alimask = Program.alimask
+hmmalign = Program.hmmalign
+hmmbuild = Program.hmmbuild
+hmmc2 = Program.hmmc2
+hmmconvert = Program.hmmconvert
+hmmemit = Program.hmmemit
+hmmerfm_exactmatch = Program.hmmerfm_exactmatch
+hmmfetch = Program.hmmfetch
+hmmlogo = Program.hmmlogo
+hmmpgmd = Program.hmmpgmd
+hmmpgmd_shard = Program.hmmpgmd_shard
+hmmpress = Program.hmmpress
+hmmscan = Program.hmmscan
+hmmsearch = Program.hmmsearch
+hmmsim = Program.hmmsim
+hmmstat = Program.hmmstat
+jackhmmer = Program.jackhmmer
+makehmmerdb = Program.makehmmerdb
+nhmmer = Program.nhmmer
+nhmmscan = Program.nhmmscan
+phmmer = Program.phmmer
 
 
-def hmmconvert():
-    raise SystemExit(_program("hmmconvert", sys.argv[1:]))
+def _program(program: Program, args):
+    return subprocess.call([path(program)] + args, close_fds=False)
 
 
-def hmmemit():
-    raise SystemExit(_program("hmmemit", sys.argv[1:]))
+def alimask_entry():
+    raise SystemExit(_program(Program.alimask, sys.argv[1:]))
 
 
-def hmmerfm_exactmatch():
-    raise SystemExit(_program("hmmerfm-exactmatch", sys.argv[1:]))
+def hmmalign_entry():
+    raise SystemExit(_program(Program.hmmalign, sys.argv[1:]))
 
 
-def hmmfetch():
-    raise SystemExit(_program("hmmfetch", sys.argv[1:]))
+def hmmbuild_entry():
+    raise SystemExit(_program(Program.hmmbuild, sys.argv[1:]))
 
 
-def hmmlogo():
-    raise SystemExit(_program("hmmlogo", sys.argv[1:]))
+def hmmc2_entry():
+    raise SystemExit(_program(Program.hmmc2, sys.argv[1:]))
 
 
-def hmmpgmd():
-    raise SystemExit(_program("hmmpgmd", sys.argv[1:]))
+def hmmconvert_entry():
+    raise SystemExit(_program(Program.hmmconvert, sys.argv[1:]))
 
 
-def hmmpgmd_shard():
-    raise SystemExit(_program("hmmpgmd_shard", sys.argv[1:]))
+def hmmemit_entry():
+    raise SystemExit(_program(Program.hmmemit, sys.argv[1:]))
 
 
-def hmmpress():
-    raise SystemExit(_program("hmmpress", sys.argv[1:]))
+def hmmerfm_exactmatch_entry():
+    raise SystemExit(_program(Program.hmmerfm_exactmatch, sys.argv[1:]))
 
 
-def hmmscan():
-    raise SystemExit(_program("hmmscan", sys.argv[1:]))
+def hmmfetch_entry():
+    raise SystemExit(_program(Program.hmmfetch, sys.argv[1:]))
 
 
-def hmmsearch():
-    raise SystemExit(_program("hmmsearch", sys.argv[1:]))
+def hmmlogo_entry():
+    raise SystemExit(_program(Program.hmmlogo, sys.argv[1:]))
 
 
-def hmmsim():
-    raise SystemExit(_program("hmmsim", sys.argv[1:]))
+def hmmpgmd_entry():
+    raise SystemExit(_program(Program.hmmpgmd, sys.argv[1:]))
 
 
-def hmmstat():
-    raise SystemExit(_program("hmmstat", sys.argv[1:]))
+def hmmpgmd_shard_entry():
+    raise SystemExit(_program(Program.hmmpgmd_shard, sys.argv[1:]))
 
 
-def jackhmmer():
-    raise SystemExit(_program("jackhmmer", sys.argv[1:]))
+def hmmpress_entry():
+    raise SystemExit(_program(Program.hmmpress, sys.argv[1:]))
 
 
-def makehmmerdb():
-    raise SystemExit(_program("makehmmerdb", sys.argv[1:]))
+def hmmscan_entry():
+    raise SystemExit(_program(Program.hmmscan, sys.argv[1:]))
 
 
-def nhmmer():
-    raise SystemExit(_program("nhmmer", sys.argv[1:]))
+def hmmsearch_entry():
+    raise SystemExit(_program(Program.hmmsearch, sys.argv[1:]))
 
 
-def nhmmscan():
-    raise SystemExit(_program("nhmmscan", sys.argv[1:]))
+def hmmsim_entry():
+    raise SystemExit(_program(Program.hmmsim, sys.argv[1:]))
 
 
-def phmmer():
-    raise SystemExit(_program("phmmer", sys.argv[1:]))
+def hmmstat_entry():
+    raise SystemExit(_program(Program.hmmstat, sys.argv[1:]))
+
+
+def jackhmmer_entry():
+    raise SystemExit(_program(Program.jackhmmer, sys.argv[1:]))
+
+
+def makehmmerdb_entry():
+    raise SystemExit(_program(Program.makehmmerdb, sys.argv[1:]))
+
+
+def nhmmer_entry():
+    raise SystemExit(_program(Program.nhmmer, sys.argv[1:]))
+
+
+def nhmmscan_entry():
+    raise SystemExit(_program(Program.nhmmscan, sys.argv[1:]))
+
+
+def phmmer_entry():
+    raise SystemExit(_program(Program.phmmer, sys.argv[1:]))

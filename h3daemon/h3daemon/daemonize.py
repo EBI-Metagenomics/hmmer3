@@ -21,8 +21,6 @@ def daemonize(
     stderr: Optional[Any] = None,
     detach: Optional[bool] = None,
 ):
-    with open("/Users/horta/code/deciphon/gui/daemonize.txt", "a") as f:
-        f.write("ENTROU\n")
     ensure_pressed(hmmfile)
     fin = open(stdin, "r") if stdin else stdin
     fout = open(stdout, "w+") if stdout else stdout

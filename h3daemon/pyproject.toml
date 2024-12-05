@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "h3daemon"
-version = "0.16.0"
+version = "0.16.1"
 description = "HMMER server"
 authors = ["Danilo Horta <horta@ebi.ac.uk>"]
 license = "MIT"

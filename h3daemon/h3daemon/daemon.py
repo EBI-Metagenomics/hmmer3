@@ -7,6 +7,7 @@ import psutil
 from deciphon_schema import HMMFile
 from pidlockfile import PIDLockFile
 
+from h3daemon.ensure_pressed import ensure_pressed
 from h3daemon.errors import ChildNotFoundError, PIDNotFoundError
 from h3daemon.healthy import assert_peers_healthy
 from h3daemon.master import Master
@@ -129,6 +130,7 @@ class Daemon:
 
 @contextmanager
 def daemon_context(hmmfile: HMMFile, cport: int = 0, wport: int = 0):
+    ensure_pressed(hmmfile)
     x = Daemon.spawn(hmmfile, cport, wport)
     try:
         yield x

@@ -21,7 +21,6 @@ def shutdown(x: psutil.Process, force: bool):
     with suppress(psutil.NoSuchProcess):
         if force:
             x.kill()
-            x.wait()
         else:
             x.terminate()
             try:
@@ -71,10 +70,10 @@ class Daemon:
                 assert_peers_healthy(master, worker)
         except Exception as exception:
             debug_exception(exception)
-            if master:
-                shutdown(master.process, force=True)
             if worker:
                 shutdown(worker.process, force=True)
+            if master:
+                shutdown(master.process, force=True)
             raise exception
 
         return cls(master, worker, None)
@@ -100,11 +99,11 @@ class Daemon:
         return cls(master, worker, process)
 
     def shutdown(self, force=False):
-        if self._master is not None:
-            shutdown(self._master.process, force)
-
         if self._worker is not None:
-            shutdown(self._worker.process, force)
+            shutdown(self._worker.process, True)
+
+        if self._master is not None:
+            shutdown(self._master.process, True)
 
         if self._process is not None:
             shutdown(self._process, force)

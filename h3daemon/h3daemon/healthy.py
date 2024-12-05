@@ -11,12 +11,12 @@ def assert_peers_healthy(master: Master, worker: Worker):
     worker_lport = worker.local_established_ports()
     worker_rport = worker.remote_established_ports()
 
-    assert len(master_lport) == 1
+    assert len(master_lport) >= 1
     assert len(worker_rport) == 1
-    assert master_lport[0] == worker_rport[0]
-    assert len(master_rport) == 1
+    assert worker_rport[0] in master_lport
+    assert len(master_rport) >= 1
     assert len(worker_lport) == 1
-    assert master_rport[0] == worker_lport[0]
+    assert worker_lport[0] in master_rport
     assert len(master_listen) == 2
     master_ports = set(master_listen)
     assert len(master_ports) == 2

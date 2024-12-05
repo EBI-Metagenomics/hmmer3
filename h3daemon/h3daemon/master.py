@@ -4,6 +4,7 @@ import time
 
 import hmmer
 import psutil
+from tenacity import Retrying, stop_after_delay, wait_exponential
 
 __all__ = ["Master"]
 
@@ -29,9 +30,14 @@ class Master:
             lports = self.local_listening_ports()
         except RuntimeError:
             # psutil bug: https://github.com/giampaolo/psutil/issues/2116
-            time.sleep(0.1)
+            time.sleep(1)
             lports = [-1, -1]
         return len(lports) > 1
+
+    def wait_for_readiness(self):
+        for attempt in Retrying(stop=stop_after_delay(10), wait=wait_exponential()):
+            with attempt:
+                assert self.is_ready()
 
     def is_running(self):
         return self._proc.is_running()

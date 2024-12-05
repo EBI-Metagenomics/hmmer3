@@ -1,12 +1,7 @@
 import socket
 from contextlib import closing
 
-__all__ = ["can_connect", "find_free_port"]
-
-
-def can_connect(cport: int):
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-        return sock.connect_ex(("127.0.0.1", cport)) == 0
+__all__ = ["find_free_port"]
 
 
 def _find_free_port():

@@ -4,20 +4,9 @@ import time
 
 import hmmer
 import psutil
+from tenacity import Retrying, stop_after_delay, wait_exponential
 
 __all__ = ["Worker"]
-
-
-def has_connected(pid: int):
-    try:
-        for x in psutil.Process(pid).net_connections(kind="tcp"):
-            if x.status == "ESTABLISHED":
-                return True
-    except RuntimeError:
-        # Bug to be fixed: https://github.com/giampaolo/psutil/issues/2116
-        time.sleep(0.1)
-        return True
-    return False
 
 
 class Worker:
@@ -43,9 +32,15 @@ class Worker:
             return False
         except RuntimeError:
             # psutil bug: https://github.com/giampaolo/psutil/issues/2116
+            time.sleep(1)
             lports = [0]
             rports = [0]
         return len(lports) > 0 and len(rports) > 0
+
+    def wait_for_readiness(self):
+        for attempt in Retrying(stop=stop_after_delay(10), wait=wait_exponential()):
+            with attempt:
+                assert self.is_ready()
 
     def is_running(self):
         return self._proc.is_running()

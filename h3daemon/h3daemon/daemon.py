@@ -1,18 +1,18 @@
 import os
-import time
 import traceback
 from contextlib import suppress
 
 import psutil
 from deciphon_schema import HMMFile
-from tenacity import Retrying, stop_after_delay, wait_exponential
+from pidlockfile import PIDLockFile
 
-from h3daemon.errors import ChildNotFoundError
+from h3daemon.errors import ChildNotFoundError, PIDNotFoundError
+from h3daemon.healthy import assert_peers_healthy
 from h3daemon.master import Master
 from h3daemon.port import find_free_port
 from h3daemon.worker import Worker
 
-__all__ = ["Manager"]
+__all__ = ["Daemon"]
 
 
 def shutdown(x: psutil.Process, force: bool):
@@ -26,34 +26,6 @@ def shutdown(x: psutil.Process, force: bool):
                 x.wait(3)
             except psutil.TimeoutExpired:
                 shutdown(x, True)
-
-
-def assert_healthy(master: Master, worker: Worker):
-    try:
-        assert master.is_running()
-        assert worker.is_running()
-        master_listen = master.local_listening_ports()
-        master_lport = master.local_established_ports()
-        master_rport = master.remote_established_ports()
-        worker_lport = worker.local_established_ports()
-        worker_rport = worker.remote_established_ports()
-
-        assert len(master_lport) == 1
-        assert len(worker_rport) == 1
-        assert master_lport[0] == worker_rport[0]
-        assert len(master_rport) == 1
-        assert len(worker_lport) == 1
-        assert master_rport[0] == worker_lport[0]
-        assert len(master_listen) == 2
-        master_ports = set(master_listen)
-        assert len(master_ports) == 2
-        master_ports.remove(worker_rport[0])
-        assert len(master_ports) == 1
-    except RuntimeError as exception:
-        if not exception.args[0] == "proc_pidinfo(PROC_PIDLISTFDS) 2/2 syscall failed":
-            raise exception
-        # psutil bug: https://github.com/giampaolo/psutil/issues/2116
-        time.sleep(0.1)
 
 
 def debug_exception(exception: Exception):
@@ -70,7 +42,7 @@ def debug_msg(msg: str):
             f.write(f"{msg}\n")
 
 
-class Manager:
+class Daemon:
     def __init__(self, master: Master, worker: Worker, process: psutil.Process | None):
         self._master = master
         self._worker = worker
@@ -93,7 +65,7 @@ class Manager:
             worker = Worker(psutil.Popen(cmd))
             worker.wait_for_readiness()
 
-            assert_healthy(master, worker)
+            assert_peers_healthy(master, worker)
         except Exception as exception:
             debug_exception(exception)
             if master:
@@ -105,7 +77,10 @@ class Manager:
         return cls(master, worker, None)
 
     @classmethod
-    def possess(cls, pid: int):
+    def possess(cls, pidfile: PIDLockFile):
+        pid = pidfile.is_locked()
+        if not pid:
+            raise PIDNotFoundError("PID not in pidfile.")
         process = psutil.Process(pid)
         children = process.children()
 
@@ -133,16 +108,15 @@ class Manager:
 
     def healthy(self) -> bool:
         try:
-            assert_healthy(self._master, self._worker)
+            if self._process:
+                assert self._process.is_running()
+            assert_peers_healthy(self._master, self._worker)
         except Exception as exception:
             debug_exception(exception)
             return False
         return True
 
     def port(self) -> int:
-        for attempt in Retrying(stop=stop_after_delay(10), wait=wait_exponential()):
-            with attempt:
-                assert self.healthy
         master_ports = set(self._master.local_listening_ports())
         master_ports.remove(self._worker.remote_established_ports()[0])
         return int(list(master_ports)[0])

@@ -1,1 +1,0 @@
-- Use tenacity https://tenacity.readthedocs.io/en/latest/ for retrying

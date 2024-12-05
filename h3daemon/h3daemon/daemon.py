@@ -21,6 +21,7 @@ def shutdown(x: psutil.Process, force: bool):
     with suppress(psutil.NoSuchProcess):
         if force:
             x.kill()
+            x.wait()
         else:
             x.terminate()
             try:

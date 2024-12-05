@@ -1,4 +1,5 @@
 import os
+import platform
 import traceback
 from contextlib import suppress
 
@@ -65,7 +66,8 @@ class Daemon:
             worker = Worker(psutil.Popen(cmd))
             worker.wait_for_readiness()
 
-            assert_peers_healthy(master, worker)
+            if platform.system() != "Darwin":
+                assert_peers_healthy(master, worker)
         except Exception as exception:
             debug_exception(exception)
             if master:

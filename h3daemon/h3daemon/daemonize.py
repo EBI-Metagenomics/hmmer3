@@ -21,6 +21,8 @@ def daemonize(
     stderr: Optional[Any] = None,
     detach: Optional[bool] = None,
 ):
+    with open("/Users/horta/code/deciphon/gui/daemonize.txt", "a") as f:
+        f.write("ENTROU\n")
     ensure_pressed(hmmfile)
     fin = open(stdin, "r") if stdin else stdin
     fout = open(stdout, "w+") if stdout else stdout
@@ -31,7 +33,7 @@ def daemonize(
     with DaemonContext(
         working_directory=str(hmmfile.path.parent),
         pidfile=pidfile,
-        detach_process=True,
+        detach_process=detach,
         stdin=fin,
         stdout=fout,
         stderr=ferr,
@@ -49,6 +51,7 @@ def spawn(
     stdin: Optional[Any] = None,
     stdout: Optional[Any] = None,
     stderr: Optional[Any] = None,
+    detach: Optional[bool] = None,
     force: Optional[bool] = False,
 ):
     pidfile = create_pidfile(hmmfile.path)
@@ -58,8 +61,7 @@ def spawn(
         x = Daemon.possess(pidfile)
         x.shutdown(force=force)
 
-    args = (hmmfile, cport, wport, stdin, stdout, stderr)
-    p = Process(target=daemonize, args=args, daemon=True)
+    args = (hmmfile, cport, wport, stdin, stdout, stderr, detach)
+    p = Process(target=daemonize, args=args, daemon=False)
     p.start()
-    p.join()
     return pidfile

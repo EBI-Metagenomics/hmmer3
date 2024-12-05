@@ -1,7 +1,7 @@
 import os
 import platform
 import traceback
-from contextlib import suppress
+from contextlib import contextmanager, suppress
 
 import psutil
 from deciphon_schema import HMMFile
@@ -13,7 +13,7 @@ from h3daemon.master import Master
 from h3daemon.port import find_free_port
 from h3daemon.worker import Worker
 
-__all__ = ["Daemon"]
+__all__ = ["Daemon", "daemon_context"]
 
 
 def shutdown(x: psutil.Process, force: bool):
@@ -125,3 +125,12 @@ class Daemon:
 
     def join(self):
         psutil.wait_procs([self._master.process, self._worker.process])
+
+
+@contextmanager
+def daemon_context(hmmfile: HMMFile, cport: int = 0, wport: int = 0):
+    x = Daemon.spawn(hmmfile, cport, wport)
+    try:
+        yield x
+    finally:
+        x.shutdown()

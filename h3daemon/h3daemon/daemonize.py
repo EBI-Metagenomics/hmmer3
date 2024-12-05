@@ -21,7 +21,6 @@ def daemonize(
     stderr: Optional[Any] = None,
     detach: Optional[bool] = None,
 ):
-    ensure_pressed(hmmfile)
     fin = open(stdin, "r") if stdin else stdin
     fout = open(stdout, "w+") if stdout else stdout
     ferr = open(stderr, "w+") if stderr else stderr
@@ -52,6 +51,7 @@ def spawn(
     detach: Optional[bool] = None,
     force: Optional[bool] = False,
 ):
+    ensure_pressed(hmmfile)
     pidfile = create_pidfile(hmmfile.path)
     if pidfile.is_locked():
         if not force:

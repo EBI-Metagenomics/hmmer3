@@ -3,6 +3,7 @@ from __future__ import annotations
 import hmmer
 import psutil
 
+from h3daemon.debug import debug_message
 from h3daemon.polling import Polling
 from h3daemon.tcp import tcp_connections
 
@@ -10,8 +11,13 @@ __all__ = ["Worker"]
 
 
 class Worker:
-    def __init__(self, proc: psutil.Process):
-        self._proc = proc
+    def __init__(self, process: psutil.Process):
+        self._proc = process
+        debug_message(f"Worker.__init__ PID: {process.pid}")
+
+    @staticmethod
+    def myself(process: psutil.Process):
+        return "--worker" in process.cmdline()
 
     @property
     def process(self):
@@ -28,6 +34,8 @@ class Worker:
         try:
             lports = self.local_established_ports()
             rports = self.remote_established_ports()
+            debug_message(f"Worker.healthy lports: {lports}")
+            debug_message(f"Worker.healthy rports: {rports}")
         except psutil.ZombieProcess:
             # psutil bug: https://github.com/giampaolo/psutil/issues/2116
             return True
@@ -40,10 +48,12 @@ class Worker:
 
     def local_established_ports(self):
         connections = tcp_connections(self._proc)
+        debug_message(f"Worker.local_established_ports connections: {connections}")
         connections = [x for x in connections if x.status == "ESTABLISHED"]
         return [x.laddr.port for x in connections if x.laddr.ip == "127.0.0.1"]
 
     def remote_established_ports(self):
         connections = tcp_connections(self._proc)
+        debug_message(f"Worker.remote_established_ports connections: {connections}")
         connections = [x for x in connections if x.status == "ESTABLISHED"]
         return [x.raddr.port for x in connections if x.raddr.ip == "127.0.0.1"]

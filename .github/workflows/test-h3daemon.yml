@@ -1,0 +1,28 @@
+name: Test h3daemon
+
+on:
+  push:
+    branches:
+      - "**"
+    paths:
+      - h3daemon/**
+      - .github/workflows/test-h3daemon.yml
+
+defaults:
+  run:
+    working-directory: h3daemon
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests
+        run: |
+          pipx run poetry install
+          pipx run poetry run pytest -n 30

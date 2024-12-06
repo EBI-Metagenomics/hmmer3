@@ -19,6 +19,11 @@ tenacity = "^9.0.0"
 [tool.poetry.extras]
 cli = ["typer"]
 
+[tool.poetry.group.dev.dependencies]
+pytest-repeat = "^0.9.3"
+pytest = "^8.3.4"
+pytest-xdist = "^3.6.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

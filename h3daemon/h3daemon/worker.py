@@ -3,8 +3,8 @@ from __future__ import annotations
 import hmmer
 import psutil
 
-from h3daemon.debug import debug_message
-from h3daemon.polling import Polling
+from h3daemon.debug import debug_exception, debug_message
+from h3daemon.polling import polling
 from h3daemon.tcp import tcp_connections
 
 __all__ = ["Worker"]
@@ -36,15 +36,14 @@ class Worker:
             rports = self.remote_established_ports()
             debug_message(f"Worker.healthy lports: {lports}")
             debug_message(f"Worker.healthy rports: {rports}")
-        except psutil.ZombieProcess:
-            # psutil bug: https://github.com/giampaolo/psutil/issues/2116
-            return True
+        except Exception as exception:
+            debug_exception(exception)
+            return False
         return len(lports) > 0 and len(rports) > 0
 
+    @polling
     def wait_for_readiness(self):
-        for attempt in Polling():
-            with attempt:
-                assert self.healthy()
+        assert self.healthy()
 
     def local_established_ports(self):
         connections = tcp_connections(self._proc)

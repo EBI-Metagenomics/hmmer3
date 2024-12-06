@@ -3,8 +3,8 @@ from __future__ import annotations
 import hmmer
 import psutil
 
-from h3daemon.debug import debug_message
-from h3daemon.polling import Polling
+from h3daemon.debug import debug_exception, debug_message
+from h3daemon.polling import polling
 from h3daemon.tcp import tcp_connections
 
 __all__ = ["Master"]
@@ -13,7 +13,7 @@ __all__ = ["Master"]
 class Master:
     def __init__(self, process: psutil.Process):
         self._proc = process
-        debug_message(f"Worker.__init__ PID: {process.pid}")
+        debug_message(f"Master.__init__ PID: {process.pid}")
 
     @staticmethod
     def myself(process: psutil.Process):
@@ -32,14 +32,17 @@ class Master:
     def healthy(self):
         if not self._proc.is_running():
             return False
-        lports = self.local_listening_ports()
-        debug_message(f"Master.healthy lports: {lports}")
+        try:
+            lports = self.local_listening_ports()
+            debug_message(f"Master.healthy lports: {lports}")
+        except Exception as exception:
+            debug_exception(exception)
+            return False
         return len(lports) > 1
 
+    @polling
     def wait_for_readiness(self):
-        for attempt in Polling():
-            with attempt:
-                assert self.healthy()
+        assert self.healthy()
 
     def local_listening_ports(self):
         connections = tcp_connections(self._proc)

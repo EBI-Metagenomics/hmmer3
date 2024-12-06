@@ -25,4 +25,4 @@ jobs:
       - name: Run tests
         run: |
           pipx run poetry install
-          pipx run poetry run pytest -n 30
+          pipx run poetry run pytest

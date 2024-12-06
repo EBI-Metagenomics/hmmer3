@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import hmmer
 import psutil
+from tenacity import retry, stop_after_delay, wait_exponential
 
 from h3daemon.debug import debug_exception, debug_message
-from h3daemon.polling import polling
 from h3daemon.tcp import tcp_connections
 
 __all__ = ["Worker"]
@@ -41,7 +41,7 @@ class Worker:
             return False
         return len(lports) > 0 and len(rports) > 0
 
-    @polling
+    @retry(stop=stop_after_delay(10), wait=wait_exponential(multiplier=0.001))
     def wait_for_readiness(self):
         assert self.healthy()
 

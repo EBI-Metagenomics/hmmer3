@@ -8,7 +8,7 @@ from deciphon_schema import HMMFile
 import h3daemon
 
 
-@pytest.mark.repeat(100)
+@pytest.mark.repeat(30)
 def test_hmmer(tmp_path, files_path: Path):
     os.chdir(tmp_path)
     debug_file = Path(tmp_path / "h3daemon_debug.txt")

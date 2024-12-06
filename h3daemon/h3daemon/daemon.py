@@ -4,13 +4,13 @@ from contextlib import contextmanager, suppress
 import psutil
 from deciphon_schema import HMMFile
 from pidlockfile import PIDLockFile
+from tenacity import retry, stop_after_delay, wait_exponential
 
 from h3daemon.debug import debug_exception, debug_message
 from h3daemon.ensure_pressed import ensure_pressed
 from h3daemon.errors import ChildNotFoundError, PIDNotFoundError
 from h3daemon.healthy import assert_peers_healthy
 from h3daemon.master import Master
-from h3daemon.polling import polling
 from h3daemon.port import find_free_port
 from h3daemon.worker import Worker
 
@@ -73,7 +73,7 @@ class Daemon:
         return cls(master, worker, None)
 
     @classmethod
-    @polling
+    @retry(stop=stop_after_delay(10), wait=wait_exponential(multiplier=0.001))
     def possess(cls, pidfile: PIDLockFile):
         pid = pidfile.is_locked()
         if not pid:
@@ -112,7 +112,7 @@ class Daemon:
 
         debug_message("Daemon.shutdown finished")
 
-    @polling
+    @retry(stop=stop_after_delay(10), wait=wait_exponential(multiplier=0.001))
     def wait_for_readiness(self):
         assert self.healthy()
 

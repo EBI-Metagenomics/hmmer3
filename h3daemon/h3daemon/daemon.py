@@ -17,17 +17,19 @@ from h3daemon.worker import Worker
 __all__ = ["Daemon", "daemon_context"]
 
 
-def shutdown(x: psutil.Process, force: bool):
+def shutdown(x: psutil.Process, *, force: bool, wait: bool):
     with suppress(psutil.NoSuchProcess):
         if force:
             x.kill()
-            x.wait()
+            if wait:
+                x.wait()
         else:
             x.terminate()
             try:
-                x.wait(3)
+                if wait:
+                    x.wait(5)
             except psutil.TimeoutExpired:
-                shutdown(x, True)
+                shutdown(x, force=True, wait=wait)
 
 
 class Daemon:
@@ -63,9 +65,9 @@ class Daemon:
         except Exception as exception:
             debug_exception(exception)
             if worker:
-                shutdown(worker.process, force=True)
+                shutdown(worker.process, force=True, wait=False)
             if master:
-                shutdown(master.process, force=True)
+                shutdown(master.process, force=True, wait=False)
             raise exception
 
         return cls(master, worker, None)
@@ -99,14 +101,14 @@ class Daemon:
         return cls(master, worker, process)
 
     def shutdown(self, force=False):
-        if self._worker is not None:
-            shutdown(self._worker.process, True)
-
         if self._master is not None:
-            shutdown(self._master.process, True)
+            shutdown(self._master.process, force=force, wait=False)
+
+        if self._worker is not None:
+            shutdown(self._worker.process, force=force, wait=False)
 
         if self._process is not None:
-            shutdown(self._process, force)
+            shutdown(self._process, force=force, wait=True)
 
         debug_message("Daemon.shutdown finished")
 

@@ -114,7 +114,7 @@ class Daemon:
 
     @polling
     def wait_for_readiness(self):
-        assert self.healthy
+        assert self.healthy()
 
     def healthy(self) -> bool:
         try:

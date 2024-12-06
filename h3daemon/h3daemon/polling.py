@@ -1,9 +1,9 @@
 import functools
 
-from tenacity import Retrying, retry, stop_after_delay, wait_fixed, wait_random
+from tenacity import Retrying, retry, stop_after_delay, wait_exponential
 
 STOP = stop_after_delay(10)
-WAIT = wait_fixed(0.1) + wait_random(0, 0.1)
+WAIT = wait_exponential()
 
 
 def polling(func):

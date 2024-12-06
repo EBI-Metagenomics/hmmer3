@@ -120,6 +120,8 @@ class Daemon:
         try:
             if self._process:
                 assert self._process.is_running()
+            assert self._master.healthy()
+            assert self._worker.healthy()
             assert_peers_healthy(self._master, self._worker)
         except Exception as exception:
             debug_exception(exception)

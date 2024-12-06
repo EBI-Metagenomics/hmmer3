@@ -127,14 +127,17 @@ class Daemon:
         return True
 
     def port(self) -> int:
+        self.wait_for_readiness()
         master_ports = set(self._master.local_listening_ports())
-        worker_ports = self._worker.remote_established_ports()
+        worker_ports = list(set(self._worker.remote_established_ports()))
         if len(worker_ports) != 1:
-            raise RuntimeError("Expected one remote port. Worker might have died.")
+            raise RuntimeError(
+                f"Expected one remote port ({worker_ports}). Worker might have died."
+            )
         master_ports.remove(worker_ports[0])
         if len(master_ports) != 1:
             raise RuntimeError(
-                "Expected one remaining master port. Master might have died."
+                f"Expected one remaining master port ({master_ports}). Master might have died."
             )
         return int(list(master_ports)[0])
 

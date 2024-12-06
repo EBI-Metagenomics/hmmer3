@@ -11,6 +11,7 @@ from h3daemon.ensure_pressed import ensure_pressed
 from h3daemon.errors import ChildNotFoundError, PIDNotFoundError
 from h3daemon.healthy import assert_peers_healthy
 from h3daemon.master import Master
+from h3daemon.polling import polling
 from h3daemon.port import find_free_port
 from h3daemon.worker import Worker
 
@@ -80,10 +81,12 @@ class Daemon:
         return cls(master, worker, None)
 
     @classmethod
+    @polling
     def possess(cls, pidfile: PIDLockFile):
         pid = pidfile.is_locked()
         if not pid:
             raise PIDNotFoundError("PID not in pidfile.")
+
         process = psutil.Process(pid)
         children = process.children()
 
@@ -109,6 +112,10 @@ class Daemon:
         if self._process is not None:
             shutdown(self._process, force)
 
+    @polling
+    def wait_for_readiness(self):
+        assert self.healthy
+
     def healthy(self) -> bool:
         try:
             if self._process:
@@ -121,7 +128,14 @@ class Daemon:
 
     def port(self) -> int:
         master_ports = set(self._master.local_listening_ports())
-        master_ports.remove(self._worker.remote_established_ports()[0])
+        worker_ports = self._worker.remote_established_ports()
+        if len(worker_ports) != 1:
+            raise RuntimeError("Expected one remote port. Worker might have died.")
+        master_ports.remove(worker_ports[0])
+        if len(master_ports) != 1:
+            raise RuntimeError(
+                "Expected one remaining master port. Master might have died."
+            )
         return int(list(master_ports)[0])
 
     def join(self):

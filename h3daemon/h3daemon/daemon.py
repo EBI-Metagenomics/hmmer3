@@ -147,6 +147,7 @@ def daemon_context(hmmfile: HMMFile, cport: int = 0, wport: int = 0):
     ensure_pressed(hmmfile)
     x = Daemon.spawn(hmmfile, cport, wport)
     try:
+        x.wait_for_readiness()
         yield x
     finally:
         x.shutdown()

@@ -56,6 +56,7 @@ def start(
         stdin=stdin,
         stdout=stdout,
         stderr=stderr,
+        detach=True,
         force=force,
     )
 

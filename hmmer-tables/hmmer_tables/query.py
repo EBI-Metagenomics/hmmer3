@@ -1,5 +1,4 @@
 from functools import reduce
-from io import TextIOBase
 from itertools import dropwhile
 from typing import Iterable, List, Optional
 
@@ -42,7 +41,7 @@ class Align(BaseModel):
     def core_positions(self):
         positions: list[int] = []
         offset = self.core_interval.start - 1
-        for i, c in enumerate(self.query_cs):
+        for c in self.query_cs:
             if c != ".":
                 offset += 1
             positions.append(offset)
@@ -59,7 +58,7 @@ class DomAlign(BaseModel):
 class DomAlignList(RootModel):
     root: List[DomAlign]
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         return iter(self.root)
 
     def __getitem__(self, item) -> DomAlign:
@@ -77,7 +76,7 @@ class DomAnnot(BaseModel):
 class DomAnnotList(RootModel):
     root: List[DomAnnot]
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         return iter(self.root)
 
     def __getitem__(self, item) -> DomAnnot:
@@ -97,7 +96,7 @@ class QueryAnnot(BaseModel):
 class QueryAnnotList(RootModel):
     root: List[QueryAnnot]
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         return iter(self.root)
 
     def __getitem__(self, item) -> QueryAnnot:
@@ -125,9 +124,9 @@ def _parse_target_consensus(row: str):
     row = remove_multispace(row)
     profile = ""
     if row.count(" ") == 3:
-        profile, start, tgt_cs, stop = row.split()
+        profile, start, _, stop = row.split()
     else:
-        start, tgt_cs, stop = row.split()
+        start, _, stop = row.split()
 
     y = line.rstrip().rindex(" ")
     x = line[:y].rindex(" ") + 1
@@ -290,7 +289,7 @@ def _read_query(stream: Iterable[str]):
     return parse_query(rows)
 
 
-def read_query(filename: PathLike | None = None, stream: TextIOBase | None = None):
+def read_query(filename: PathLike | None = None, stream: Iterable[str] | None = None):
     """
     Read query.
     """

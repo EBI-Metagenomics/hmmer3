@@ -1,4 +1,3 @@
-from io import TextIOBase
 from typing import Iterable
 
 import more_itertools
@@ -40,7 +39,7 @@ def _read_output_stream(stream: Iterable[str]):
     return Output(head="\n".join(head), queries=query_annotations)
 
 
-def read_output(filename: PathLike | None = None, stream: TextIOBase | None = None):
+def read_output(filename: PathLike | None = None, stream: Iterable[str] | None = None):
     """
     Read output file type.
     """

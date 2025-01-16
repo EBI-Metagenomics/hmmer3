@@ -1,5 +1,4 @@
 import dataclasses
-from io import TextIOBase
 from typing import Iterable, List
 
 from deciphon_intervals import PyInterval, RInterval
@@ -91,7 +90,7 @@ class DomTBLRow(BaseModel):
 class DomTBL(RootModel):
     root: List[DomTBLRow]
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         return iter(self.root)
 
     def __getitem__(self, item) -> DomTBLRow:
@@ -132,7 +131,7 @@ def _read_domtbl_stream(stream: Iterable[str]):
 
 def read_domtbl(
     filename: PathLike | None = None,
-    stream: TextIOBase | None = None,
+    stream: Iterable[str] | None = None,
 ) -> DomTBL:
     """
     Read domtbl file type.

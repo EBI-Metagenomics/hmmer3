@@ -1,4 +1,3 @@
-from io import TextIOBase
 from typing import Iterable, List
 
 from pydantic import BaseModel, RootModel
@@ -43,7 +42,7 @@ class TBLRow(BaseModel):
 class TBL(RootModel):
     root: List[TBLRow]
 
-    def __iter__(self):
+    def __iter__(self):  # type: ignore
         return iter(self.root)
 
     def __getitem__(self, item) -> TBLRow:
@@ -79,7 +78,7 @@ def _read_tbl_stream(stream: Iterable[str]) -> TBL:
     return TBL.model_validate(rows)
 
 
-def read_tbl(filename: PathLike | None = None, stream: TextIOBase | None = None) -> TBL:
+def read_tbl(filename: PathLike | None = None, stream: Iterable[str] | None = None) -> TBL:
     """
     Read tbl file type.
     """

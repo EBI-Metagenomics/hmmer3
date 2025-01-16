@@ -1,6 +1,6 @@
 [project]
 name = "hmmer-tables"
-version = "1.0.1"
+version = "1.0.2"
 description = "Read tables produced by HMMER software."
 authors = [{ name = "Danilo Horta", email = "horta@ebi.ac.uk" }]
 requires-python = "~=3.9"

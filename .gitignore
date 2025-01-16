@@ -1,3 +1,4 @@
+uv.lock
 *.o
 *.c
 dist/

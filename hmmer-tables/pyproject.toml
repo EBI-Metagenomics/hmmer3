@@ -1,25 +1,30 @@
-[tool.poetry]
+[project]
 name = "hmmer-tables"
 version = "1.0.1"
 description = "Read tables produced by HMMER software."
-authors = ["Danilo Horta <horta@ebi.ac.uk>"]
-license = "MIT"
+authors = [{ name = "Danilo Horta", email = "horta@ebi.ac.uk" }]
+requires-python = "~=3.9"
 readme = "README.md"
-packages = [{ include = "hmmer_tables" }]
+license = "MIT"
+dependencies = [
+    "deciphon-intervals>=1.0.0,<2",
+    "more-itertools~=10.2",
+    "pydantic~=2.7",
+    "typer>=0.12,<0.13",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-deciphon-intervals = "^1.0.0"
-more-itertools = "^10.2"
-pydantic = "^2.7"
-typer = "^0.12"
+[project.scripts]
+hmmer-tables = "hmmer_tables.cli:app"
 
-[tool.poetry.scripts]
-hmmer-tables = 'hmmer_tables.cli:app'
+[dependency-groups]
+dev = ["pytest~=8.2"]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.2"
+[tool.hatch.build.targets.sdist]
+include = ["hmmer_tables"]
+
+[tool.hatch.build.targets.wheel]
+include = ["hmmer_tables"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

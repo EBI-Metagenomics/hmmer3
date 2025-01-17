@@ -24,7 +24,6 @@ app = typer.Typer(
 O_VERSION = typer.Option(None, "--version", is_eager=True)
 O_PORT = typer.Option(0, help="Port to listen to.")
 O_FORCE = typer.Option(False, "--force")
-O_WAIT = typer.Option(False, "--wait")
 O_STDIN = typer.Option(None, "--stdin")
 O_STDOUT = typer.Option(None, "--stdout")
 O_STDERR = typer.Option(None, "--stderr")
@@ -50,12 +49,15 @@ def start(
     Start daemon.
     """
     hmm = HMMFile(path=hmmfile)
+    fin = open(stdin, "r") if stdin else stdin
+    fout = open(stdout, "w+") if stdout else stdout
+    ferr = open(stderr, "w+") if stderr else stderr
     spawn(
         hmm,
         cport=port,
-        stdin=stdin,
-        stdout=stdout,
-        stderr=stderr,
+        stdin=fin,
+        stdout=fout,
+        stderr=ferr,
         detach=True,
         force=force,
     )
@@ -73,7 +75,7 @@ def stop(hmmfile: Path, force: bool = O_FORCE):
 
 
 @app.command()
-def ready(hmmfile: Path, wait: bool = O_WAIT):
+def ready(hmmfile: Path):
     """
     Check if h3daemon is running and ready.
     """

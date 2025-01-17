@@ -1,6 +1,6 @@
 [project]
 name = "h3daemon"
-version = "0.16.15"
+version = "1.0.0"
 description = "HMMER server"
 authors = [{ name = "Danilo Horta", email = "horta@ebi.ac.uk" }]
 requires-python = "~=3.9"

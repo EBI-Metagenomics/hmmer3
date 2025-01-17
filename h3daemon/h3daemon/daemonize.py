@@ -21,19 +21,15 @@ def daemonize(
     stderr: Optional[Any] = None,
     detach: Optional[bool] = None,
 ):
-    fin = open(stdin, "r") if stdin else stdin
-    fout = open(stdout, "w+") if stdout else stdout
-    ferr = open(stderr, "w+") if stderr else stderr
-
     pidfile = create_pidfile(hmmfile.path)
     assert pidfile.is_locked() is None
     with DaemonContext(
         working_directory=str(hmmfile.path.parent),
         pidfile=pidfile,
         detach_process=detach,
-        stdin=fin,
-        stdout=fout,
-        stderr=ferr,
+        stdin=stdin,
+        stdout=stdout,
+        stderr=stderr,
     ):
         x = Daemon.spawn(hmmfile, cport, wport)
         x.join()

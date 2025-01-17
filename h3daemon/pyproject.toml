@@ -1,31 +1,32 @@
-[tool.poetry]
+[project]
 name = "h3daemon"
 version = "0.16.14"
 description = "HMMER server"
-authors = ["Danilo Horta <horta@ebi.ac.uk>"]
-license = "MIT"
+authors = [{ name = "Danilo Horta", email = "horta@ebi.ac.uk" }]
+requires-python = "~=3.9"
 readme = "README.md"
+license = "MIT"
+dependencies = [
+    "psutil>=6.1.0,<7",
+    "hmmer>=3.4.0.2,<4",
+    "python-daemon>=3.1.0,<4",
+    "pidlockfile>=0.3,<0.4",
+    "deciphon-schema>=0.2.0",
+    "tenacity>=9.0.0,<10",
+]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-psutil = "^6.1.0"
-typer = { version = "^0.13.0", optional = true }
-hmmer = "^3.4.0.2"
-python-daemon = "^3.1.0"
-pidlockfile = "^0.3"
-deciphon-schema = "^0.1.2"
-tenacity = "^9.0.0"
+[project.optional-dependencies]
+cli = ["typer>=0.13.0,<0.14"]
 
-[tool.poetry.extras]
-cli = ["typer"]
+[project.scripts]
+h3daemon = "h3daemon.cli:app"
 
-[tool.poetry.group.dev.dependencies]
-pytest-repeat = "^0.9.3"
-pytest = "^8.3.4"
+[dependency-groups]
+dev = [
+    "pytest-repeat>=0.9.3,<0.10",
+    "pytest>=8.3.4,<9",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-h3daemon = 'h3daemon.cli:app'
+requires = ["hatchling"]
+build-backend = "hatchling.build"

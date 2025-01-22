@@ -147,6 +147,7 @@ class Daemon:
 
 @contextmanager
 def context(hmmfile: HMMFile, port: int = 0):
+    port = find_free_port() if port == 0 else port
     x = Daemon.create(hmmfile, port, find_free_port())
     try:
         yield x.port()

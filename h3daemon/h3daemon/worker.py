@@ -4,15 +4,16 @@ import hmmer
 import psutil
 from tenacity import retry, stop_after_delay, wait_exponential
 
-from h3daemon.debug import debug_exception, debug_message
-from h3daemon.tcp import tcp_connections
+from h3daemon.debug import debug_message
+from h3daemon.tcp import can_connect
 
 __all__ = ["Worker"]
 
 
 class Worker:
-    def __init__(self, process: psutil.Process):
+    def __init__(self, process: psutil.Process, wport: int):
         self._proc = process
+        self._wport = wport
         debug_message(f"Worker.__init__ PID: {process.pid}")
 
     @staticmethod
@@ -29,30 +30,8 @@ class Worker:
         return [hmmpgmd, "--worker", "127.0.0.1", "--cpu", "1", "--wport", str(wport)]
 
     def healthy(self):
-        if not self._proc.is_running():
-            return False
-        try:
-            lports = self.local_established_ports()
-            rports = self.remote_established_ports()
-            debug_message(f"Worker.healthy lports: {lports}")
-            debug_message(f"Worker.healthy rports: {rports}")
-        except Exception as exception:
-            debug_exception(exception)
-            return False
-        return len(lports) > 0 and len(rports) > 0
+        return self._proc.is_running() and can_connect("127.0.0.1", self._wport)
 
     @retry(stop=stop_after_delay(10), wait=wait_exponential(multiplier=0.001))
     def wait_for_readiness(self):
         assert self.healthy()
-
-    def local_established_ports(self):
-        connections = tcp_connections(self._proc)
-        debug_message(f"Worker.local_established_ports connections: {connections}")
-        connections = [x for x in connections if x.status == "ESTABLISHED"]
-        return [x.laddr.port for x in connections if x.laddr.ip == "127.0.0.1"]
-
-    def remote_established_ports(self):
-        connections = tcp_connections(self._proc)
-        debug_message(f"Worker.remote_established_ports connections: {connections}")
-        connections = [x for x in connections if x.status == "ESTABLISHED"]
-        return [x.raddr.port for x in connections if x.raddr.ip == "127.0.0.1"]

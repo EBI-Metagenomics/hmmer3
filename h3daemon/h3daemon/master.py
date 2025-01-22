@@ -4,16 +4,21 @@ import hmmer
 import psutil
 from tenacity import retry, stop_after_delay, wait_exponential
 
-from h3daemon.debug import debug_exception, debug_message
-from h3daemon.tcp import tcp_connections
+from h3daemon.debug import debug_message
+from h3daemon.tcp import can_connect
 
 __all__ = ["Master"]
 
 
 class Master:
-    def __init__(self, process: psutil.Process):
+    def __init__(self, process: psutil.Process, cport: int, wport: int):
         self._proc = process
+        self._cport = cport
+        self._wport = wport
         debug_message(f"Master.__init__ PID: {process.pid}")
+
+    def cport(self):
+        return self._cport
 
     @staticmethod
     def myself(process: psutil.Process):
@@ -30,34 +35,12 @@ class Master:
         return cmd
 
     def healthy(self):
-        if not self._proc.is_running():
-            return False
-        try:
-            lports = self.local_listening_ports()
-            debug_message(f"Master.healthy lports: {lports}")
-        except Exception as exception:
-            debug_exception(exception)
-            return False
-        return len(lports) > 1
+        return (
+            self._proc.is_running()
+            and can_connect("127.0.0.1", self._cport)
+            and can_connect("127.0.0.1", self._wport)
+        )
 
     @retry(stop=stop_after_delay(10), wait=wait_exponential(multiplier=0.001))
     def wait_for_readiness(self):
         assert self.healthy()
-
-    def local_listening_ports(self):
-        connections = tcp_connections(self._proc)
-        debug_message(f"Master.local_listening_ports connections: {connections}")
-        connections = [x for x in connections if x.status == "LISTEN"]
-        return [x.laddr.port for x in connections if x.laddr.ip == "0.0.0.0"]
-
-    def local_established_ports(self):
-        connections = tcp_connections(self._proc)
-        debug_message(f"Master.local_established_ports connections: {connections}")
-        connections = [x for x in connections if x.status == "ESTABLISHED"]
-        return [x.laddr.port for x in connections if x.laddr.ip == "127.0.0.1"]
-
-    def remote_established_ports(self):
-        connections = tcp_connections(self._proc)
-        debug_message(f"Master.remote_established_ports connections: {connections}")
-        connections = [x for x in connections if x.status == "ESTABLISHED"]
-        return [x.raddr.port for x in connections if x.raddr.ip == "127.0.0.1"]

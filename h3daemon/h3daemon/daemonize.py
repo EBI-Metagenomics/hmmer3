@@ -5,9 +5,10 @@ from daemon import DaemonContext
 from deciphon_schema import HMMFile
 
 from h3daemon.daemon import Daemon
-from h3daemon.ensure_pressed import ensure_pressed
 from h3daemon.errors import DaemonAlreadyRunningError
 from h3daemon.pidfile import create_pidfile
+from h3daemon.port import find_free_port
+from h3daemon.portfile import create_portfile
 
 __all__ = ["daemonize", "spawn"]
 
@@ -21,7 +22,7 @@ def daemonize(
     stderr: Optional[Any] = None,
     detach: Optional[bool] = None,
 ):
-    pidfile = create_pidfile(hmmfile.path)
+    pidfile = create_pidfile(hmmfile)
     assert pidfile.is_locked() is None
     with DaemonContext(
         working_directory=str(hmmfile.path.parent),
@@ -31,10 +32,11 @@ def daemonize(
         stdout=stdout,
         stderr=stderr,
     ):
-        x = Daemon.spawn(hmmfile, cport, wport)
+        cport = find_free_port() if cport == 0 else cport
+        wport = find_free_port() if wport == 0 else wport
+        create_portfile(pidfile, cport, wport)
+        x = Daemon.create(hmmfile, cport, wport)
         x.join()
-
-    return pidfile
 
 
 def spawn(
@@ -47,8 +49,7 @@ def spawn(
     detach: Optional[bool] = None,
     force: Optional[bool] = False,
 ):
-    ensure_pressed(hmmfile)
-    pidfile = create_pidfile(hmmfile.path)
+    pidfile = create_pidfile(hmmfile)
     if pidfile.is_locked():
         if not force:
             raise DaemonAlreadyRunningError(f"Daemon for {hmmfile} is already running.")

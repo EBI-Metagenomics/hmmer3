@@ -1,10 +1,12 @@
-from psutil import Process
+import socket
 
-__all__ = ["tcp_connections"]
+__all__ = ["can_connect"]
 
 
-def tcp_connections(x: Process):
-    # psutil bug: https://github.com/giampaolo/psutil/issues/2116
-    with open("/dev/null", "wb"):
-        connections = x.net_connections(kind="tcp")
-    return connections
+def can_connect(host: str, port: int):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((host, port))
+        return True
+    except ConnectionRefusedError:
+        return False

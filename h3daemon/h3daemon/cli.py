@@ -11,6 +11,7 @@ from typer import echo
 from h3daemon.daemon import Daemon
 from h3daemon.daemonize import spawn
 from h3daemon.pidfile import create_pidfile
+from h3daemon import possess
 
 __all__ = ["app"]
 
@@ -27,6 +28,7 @@ O_FORCE = typer.Option(False, "--force")
 O_STDIN = typer.Option(None, "--stdin")
 O_STDOUT = typer.Option(None, "--stdout")
 O_STDERR = typer.Option(None, "--stderr")
+O_WAIT = typer.Option(False, "--wait")
 
 
 @app.callback(invoke_without_command=True)
@@ -69,17 +71,20 @@ def stop(hmmfile: Path, force: bool = O_FORCE):
     Stop daemon.
     """
     hmm = HMMFile(path=hmmfile)
-    pidfile = create_pidfile(hmm.path)
+    pidfile = create_pidfile(hmm)
     x = Daemon.possess(pidfile)
     x.shutdown(force=force)
 
 
 @app.command()
-def ready(hmmfile: Path):
+def ready(
+    hmmfile: Path,
+    wait: bool = O_WAIT,
+):
     """
     Check if h3daemon is running and ready.
     """
     file = HMMFile(path=hmmfile)
-    pidfile = create_pidfile(file.path)
-    x = Daemon.possess(pidfile)
+    pidfile = create_pidfile(file)
+    x = possess(pidfile, wait=wait)
     echo(x.healthy())

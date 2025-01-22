@@ -1,5 +1,5 @@
 from pathlib import Path
-from subprocess import check_call
+from subprocess import DEVNULL, check_call
 
 import hmmer
 from deciphon_schema import HMMFile
@@ -15,4 +15,8 @@ def ensure_pressed(hmmfile: HMMFile):
         if not filename.exists():
             for x in pressed_extensions:
                 Path(f"{hmmfile.path}.{x}").unlink(True)
-            check_call([hmmer.path(hmmer.hmmpress), str(hmmfile.path)])
+            check_call(
+                [hmmer.path(hmmer.hmmpress), str(hmmfile.path)],
+                stdout=DEVNULL,
+                stderr=DEVNULL,
+            )

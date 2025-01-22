@@ -9,7 +9,7 @@ from deciphon_schema import HMMFile
 from typer import echo
 
 from h3daemon.daemon import Daemon
-from h3daemon.daemonize import spawn
+from h3daemon import spawn
 from h3daemon.pidfile import create_pidfile
 from h3daemon import possess
 
@@ -56,7 +56,7 @@ def start(
     ferr = open(stderr, "w+") if stderr else stderr
     spawn(
         hmm,
-        cport=port,
+        port=port,
         stdin=fin,
         stdout=fout,
         stderr=ferr,

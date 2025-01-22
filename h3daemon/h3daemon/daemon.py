@@ -1,18 +1,27 @@
 from contextlib import contextmanager, suppress
+from multiprocessing import Process
+from typing import Any, Optional
 
 import psutil
+from daemon import DaemonContext
 from deciphon_schema import HMMFile
 from pidlockfile import PIDLockFile
 from tenacity import retry, stop_after_delay, wait_exponential
 
 from h3daemon.debug import debug_exception, debug_message
 from h3daemon.ensure_pressed import ensure_pressed
-from h3daemon.errors import ChildNotFoundError, PIDNotFoundError
+from h3daemon.errors import (
+    ChildNotFoundError,
+    DaemonAlreadyRunningError,
+    PIDNotFoundError,
+)
 from h3daemon.master import Master
-from h3daemon.portfile import read_portfile
+from h3daemon.pidfile import create_pidfile
+from h3daemon.port import find_free_port
+from h3daemon.portfile import create_portfile, read_portfile
 from h3daemon.worker import Worker
 
-__all__ = ["Daemon", "daemon_context"]
+__all__ = ["Daemon", "context"]
 
 
 def shutdown(x: psutil.Process, *, force: bool, wait: bool):
@@ -137,10 +146,62 @@ class Daemon:
 
 
 @contextmanager
-def daemon_context(hmmfile: HMMFile, cport: int = 0, wport: int = 0):
-    x = Daemon.create(hmmfile, cport, wport)
+def context(hmmfile: HMMFile, port: int = 0):
+    x = Daemon.create(hmmfile, port, find_free_port())
     try:
-        x.wait_for_readiness()
-        yield x
+        yield x.port()
     finally:
         x.shutdown()
+
+
+def daemonize(
+    hmmfile: HMMFile,
+    port: int = 0,
+    stdin: Optional[Any] = None,
+    stdout: Optional[Any] = None,
+    stderr: Optional[Any] = None,
+    detach: Optional[bool] = None,
+):
+    pidfile = create_pidfile(hmmfile)
+    assert pidfile.is_locked() is None
+    with DaemonContext(
+        working_directory=str(hmmfile.path.parent),
+        pidfile=pidfile,
+        detach_process=detach,
+        stdin=stdin,
+        stdout=stdout,
+        stderr=stderr,
+    ):
+        port = find_free_port() if port == 0 else port
+        wport = find_free_port()
+        create_portfile(pidfile, port, wport)
+        x = Daemon.create(hmmfile, port, wport)
+        x.join()
+
+
+def spawn(
+    hmmfile: HMMFile,
+    port: int = 0,
+    stdin: Optional[Any] = None,
+    stdout: Optional[Any] = None,
+    stderr: Optional[Any] = None,
+    detach: Optional[bool] = None,
+    force: Optional[bool] = False,
+):
+    pidfile = create_pidfile(hmmfile)
+    if pidfile.is_locked():
+        if not force:
+            raise DaemonAlreadyRunningError(f"Daemon for {hmmfile} is already running.")
+        x = Daemon.possess(pidfile)
+        x.shutdown(force=force)
+
+    args = (hmmfile, port, stdin, stdout, stderr, detach)
+    p = Process(target=daemonize, args=args, daemon=False)
+    p.start()
+    return pidfile
+
+
+def possess(pidfile: PIDLockFile, wait=True):
+    if wait:
+        return Daemon.possess_wait(pidfile)
+    return Daemon.possess(pidfile)

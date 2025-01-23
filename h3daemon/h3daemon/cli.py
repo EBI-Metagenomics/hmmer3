@@ -60,7 +60,6 @@ def start(
         stdin=fin,
         stdout=fout,
         stderr=ferr,
-        detach=True,
         force=force,
     )
 

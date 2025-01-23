@@ -13,6 +13,6 @@ def test_hmmer(tmp_path, files_path: Path):
     os.chdir(tmp_path)
     shutil.copy(files_path / "minifam.hmm", Path("minifam.hmm"))
     hmmfile = HMMFile(path=Path("minifam.hmm"))
-    pidfile = h3daemon.spawn(hmmfile, detach=True, force=True)
+    pidfile = h3daemon.spawn(hmmfile, force=True)
     daemon = h3daemon.possess(pidfile, wait=True)
     daemon.shutdown()

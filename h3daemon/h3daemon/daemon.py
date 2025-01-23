@@ -15,6 +15,7 @@ from h3daemon.errors import (
     DaemonAlreadyRunningError,
     PIDNotFoundError,
 )
+from h3daemon.fixstreams import fixstreams
 from h3daemon.master import Master
 from h3daemon.pidfile import create_pidfile
 from h3daemon.port import find_free_port
@@ -161,23 +162,24 @@ def daemonize(
     stdin: Optional[Any] = None,
     stdout: Optional[Any] = None,
     stderr: Optional[Any] = None,
-    detach: Optional[bool] = None,
 ):
     pidfile = create_pidfile(hmmfile)
     assert pidfile.is_locked() is None
-    with DaemonContext(
-        working_directory=str(hmmfile.path.parent),
-        pidfile=pidfile,
-        detach_process=detach,
-        stdin=stdin,
-        stdout=stdout,
-        stderr=stderr,
-    ):
-        port = find_free_port() if port == 0 else port
-        wport = find_free_port()
-        create_portfile(pidfile, port, wport)
-        x = Daemon.create(hmmfile, port, wport)
-        x.join()
+    # https://pagure.io/python-daemon/issue/89
+    with fixstreams():
+        with DaemonContext(
+            working_directory=str(hmmfile.path.parent),
+            pidfile=pidfile,
+            detach_process=True,
+            stdin=stdin,
+            stdout=stdout,
+            stderr=stderr,
+        ):
+            port = find_free_port() if port == 0 else port
+            wport = find_free_port()
+            create_portfile(pidfile, port, wport)
+            x = Daemon.create(hmmfile, port, wport)
+            x.join()
 
 
 def spawn(
@@ -186,7 +188,6 @@ def spawn(
     stdin: Optional[Any] = None,
     stdout: Optional[Any] = None,
     stderr: Optional[Any] = None,
-    detach: Optional[bool] = None,
     force: Optional[bool] = False,
 ):
     pidfile = create_pidfile(hmmfile)
@@ -196,7 +197,7 @@ def spawn(
         x = Daemon.possess(pidfile)
         x.shutdown(force=force)
 
-    args = (hmmfile, port, stdin, stdout, stderr, detach)
+    args = (hmmfile, port, stdin, stdout, stderr)
     p = Process(target=daemonize, args=args, daemon=False)
     p.start()
     return pidfile

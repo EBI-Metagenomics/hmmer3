@@ -1,6 +1,6 @@
 [project]
 name = "h3daemon"
-version = "2.0.2"
+version = "2.0.3"
 description = "HMMER server"
 authors = [{ name = "Danilo Horta", email = "horta@ebi.ac.uk" }]
 requires-python = "~=3.9"
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-cli = ["typer>=0.13.0,<0.14"]
+cli = ["typer>=0.15.0,<0.16"]
 
 [project.scripts]
 h3daemon = "h3daemon.cli:app"

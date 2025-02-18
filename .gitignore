@@ -1,6 +1,5 @@
 uv.lock
 *.o
-*.c
 dist/
 *.a
 *.dll

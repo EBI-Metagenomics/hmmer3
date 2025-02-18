@@ -552,6 +552,7 @@ static int hit_parse(struct hit *x, unsigned char const *head,
     if ((rc = copy_string(&x->acc, (char const *)head))) defer_return(rc);
     head += strlen(x->acc) + 1;
   }
+  else if ((rc = copy_string(&x->acc, ""))) defer_return(rc);
 
   if (presence & DESC_PRESENT)
   {
@@ -559,6 +560,7 @@ static int hit_parse(struct hit *x, unsigned char const *head,
     if ((rc = copy_string(&x->desc, (char const *)head))) defer_return(rc);
     head += strlen(x->desc) + 1;
   }
+  else if ((rc = copy_string(&x->desc, ""))) defer_return(rc);
 
   if (ndom > x->ndom)
   {

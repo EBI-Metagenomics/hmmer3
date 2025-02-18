@@ -21,8 +21,9 @@ jobs:
       - name: Build SDist
         run: pipx run build --sdist
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: artifact-sdist
           path: h3result-py/dist/*.tar.gz
 
   make_linux_wheels:
@@ -38,8 +39,9 @@ jobs:
       - name: Build wheels
         run: pipx run cibuildwheel==2.22.0
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: artifact-linux_wheels
           path: h3result-py/wheelhouse/*.whl
 
   make_macos_intel_wheels:
@@ -50,8 +52,9 @@ jobs:
       - name: Build wheels
         run: pipx run cibuildwheel==2.22.0
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: artifact-macos_intel_wheels
           path: h3result-py/wheelhouse/*.whl
 
   make_macos_arm_wheels:
@@ -65,18 +68,20 @@ jobs:
       - name: Build wheels
         run: pipx run cibuildwheel==2.22.0
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: artifact-macos_arm_wheels
           path: h3result-py/wheelhouse/*.whl
 
   upload_all:
     needs: [make_linux_wheels, make_macos_intel_wheels, make_macos_arm_wheels, make_sdist]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: artifact
           path: dist
+          pattern: artifact-*
+          merge-multiple: true
 
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:

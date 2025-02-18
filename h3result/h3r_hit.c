@@ -50,6 +50,10 @@ int h3r_hit_init(struct h3r_hit *x)
   if (!(x->acc = malloc(sizeof(char))))  defer_return(H3R_ENOMEM);
   if (!(x->desc = malloc(sizeof(char)))) defer_return(H3R_ENOMEM);
 
+  x->name[0] = '\0';
+  x->acc[0]  = '\0';
+  x->desc[0] = '\0';
+
   return 0;
 
 defer:

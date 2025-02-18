@@ -72,6 +72,23 @@ int h3r_alidisplay_init(struct h3r_alidisplay *x)
   if (!(x->sqacc = malloc(sizeof(char))))   defer_return(H3R_ENOMEM);
   if (!(x->sqdesc = malloc(sizeof(char))))  defer_return(H3R_ENOMEM);
 
+  x->rfline[0] = '\0';
+  x->mmline[0] = '\0';
+  x->csline[0] = '\0';
+  x->model[0]  = '\0';
+  x->mline[0]  = '\0';
+  x->aseq[0]   = '\0';
+  x->ntseq[0]  = '\0';
+  x->ppline[0] = '\0';
+
+  x->hmmname[0] = '\0';
+  x->hmmacc[0]  = '\0';
+  x->hmmdesc[0] = '\0';
+
+  x->sqname[0] = '\0';
+  x->sqacc[0]  = '\0';
+  x->sqdesc[0] = '\0';
+
   return 0;
 
 defer:

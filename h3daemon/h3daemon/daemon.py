@@ -167,6 +167,7 @@ def daemonize(
     assert pidfile.is_locked() is None
     # https://pagure.io/python-daemon/issue/89
     with fixstreams():
+        hmmfile = HMMFile(path=hmmfile.path.absolute())
         with DaemonContext(
             working_directory=str(hmmfile.path.parent),
             pidfile=pidfile,

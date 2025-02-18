@@ -16,7 +16,7 @@ def ensure_pressed(hmmfile: HMMFile):
             for x in pressed_extensions:
                 Path(f"{hmmfile.path}.{x}").unlink(True)
             check_call(
-                [hmmer.path(hmmer.hmmpress), str(hmmfile.path)],
+                [hmmer.path(hmmer.hmmpress), "-f", str(hmmfile.path)],
                 stdout=DEVNULL,
                 stderr=DEVNULL,
             )

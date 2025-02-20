@@ -7,19 +7,25 @@
 
 static inline int read_map(struct lio_reader *x, uint32_t *size)
 {
-  if (lio_free(x, lip_unpack_map(lio_read(x), size))) return 1;
+  unsigned char *buf = NULL;
+  if (lio_read(x, &buf)) return 1;
+  if (lio_free(x, lip_unpack_map(buf, size))) return 1;
   return 0;
 }
 
 static inline int read_array(struct lio_reader *x, uint32_t *size)
 {
-  if (lio_free(x, lip_unpack_array(lio_read(x), size))) return 1;
+  unsigned char *buf = NULL;
+  if (lio_read(x, &buf)) return 1;
+  if (lio_free(x, lip_unpack_array(buf, size))) return 1;
   return 0;
 }
 
 static inline int read_string(struct lio_reader *x, uint32_t *size)
 {
-  if (lio_free(x, lip_unpack_string(lio_read(x), size))) return 1;
+  unsigned char *buf = NULL;
+  if (lio_read(x, &buf)) return 1;
+  if (lio_free(x, lip_unpack_string(buf, size))) return 1;
   return 0;
 }
 
@@ -46,31 +52,41 @@ static inline int read_cstring2(struct lio_reader *f, char **str)
 
 static inline int read_f32(struct lio_reader *x, float *data)
 {
-  if (lio_free(x, lip_unpack_float(lio_read(x), data))) return 1;
+  unsigned char *buf = NULL;
+  if (lio_read(x, &buf)) return 1;
+  if (lio_free(x, lip_unpack_float(buf, data))) return 1;
   return 0;
 }
 
 static inline int read_f64(struct lio_reader *x, double *data)
 {
-  if (lio_free(x, lip_unpack_float(lio_read(x), data))) return 1;
+  unsigned char *buf = NULL;
+  if (lio_read(x, &buf)) return 1;
+  if (lio_free(x, lip_unpack_float(buf, data))) return 1;
   return 0;
 }
 
 static inline int read_unsigned(struct lio_reader *x, unsigned *data)
 {
-  if (lio_free(x, lip_unpack_int(lio_read(x), data))) return 1;
+  unsigned char *buf = NULL;
+  if (lio_read(x, &buf)) return 1;
+  if (lio_free(x, lip_unpack_int(buf, data))) return 1;
   return 0;
 }
 
 static inline int read_ulong(struct lio_reader *x, unsigned long *data)
 {
-  if (lio_free(x, lip_unpack_int(lio_read(x), data))) return 1;
+  unsigned char *buf = NULL;
+  if (lio_read(x, &buf)) return 1;
+  if (lio_free(x, lip_unpack_int(buf, data))) return 1;
   return 0;
 }
 
 static inline int read_bool(struct lio_reader *x, bool *data)
 {
-  if (lio_free(x, lip_unpack_bool(lio_read(x), data))) return 1;
+  unsigned char *buf = NULL;
+  if (lio_read(x, &buf)) return 1;
+  if (lio_free(x, lip_unpack_bool(buf, data))) return 1;
   return 0;
 }
 

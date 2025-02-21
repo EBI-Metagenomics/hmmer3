@@ -1,3 +1,4 @@
+import traceback
 from contextlib import contextmanager, suppress
 from multiprocessing import Process
 from typing import Any, Optional
@@ -5,10 +6,10 @@ from typing import Any, Optional
 import psutil
 from daemon import DaemonContext
 from deciphon_schema import HMMFile
+from loguru import logger
 from pidlockfile import PIDLockFile
 from tenacity import retry, stop_after_delay, wait_exponential
 
-from h3daemon.debug import debug_exception, debug_message
 from h3daemon.ensure_pressed import ensure_pressed
 from h3daemon.errors import (
     ChildNotFoundError,
@@ -46,17 +47,18 @@ class Daemon:
         self._worker = worker
         self._process = process
         if process is not None:
-            debug_message(f"Daemon.__init__ PID: {process.pid}")
+            logger.info(f"Daemon.__init__ PID: {process.pid}.")
 
     @classmethod
+    @logger.catch(reraise=True)
     def create(cls, hmmfile: HMMFile, cport: int, wport: int):
         ensure_pressed(hmmfile)
         master: Master | None = None
         worker: Worker | None = None
 
         try:
-            debug_message(f"Daemon.spawn cport: {cport}")
-            debug_message(f"Daemon.spawn wport: {wport}")
+            logger.info(f"Daemon.spawn cport: {cport}.")
+            logger.info(f"Daemon.spawn wport: {wport}.")
 
             cmd = Master.cmd(cport, wport, str(hmmfile.path))
             master = Master(psutil.Popen(cmd), cport, wport)
@@ -66,9 +68,8 @@ class Daemon:
             worker = Worker(psutil.Popen(cmd), wport)
             worker.wait_for_readiness()
 
-            debug_message("Daemon.spawn is ready")
+            logger.info("Daemon.spawn is ready")
         except Exception as exception:
-            debug_exception(exception)
             if worker:
                 shutdown(worker.process, force=True, wait=False)
             if master:
@@ -108,7 +109,7 @@ class Daemon:
         else:
             raise ChildNotFoundError("Worker not found.")
 
-        debug_message("Daemon.possess finished")
+        logger.info("Daemon.possess finished.")
         return cls(master, worker, process)
 
     def shutdown(self, force=False):
@@ -121,20 +122,21 @@ class Daemon:
         if self._process is not None:
             shutdown(self._process, force=force, wait=True)
 
-        debug_message("Daemon.shutdown finished")
+        logger.info("Daemon.shutdown finished.")
 
     @retry(stop=stop_after_delay(10), wait=wait_exponential(multiplier=0.001))
     def wait_for_readiness(self):
         assert self.healthy()
 
     def healthy(self) -> bool:
+        logger.info("Checking deamon healthy...")
         try:
             if self._process:
                 assert self._process.is_running()
             assert self._master.healthy()
             assert self._worker.healthy()
         except Exception as exception:
-            debug_exception(exception)
+            logger.info(f"Exception raised while checking healthy: {str(exception)}.")
             return False
         return True
 
@@ -164,21 +166,44 @@ def daemonize(
     stdout: Optional[Any] = None,
     stderr: Optional[Any] = None,
 ):
+    logfile = f"{str(hmmfile.path)}.log"
+    logger.add(logfile, level="TRACE")
+    logger.info("Spawning daemon up...")
+
     # https://pagure.io/python-daemon/issue/89
     with fixstreams():
-        with DaemonContext(
+        ctx = DaemonContext(
             working_directory=str(hmmfile.path.parent),
             pidfile=pidfile,
             detach_process=True,
             stdin=stdin,
             stdout=stdout,
             stderr=stderr,
-        ):
-            port = find_free_port() if port == 0 else port
-            wport = find_free_port()
-            create_portfile(pidfile, port, wport)
-            x = Daemon.create(hmmfile, port, wport)
-            x.join()
+        )
+        try:
+            try:
+                # We remove it to avoid log duplication due to fork that will happen
+                # bellow and to avoid broken sink due to daemon construction.
+                logger.remove()
+                ctx.open()
+            except Exception as exception:
+                logger.add(logfile, level="TRACE")
+                logger.trace(str(exception) + "\n" + traceback.format_exc())
+                raise
+
+            try:
+                # We are now the child resulted from the fork. Open a sink for it.
+                logger.add(logfile, level="TRACE")
+                port = find_free_port() if port == 0 else port
+                wport = find_free_port()
+                create_portfile(pidfile, port, wport)
+                x = Daemon.create(hmmfile, port, wport)
+                x.join()
+            except Exception as exception:
+                logger.trace(str(exception) + "\n" + traceback.format_exc())
+                raise
+        finally:
+            ctx.close()
 
 
 def spawn(
@@ -198,9 +223,12 @@ def spawn(
 
     hmmfile = HMMFile(path=hmmfile.path.absolute())
     args = (pidfile, hmmfile, port, stdin, stdout, stderr)
+
     p = Process(target=daemonize, args=args, daemon=False)
     p.start()
     p.join()
+    assert p.exitcode == 0
+
     return pidfile
 
 

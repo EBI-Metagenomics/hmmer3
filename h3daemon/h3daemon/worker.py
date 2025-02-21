@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import hmmer
 import psutil
+from loguru import logger
 from tenacity import retry, stop_after_delay, wait_exponential
 
-from h3daemon.debug import debug_message
 from h3daemon.tcp import can_connect
 
 __all__ = ["Worker"]
@@ -14,7 +14,7 @@ class Worker:
     def __init__(self, process: psutil.Process, wport: int):
         self._proc = process
         self._wport = wport
-        debug_message(f"Worker.__init__ PID: {process.pid}")
+        logger.info(f"Worker.__init__ PID: {process.pid}.")
 
     @staticmethod
     def myself(process: psutil.Process):

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import hmmer
 import psutil
+from loguru import logger
 from tenacity import retry, stop_after_delay, wait_exponential
 
-from h3daemon.debug import debug_message
 from h3daemon.tcp import can_connect
 
 __all__ = ["Master"]
@@ -15,7 +15,7 @@ class Master:
         self._proc = process
         self._cport = cport
         self._wport = wport
-        debug_message(f"Master.__init__ PID: {process.pid}")
+        logger.info(f"Master.__init__ PID: {process.pid}.")
 
     def cport(self):
         return self._cport

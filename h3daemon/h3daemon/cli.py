@@ -8,10 +8,9 @@ import typer
 from deciphon_schema import HMMFile
 from typer import echo
 
+from h3daemon import possess, spawn
 from h3daemon.daemon import Daemon
-from h3daemon import spawn
 from h3daemon.pidfile import create_pidfile
-from h3daemon import possess
 
 __all__ = ["app"]
 

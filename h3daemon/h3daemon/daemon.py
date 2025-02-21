@@ -157,17 +157,15 @@ def context(hmmfile: HMMFile, port: int = 0):
 
 
 def daemonize(
+    pidfile: PIDLockFile,
     hmmfile: HMMFile,
     port: int = 0,
     stdin: Optional[Any] = None,
     stdout: Optional[Any] = None,
     stderr: Optional[Any] = None,
 ):
-    pidfile = create_pidfile(hmmfile)
-    assert pidfile.is_locked() is None
     # https://pagure.io/python-daemon/issue/89
     with fixstreams():
-        hmmfile = HMMFile(path=hmmfile.path.absolute())
         with DaemonContext(
             working_directory=str(hmmfile.path.parent),
             pidfile=pidfile,
@@ -198,9 +196,11 @@ def spawn(
         x = Daemon.possess(pidfile)
         x.shutdown(force=force)
 
-    args = (hmmfile, port, stdin, stdout, stderr)
+    hmmfile = HMMFile(path=hmmfile.path.absolute())
+    args = (pidfile, hmmfile, port, stdin, stdout, stderr)
     p = Process(target=daemonize, args=args, daemon=False)
     p.start()
+    p.join()
     return pidfile
 
 
